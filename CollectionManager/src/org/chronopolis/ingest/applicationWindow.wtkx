@@ -1,0 +1,154 @@
+<Window title="Chronopolis Collection Manager" maximized="true"
+        xmlns:wtkx="http://pivot.apache.org/wtkx"
+        xmlns:c="org.apache.pivot.wtk.content"
+        xmlns="org.apache.pivot.wtk"
+        xmlns:effects="org.apache.pivot.wtk.effects"
+        xmlns:chron="org.chronopolis.ingest"
+        wtkx:id="mainw">
+    <wtkx:define>
+        <chron:ArchivedCollectionPanel wtkx:id="archivePanel"/>
+        <chron:BagAssemblyPanel wtkx:id="assemblyPanel"/>
+        <!--<chron:ChooseCollectionDialog wtkx:id="collectionChooseDialog"/> -->
+        <chron:CreateHoleyBagDialog wtkx:id="createBagDialog"/>
+        <wtkx:include wtkx:id="aboutDialog" src="aboutDialog.wtkx"/>
+        <FileBrowserSheet wtkx:id="digestBrowser" mode="SAVE_AS"/>
+    </wtkx:define>
+    <content>
+        <TablePane>
+            <columns><TablePane.Column width="1*"/></columns>
+            <rows>
+                <TablePane.Row height="-1">
+                    <TablePane>
+                        <columns>
+                            <TablePane.Column width="-1"/>
+                            <TablePane.Column width="1*"/>
+                        </columns>
+                        <rows>
+                            <TablePane.Row height="-1">
+
+                                <BoxPane orientation="horizontal" styles="{verticalAlignment:'center',padding:{left:5,top:5,right:0,bottom:5}}}">
+                                    <MenuButton tooltipText="Create new bag or collection" styles="{backgroundColor:'#ffffff'}" preferredWidth="60" preferredHeight="50" >
+                                        <buttonData>
+                                            <c:ButtonData icon="@newCollection.png" />
+                                        </buttonData>
+                                        <menu>
+                                            <Menu>
+                                                <sections>
+                                                    <Menu.Section>
+                                                        <Menu.Item buttonData="New bag">
+
+                                                            <buttonPressListeners>
+                                                                <wtkx:script>
+                                                                    function buttonPressed(button) {
+                                                                    var newPkg = new org.chronopolis.ingest.pkg.ChronPackage();
+                                                                    newPkg.setDigest('SHA-256');
+                                                                    pendingListView.getListData().add(newPkg);
+                                                                    pendingListView.setSelectedIndex(pendingListView.getListData().getLength() -1);
+                                                                    }
+                                                                </wtkx:script>
+                                                            </buttonPressListeners>
+                                                        </Menu.Item>
+                                                        <Menu.Item buttonData="Create Collection"/>
+                                                    </Menu.Section>
+                                                </sections>
+                                            </Menu>
+                                        </menu>
+                                    </MenuButton>
+                                    
+                                    <MenuButton tooltipText="Transfer Bag to Chronopolis" styles="{backgroundColor:'#ffffff'}" preferredWidth="60" preferredHeight="50" >
+                                        <buttonData>
+                                            <c:ButtonData icon="@transferBag.png" />
+                                        </buttonData>
+                                        <menu>
+                                            <Menu>
+                                                <sections>
+                                                    <Menu.Section>
+                                                        <Menu.Item enabled="false" buttonData="Create/Transfer Bag" 
+                                                        tooltipText="Transfer Bag to Chronopolis" wtkx:id="createBagBtn" >
+
+                                                            <buttonPressListeners>
+                                                                <wtkx:script>
+                                                                    function buttonPressed(button) {
+                                                                    createBagDialog.open(mainw);
+                                                                    }
+                                                                </wtkx:script>
+                                                            </buttonPressListeners>
+                                                        </Menu.Item>
+                                                        <Menu.Item enabled="false" wtkx:id="saveBagBtn" buttonData="Save Bag Manifest">
+                                                            <buttonPressListeners>
+                                                                <wtkx:script>
+                                                                    function buttonPressed(button) {
+                                                                    digestBrowser.open(mainw);
+                                                                    }
+                                                                </wtkx:script>
+                                                            </buttonPressListeners>
+                                                        </Menu.Item>
+                                                    </Menu.Section>
+                                                </sections>
+                                            </Menu>
+                                        </menu>
+                                    </MenuButton>
+                                </BoxPane>
+
+                                <BoxPane styles="{verticalAlignment:'center',horizontalAlignment:'right',padding:{left:5,top:5,right:55,bottom:5}}">
+                                    <Label text="Chronopolis Data Manager" styles="{font:'Arial bold 36',color:'#a0a0a0'}">
+                                        <decorators>
+                                            <chron:ConfigurableReflection yTranslate="-20"/>
+                                        </decorators>
+                                        <componentMouseButtonListeners>
+                                            <wtkx:script>
+                                                function mouseClick(component, button, x, i, count)
+                                                {
+                                                aboutDialog.open(mainw);
+                                                }
+                                            </wtkx:script>
+                                        </componentMouseButtonListeners>
+                                    </Label>
+                                </BoxPane>
+
+                            </TablePane.Row>
+
+                        </rows>
+                    </TablePane>
+                </TablePane.Row>
+                <TablePane.Row height="1*">
+                    <SplitPane splitRatio="0.3">
+                        <left>
+                            <SplitPane orientation="vertical">
+                                <left>
+                                    <Border title="Archived Collections" styles="{cornerRadii: 10, padding:2, backgroundColor:'#f7f5ee'}">
+                                        <content>
+                                            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" >
+                                                <view>
+                                                    <ListView wtkx:id="ingestedListView"/>
+                                                </view>
+                                            </ScrollPane>
+                                        </content>
+                                    </Border>
+                                </left>
+                                <right>
+                                    <Border title="Working Collections" styles="{cornerRadii: 10, padding:2, backgroundColor:'#f7f5ee'}">
+                                        <content>
+                                            <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
+                                                <view>
+                                                    <ListView wtkx:id="pendingListView"/>
+                                                </view>
+                                            </ScrollPane>
+                                        </content>
+                                    </Border>
+                                </right>
+                            </SplitPane>
+
+                        </left>
+                        <right>
+                            <Border styles="{cornerRadii: 10, padding:5, backgroundColor:'#f7f5ee'}" wtkx:id="detailBorder"/>
+
+                        </right>
+                    </SplitPane>
+
+                </TablePane.Row>
+            </rows>
+        </TablePane>
+        
+    </content>
+</Window>

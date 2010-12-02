@@ -1,0 +1,64 @@
+<TablePane xmlns:wtkx="http://pivot.apache.org/wtkx"
+           xmlns="org.apache.pivot.wtk"
+           xmlns:chron="org.chronopolis.ingest">
+
+    <define>
+        <FileBrowserSheet wtkx:id="browser" mode="SAVE_TO"/>
+    </define>
+
+    <columns>
+        <TablePane.Column width="1*"/>
+    </columns>
+    <rows>
+        <TablePane.Row height="-1" >
+            <BoxPane styles="{padding:{left:10,top:10,right:15,bottom:15},verticalAlignment:'center'}">
+                <Label text="Name:"/>
+                <TextInput wtkx:id="nameText" width="250"/>
+                <Label  text="Digest:" styles="{padding:{left:15,top:0,right:0,bottom:0}}"/>
+                <ListButton wtkx:id="digestListBtn" listData="['SHA-256','SHA-512','MD5']"></ListButton>
+                <BoxPane styles="{padding:{left:15,top:0,right:0,bottom:0}}">
+                    <PushButton wtkx:id="removeBtn" buttonData="Remove Bag"/>
+                </BoxPane>
+            </BoxPane>
+        </TablePane.Row>
+        <TablePane.Row height="1*">
+            <SplitPane splitRatio="0.43">
+                <left>
+                    <TablePane>
+                        <columns>
+                            <TablePane.Column width="1*"/>
+                        </columns>
+                        <rows>
+                            <TablePane.Row height="1*">
+                                <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" styles="{backgroundColor:'#fafafa'}">
+                                    <view>
+                                        <ListView wtkx:id="rootList" styles="{backgroundColor:'#fafafa'}"/>
+                                    </view>
+                                </ScrollPane>
+                            </TablePane.Row>
+                            <TablePane.Row height="-1">
+                                <BoxPane styles="{padding:{left:10,top:10,right:5,bottom:5}}">
+                                    <PushButton buttonData="Add Directory" wtkx:id="addFilesBtn">
+                                        <buttonPressListeners>
+                                            <wtkx:script>
+                                                function buttonPressed(button) {
+                                                browser.open(button.getWindow());
+                                                }
+                                            </wtkx:script>
+                                        </buttonPressListeners>
+                                    </PushButton>
+                                    <PushButton buttonData="Remove Directory" enabled="false" wtkx:id="removeFileBtn"/>
+                                        
+                                </BoxPane>
+                            </TablePane.Row>
+                        </rows>
+                    </TablePane>
+
+                </left>
+                <right>
+                    <Border/>
+                </right>
+            </SplitPane>
+        </TablePane.Row>
+    </rows>
+</TablePane>

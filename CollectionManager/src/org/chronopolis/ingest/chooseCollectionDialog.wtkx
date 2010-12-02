@@ -1,0 +1,28 @@
+<TablePane xmlns:wtkx="http://pivot.apache.org/wtkx"
+           xmlns="org.apache.pivot.wtk">
+
+    <columns>
+        <TablePane.Column width="1*"/>
+    </columns>
+    <rows>
+        <TablePane.Row height="1*" >
+            <Border><content>
+            <ListButton wtkx:id="collectionListButton"/>
+            </content></Border>
+        </TablePane.Row>
+        <TablePane.Row height="-1" >
+            <BoxPane styles="{horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
+                <PushButton wtkx:id="cancelBtn" buttonData="Cancel">
+                    <buttonPressListeners>
+                        <wtkx:script>
+                            function buttonPressed(button) {
+                            button.getWindow().close();
+                            }
+                        </wtkx:script>
+                    </buttonPressListeners>
+                    </PushButton>
+                <PushButton wtkx:id="okBtn" buttonData="Transfer"/>
+            </BoxPane>
+        </TablePane.Row>
+    </rows>
+</TablePane>

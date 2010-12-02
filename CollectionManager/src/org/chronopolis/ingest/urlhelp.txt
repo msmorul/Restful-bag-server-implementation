@@ -1,0 +1,7 @@
+The URL template is used to construct a fetch list for a bag. URL's are constructed by substituting in data from the bag to create a new url. The Sample Data URL shows an example line from the fetch file constructed using your template.
+
+The following strings in the template will be substituted:
+
+{b} - will be replaced with the current package name
+{d} - will be replaced with the data path in the bag (data/your_path)
+{r} - will be replaced with data path and no 'data' prefix

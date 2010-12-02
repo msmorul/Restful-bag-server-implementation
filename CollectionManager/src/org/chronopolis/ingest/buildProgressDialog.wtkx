@@ -1,0 +1,29 @@
+<TablePane xmlns:wtkx="http://pivot.apache.org/wtkx"
+           xmlns="org.apache.pivot.wtk">
+
+
+    <columns>
+        <TablePane.Column width="-1"/>
+        <TablePane.Column width="1*"/>
+    </columns>
+    <rows>
+
+        <TablePane.Row height="-1" >
+            <Label text="Current File:" styles="{padding:{left:5,top:00,right:10,bottom:0}}"/>
+            <Label wtkx:id="fileLabel"/>
+        </TablePane.Row>
+
+        <TablePane.Row height="-1" >
+            <Label styles="{padding:{top:0,left:5,bottom:0,right:10}}" text="Total Processed:" />
+            <BoxPane styles="{horizontalAlignment:'left', verticalAlignment:'center'}">
+                <Label wtkx:id="totalLabel"/>
+                <Meter wtkx:id="fileMeter" preferredWidth="200" preferredHeight="16" />
+            </BoxPane>
+        </TablePane.Row>
+
+        <TablePane.Row height="-1">
+            <ActivityIndicator wtkx:id="activityIndicator" styles="{color:'#aa0000'}"
+                               preferredWidth="48" preferredHeight="48"/>
+        </TablePane.Row>
+    </rows>
+</TablePane>
