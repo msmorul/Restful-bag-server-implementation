@@ -16,11 +16,17 @@ import org.apache.pivot.serialization.SerializationException;
 import org.apache.pivot.util.Filter;
 import org.apache.pivot.util.ListenerList;
 import org.apache.pivot.util.Vote;
+import org.apache.pivot.util.concurrent.Task;
+import org.apache.pivot.util.concurrent.TaskExecutionException;
+import org.apache.pivot.util.concurrent.TaskListener;
 import org.apache.pivot.wtk.Accordion;
 import org.apache.pivot.wtk.AccordionSelectionListener;
+import org.apache.pivot.wtk.ActivityIndicator;
 import org.apache.pivot.wtk.Alert;
 import org.apache.pivot.wtk.ApplicationContext;
 import org.apache.pivot.wtk.ApplicationContextMessageListener;
+import org.apache.pivot.wtk.Border;
+import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonGroup;
 import org.apache.pivot.wtk.ButtonPressListener;
@@ -32,21 +38,24 @@ import org.apache.pivot.wtk.FileBrowser;
 import org.apache.pivot.wtk.FileBrowserListener;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.ListButton;
+import org.apache.pivot.wtk.ListView;
 import org.apache.pivot.wtk.MessageType;
+import org.apache.pivot.wtk.Orientation;
 import org.apache.pivot.wtk.PushButton;
+import org.apache.pivot.wtk.Sheet;
+import org.apache.pivot.wtk.SheetCloseListener;
 import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.TextInputTextListener;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ButtonData;
 import org.apache.pivot.wtk.content.ButtonDataRenderer;
-import org.apache.pivot.wtk.validation.Validator;
 import org.apache.pivot.wtkx.WTKX;
 import org.apache.pivot.wtkx.WTKXSerializer;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.URLUTF8Encoder;
 
 /**
- *
+ * TODO: each pane should be its own class
  * @author toaster
  */
 public class CreateHoleyBagDialog extends Dialog {
@@ -112,7 +121,22 @@ public class CreateHoleyBagDialog extends Dialog {
     @WTKX
     private Label vrfyPatternHdr;
     @WTKX
+    private Label vrfyFilesLbl;
+    @WTKX
+    private Label vrfyDirectoriesLbl;
+    @WTKX
+    private Label vrfySizeLbl;
+    @WTKX
+    private Label vrfyUnreadableLbl;
+    @WTKX
+    private ListView vrfyUnreadableList;
+    @WTKX
+    private Border vrfyUnreadablePane;
+    @WTKX
     private PushButton okBtn;
+//    @WTKX
+//    private PushButton verifyPreviousBtn;
+    private boolean isVerify = false;
     ///
     private AccordionSelectionListener accordionSelectionListener = new AccordionSelectionListener() {
 
@@ -151,11 +175,114 @@ public class CreateHoleyBagDialog extends Dialog {
             updateAccordion();
         }
     };
+    private Task<ChronPackage.Statistics> updateTask = new Task<ChronPackage.Statistics>() {
+
+        @Override
+        public ChronPackage.Statistics execute() throws TaskExecutionException {
+            try {
+                return workingPackage.createStatistics(
+                        new ChronPackage.AbortScanNotifier() {
+
+                            public boolean aborted() {
+                                return !isVerify;
+                            }
+                        });
+            } finally {
+                isVerify = false;
+            }
+        }
+    };
+    //TODO: Clean this entire crap pile up.
+    private AccordionSelectionListener verifyUpdateAccordionListener = new AccordionSelectionListener.Adapter() {
+
+        @Override
+        public Vote previewSelectedIndexChange(Accordion acrdn, int i) {
+            okBtn.setEnabled(false);
+
+            System.out.println(" d " + acrdn.getSelectedIndex() + " i " + i);
+            if (i == (acrdn.getPanels().getLength() - 1)) {
+                if (isVerify) {
+                    return Vote.APPROVE;
+                }
+
+                isVerify = true;
+                //TODO: Make this a new components
+                final Sheet statusSheet = new Sheet();
+                statusSheet.setPreferredHeight(175);
+                statusSheet.setPreferredWidth(325);
+                ActivityIndicator idc = new ActivityIndicator();
+                idc.setPreferredWidth(96);
+                idc.setPreferredHeight(96);
+                idc.setActive(true);
+                BoxPane bp = new BoxPane();
+                bp.getStyles().put("horizontalAlignment", "center");
+                bp.add(idc);
+                bp.setOrientation(Orientation.VERTICAL);
+                bp.add(new Label("Scanning Bag..."));
+                PushButton pb = new PushButton("Skip");
+                pb.getButtonPressListeners().add(new ButtonPressListener() {
+
+                    public void buttonPressed(Button button) {
+                        isVerify = false;
+                    }
+                });
+                bp.add(pb);
+                statusSheet.setContent(bp);
+
+                TaskListener<ChronPackage.Statistics> taskListener = new TaskListener<ChronPackage.Statistics>() {
+
+                    public void taskExecuted(Task<ChronPackage.Statistics> task) {
+                        ChronPackage.Statistics stats = task.getResult();
+                        if (stats != null) {
+                            vrfyFilesLbl.setText(Long.toString(stats.getFiles()));
+                            vrfyDirectoriesLbl.setText(Long.toString(stats.getDirectories()));
+                            vrfySizeLbl.setText(Util.formatSize(stats.getSize()));
+                            vrfyUnreadableLbl.setText(Long.toString(stats.getUnreadable()));
+                            vrfyUnreadablePane.setVisible(stats.getUnreadable() > 0);
+                            vrfyUnreadableList.setListData(stats.getUnreadableFiles());
+                        } else {
+                            vrfyFilesLbl.setText("scan aborted");
+                            vrfyDirectoriesLbl.setText("scan aborted");
+                            vrfySizeLbl.setText("scan aborted");
+                            vrfyUnreadableLbl.setText("scan aborted");
+                            vrfyUnreadablePane.setVisible(false);
+                        }
+                        okBtn.setEnabled(true);
+                        statusSheet.close(true);
+                    }
+
+                    public void executeFailed(Task<ChronPackage.Statistics> task) {
+                        okBtn.setEnabled(false);
+                        if (!isVerify) {
+                            Alert.alert(MessageType.ERROR, "Count not scan bag", accordion.getDisplay());
+                        }
+                        statusSheet.close(true);
+                    }
+                };
+
+                statusSheet.open(acrdn.getWindow(), new SheetCloseListener() {
+
+                    public void sheetClosed(Sheet sheet) {
+                        System.out.println("closing " + sheet.getResult());
+
+                        if (!sheet.getResult()) {
+                            isVerify = false;
+                        }
+                    }
+                });
+
+                updateTask.execute(taskListener);
+            } else {
+                isVerify = false;
+            }
+
+            return Vote.APPROVE;
+        }
+    };
     private ButtonPressListener pane1ButtonListener = new ButtonPressListener() {
 
         public void buttonPressed(Button button) {
             pane1Message.setText("");
-//                System.out.println(outputGroup.getSelection());
             if (outputGroup.getSelection() == null) {
                 pane1Message.setText("Please Choose Destination");
             } else if (typeGroup.getSelection() == null) {
@@ -282,6 +409,7 @@ public class CreateHoleyBagDialog extends Dialog {
 
 
         accordion.getAccordionSelectionListeners().add(accordionSelectionListener);
+        accordion.getAccordionSelectionListeners().add(verifyUpdateAccordionListener);
         urlTxt.getTextInputTextListeners().add(new TextInputTextListener() {
 
             public void textChanged(TextInput ti) {
@@ -309,9 +437,19 @@ public class CreateHoleyBagDialog extends Dialog {
         });
 
         browser.getFileBrowserListeners().add(browserLabelUpdateListener);
-        File bagFile = new File(browser.getRootDirectory(), bagfileTxt.getText());
-        saveFileLbl.setText(bagFile.getAbsolutePath());
+//        File bagFile = new File(browser.getRootDirectory(), bagfileTxt.getText());
+//        saveFileLbl.setText(bagFile.getAbsolutePath());
         pane2bNextBtn.getButtonPressListeners().add(pane2bButtonListener);
+        bagfileTxt.getTextInputTextListeners().add(new TextInputTextListener() {
+
+            public void textChanged(TextInput ti) {
+                if (browser.getRootDirectory() != null && bagfileTxt.getText() != null) {
+
+                    File bagFile = new File(browser.getRootDirectory(), bagfileTxt.getText());
+                    saveFileLbl.setText(bagFile.getAbsolutePath());
+                }
+            }
+        });
 
         // pane 3 config
         urlTxt.setText(Main.getDefaultURLPattern());
@@ -332,14 +470,16 @@ public class CreateHoleyBagDialog extends Dialog {
     }
 
     private void updateSampleUrl() {
-        if (workingPackage == null)
+        if (workingPackage == null) {
             return;
-        
+        }
+
         String txt = urlTxt.getText();
         if (Strings.isEmpty(txt)) {
             sampleUrlLbl.setText("Add URL to create fetch file");
         }
         String newTxt = txt.replaceAll("\\{b\\}", workingPackage.getName());
+
         if (workingPackage.findFirstFile() == null) {
             newTxt = newTxt.replaceAll("\\{d\\}", "").replaceAll("\\{r\\}", "");
         } else {

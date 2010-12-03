@@ -20,7 +20,7 @@ public class ChronPackage {
     private String digest = "SHA-256";
     private List<File> rootList = new ArrayList();
     private List<ChronPackageListener> listeners = new ArrayList<ChronPackageListener>();
-    private Map<String,String> metadataMap = new HashMap<String, String>();
+    private Map<String, String> metadataMap = new HashMap<String, String>();
     private boolean readOnly = false;
 
     public String getName() {
@@ -35,33 +35,75 @@ public class ChronPackage {
         }
     }
 
+    public Statistics createStatistics(AbortScanNotifier notifier) {
+        Statistics stats = new Statistics();
+        for (File f : rootList) {
+            updateStats(f, stats, notifier);
+        }
+        if (notifier.aborted()) {
+            return null;
+        } else {
+            return stats;
+        }
+    }
+
+    private void updateStats(File f, Statistics stats, AbortScanNotifier notifier) {
+        if (!f.canRead())
+        {
+                stats.unreadable++;
+                stats.unreadableFiles.add(f);
+                return;
+        }
+        
+        if (f.isFile()) {
+            stats.files++;
+            stats.size += f.length();
+        } else if (f.isDirectory()) {
+            stats.directories++;
+            for (File f2 : f.listFiles()) {
+                if (notifier.aborted()) {
+                    return;
+                }
+                updateStats(f2, stats, notifier);
+            }
+        } else {
+            //errors here
+        }
+    }
+
     /**
      * Return the first file to be written in this bag.
      * 
      * @return first data file (ie, data/somedir/file4.txt)
      */
-    public String findFirstFile()
-    {
-        if (rootList.isEmpty())
+    public String findFirstFile() {
+        if (rootList.isEmpty()) {
             return null;
-        
-        return trollForFirst(rootList.get(0));
+        }
+        for (File f : rootList) {
+            if (f.exists()) {
+                return trollForFirst(f);
+            }
+        }
+        return null;
     }
 
-    private String trollForFirst(File dir)
-    {
-        
+    private String trollForFirst(File dir) {
+
         File firstDir = null;
-        for (File f : dir.listFiles())
-        {
-            if (f.isFile())
+
+        for (File f : dir.listFiles()) {
+
+            if (f.isFile()) {
                 return dir.getName() + "/" + f.getName();
-            else if (firstDir == null && f.isDirectory())
+            } else if (firstDir == null && f.isDirectory()) {
                 firstDir = f;
+            }
         }
-        if (firstDir == null)
+        if (firstDir == null) {
             return dir.getName();
-        
+        }
+
         return dir.getName() + "/" + trollForFirst(firstDir);
     }
 
@@ -73,19 +115,18 @@ public class ChronPackage {
         return digest;
     }
 
-    public String getBagFormattedDigest()
-    {
-        return digest.toLowerCase().replaceAll("[^a-z0-9]","");
+    public String getBagFormattedDigest() {
+        return digest.toLowerCase().replaceAll("[^a-z0-9]", "");
     }
 
     public void setDigest(String digest) {
         String old = this.digest;
         this.digest = digest;
-        for (ChronPackageListener l : listeners )
-        {
+        for (ChronPackageListener l : listeners) {
             l.digestChanged(this, old);
         }
     }
+
     public void setName(String name) {
         String old = this.name;
         this.name = name;
@@ -98,12 +139,48 @@ public class ChronPackage {
         return metadataMap;
     }
 
-    
     public List<File> getRootList() {
         return rootList;
     }
 
     public List<ChronPackageListener> getChronPackageListeners() {
         return listeners;
+    }
+
+    public class Statistics {
+
+        private long size = 0;
+        private long files = 0;
+        private long directories = 0;
+        private long unreadable = 0;
+        private List<File> unreadableFiles = new ArrayList<File>();
+
+        public long getDirectories() {
+            return directories;
+        }
+
+        public long getFiles() {
+            return files;
+        }
+
+        public long getSize() {
+            return size;
+        }
+
+        public long getUnreadable() {
+            return unreadable;
+        }
+
+        public List<File> getUnreadableFiles() {
+            return unreadableFiles;
+        }
+
+
+
+    }
+
+    public static interface AbortScanNotifier {
+
+        public boolean aborted();
     }
 }

@@ -290,13 +290,47 @@
                     <Label text="URL Pattern:" wtkx:id="vrfyPatternHdr" styles="{font:'Arial bold 14'}"/>
                     <Label wtkx:id="vrfyPatternLbl" />
                 </TablePane.Row>
-                <TablePane.Row height="1*">
+                <TablePane.Row height="-1">
                     <Label text="Bag Location: " styles="{font:'Arial bold 14'}"/>
                     <Label wtkx:id="vrfyLocationLbl" />
                 </TablePane.Row>
+
+                <TablePane.Row height="-1">
+                    <Label text="Total Files: " styles="{font:'Arial bold 14'}"/>
+                    <Label wtkx:id="vrfyFilesLbl" />
+                </TablePane.Row>
+
+                <TablePane.Row height="-1">
+                    <Label text="Total Directories: " styles="{font:'Arial bold 14'}"/>
+                    <Label wtkx:id="vrfyDirectoriesLbl" />
+                </TablePane.Row>
+
+                <TablePane.Row height="-1">
+                    <Label text="Size: " styles="{font:'Arial bold 14'}"/>
+                    <Label wtkx:id="vrfySizeLbl" />
+                </TablePane.Row>
+
+                <TablePane.Row height="-1">
+                    <Label text="Unreadable files: " styles="{font:'Arial bold 14'}"/>
+                    <Label wtkx:id="vrfyUnreadableLbl" />
+                </TablePane.Row>
+                <TablePane.Row height="150">
+                    <Border  TablePane.columnSpan="2" wtkx:id="vrfyUnreadablePane">
+                        <content>
+                            <ScrollPane horizontalScrollBarPolicy="fill"
+                                        verticalScrollBarPolicy="fill_to_capacity">
+                                <view>
+                                    <ListView wtkx:id="vrfyUnreadableList"/>
+                                </view>
+                            </ScrollPane>
+                        </content>
+                    </Border>
+                </TablePane.Row>
+
+                <TablePane.Row height="1*"><BoxPane/></TablePane.Row>
                 <TablePane.Row height="-1" >
                     <BoxPane TablePane.columnSpan="2" styles="{horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
-                        <PushButton preferredWidth="50">
+                        <PushButton preferredWidth="50" wtkx:id="verifyPreviousBtn">
                             <buttonData>
                                 <c:ButtonData icon="@go-previous.png" />
                             </buttonData>
