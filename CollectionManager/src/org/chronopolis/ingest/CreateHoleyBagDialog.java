@@ -43,6 +43,7 @@ import org.apache.pivot.wtk.validation.Validator;
 import org.apache.pivot.wtkx.WTKX;
 import org.apache.pivot.wtkx.WTKXSerializer;
 import org.chronopolis.ingest.pkg.ChronPackage;
+import org.chronopolis.ingest.pkg.URLUTF8Encoder;
 
 /**
  *
@@ -344,7 +345,7 @@ public class CreateHoleyBagDialog extends Dialog {
         } else {
             newTxt = newTxt.replaceAll("\\{d\\}", "data" + "/" + workingPackage.findFirstFile()).replaceAll("\\{r\\}", workingPackage.findFirstFile());
         }
-        sampleUrlLbl.setText(newTxt);
+        sampleUrlLbl.setText(URLUTF8Encoder.encode(newTxt));
 
     }
 
