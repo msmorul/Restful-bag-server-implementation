@@ -33,6 +33,7 @@ import org.apache.pivot.wtk.TextInputTextListener;
 import org.apache.pivot.wtk.content.ListViewItemRenderer;
 import org.apache.pivot.wtkx.WTKX;
 import org.apache.pivot.wtkx.WTKXSerializer;
+import org.chronopolis.ingest.pkg.BagWriter;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.ChronPackageListener;
 
@@ -170,6 +171,7 @@ public class BagAssemblyPanel extends Border {
             public void textChanged(TextInput ti) {
                 if (workingBag != null) {
                     workingBag.setName(ti.getText());
+                    workingBag.getMetadataMap().put(BagWriter.INFO_INTERNAL_SENDER_IDENTIFIER, ti.getText());
                 }
             }
         });

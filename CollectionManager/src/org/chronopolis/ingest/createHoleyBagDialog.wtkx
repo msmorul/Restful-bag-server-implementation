@@ -271,85 +271,174 @@
 
         <BoxPane wtkx:id="fillerPane" Accordion.label="Choose Bag Destination"/>
 
+        <TabPane  wtkx:id="verifyPane" Accordion.label="Verify Bag Creation" >
+            <tabs>
+                <TablePane TabPane.label="Overview &amp; Submit" styles="{verticalSpacing:6,padding:10}">
+                    <columns>
+                        <TablePane.Column width="150"/>
+                        <TablePane.Column width="1*"/>
+                    </columns>
+                    <rows>
+                        <TablePane.Row height="-1">
+                            <Label text="Destination:" styles="{font:'Arial bold 14'}"/>
+                            <Label wtkx:id="vrfyDestLbl" />
+                        </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <Label text="Bag Type:" styles="{font:'Arial bold 14'}"/>
+                            <Label wtkx:id="vrfyTypeLbl" />
+                        </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <Label text="URL Pattern:" wtkx:id="vrfyPatternHdr" styles="{font:'Arial bold 14'}"/>
+                            <Label wtkx:id="vrfyPatternLbl" />
+                        </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <Label text="Bag Location: " styles="{font:'Arial bold 14'}"/>
+                            <Label wtkx:id="vrfyLocationLbl" />
+                        </TablePane.Row>
 
-        <TablePane wtkx:id="verifyPane" Accordion.label="Verify Bag Creation" styles="{verticalSpacing:6,padding:15}">
-            <columns>
-                <TablePane.Column width="150"/>
-                <TablePane.Column width="1*"/>
-            </columns>
-            <rows>
-                <TablePane.Row height="-1">
-                    <Label text="Destination:" styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyDestLbl" />
-                </TablePane.Row>
-                <TablePane.Row height="-1">
-                    <Label text="Bag Type:" styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyTypeLbl" />
-                </TablePane.Row>
-                <TablePane.Row height="-1">
-                    <Label text="URL Pattern:" wtkx:id="vrfyPatternHdr" styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyPatternLbl" />
-                </TablePane.Row>
-                <TablePane.Row height="-1">
-                    <Label text="Bag Location: " styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyLocationLbl" />
-                </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <Label text="Total Files: " styles="{font:'Arial bold 14'}"/>
+                            <Label wtkx:id="vrfyFilesLbl" />
+                        </TablePane.Row>
 
-                <TablePane.Row height="-1">
-                    <Label text="Total Files: " styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyFilesLbl" />
-                </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <Label text="Total Directories: " styles="{font:'Arial bold 14'}"/>
+                            <Label wtkx:id="vrfyDirectoriesLbl" />
+                        </TablePane.Row>
 
-                <TablePane.Row height="-1">
-                    <Label text="Total Directories: " styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyDirectoriesLbl" />
-                </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <Label text="Size: " styles="{font:'Arial bold 14'}"/>
+                            <Label wtkx:id="vrfySizeLbl" />
+                        </TablePane.Row>
 
-                <TablePane.Row height="-1">
-                    <Label text="Size: " styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfySizeLbl" />
-                </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <Label text="Unreadable files: " styles="{font:'Arial bold 14'}"/>
+                            <Label wtkx:id="vrfyUnreadableLbl" />
+                        </TablePane.Row>
+                        <TablePane.Row height="1*">
+                            <Border  TablePane.columnSpan="2" wtkx:id="vrfyUnreadablePane">
+                                <content>
+                                    <ScrollPane horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill_to_capacity">
+                                        <view>
+                                            <ListView wtkx:id="vrfyUnreadableList"/>
+                                        </view>
+                                    </ScrollPane>
+                                </content>
+                            </Border>
+                        </TablePane.Row>
 
-                <TablePane.Row height="-1">
-                    <Label text="Unreadable files: " styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyUnreadableLbl" />
-                </TablePane.Row>
-                <TablePane.Row height="150">
-                    <Border  TablePane.columnSpan="2" wtkx:id="vrfyUnreadablePane">
-                        <content>
-                            <ScrollPane horizontalScrollBarPolicy="fill"
-                                        verticalScrollBarPolicy="fill_to_capacity">
-                                <view>
-                                    <ListView wtkx:id="vrfyUnreadableList"/>
-                                </view>
-                            </ScrollPane>
-                        </content>
-                    </Border>
-                </TablePane.Row>
+                        <!--<TablePane.Row height="1*"><BoxPane/></TablePane.Row>-->
+                        <TablePane.Row height="-1" >
+                            <BoxPane TablePane.columnSpan="2" styles="{horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
+                                <PushButton preferredWidth="50" wtkx:id="verifyPreviousBtn">
+                                    <buttonData>
+                                        <c:ButtonData icon="@go-previous.png" />
+                                    </buttonData>
+                                    <buttonPressListeners>
+                                        <wtkx:script>
+                                            function buttonPressed(button) {
+                                            accordion.setSelectedIndex(accordion.getSelectedIndex() -1 );
+                                            }
+                                        </wtkx:script>
+                                    </buttonPressListeners>
+                                </PushButton>
+                                <PushButton tooltipText="Create and transmit/save bag" wtkx:id="okBtn" preferredWidth="50">
+                                    <buttonData>
+                                        <c:ButtonData icon="@package-x-generic.png" />
+                                    </buttonData>
+                                </PushButton>
+                            </BoxPane>
+                        </TablePane.Row>
+                    </rows>
+                </TablePane>
+                <TablePane TabPane.label="Bag Contents" styles="{verticalSpacing:6,padding:10}">
+                    <columns>
+                        <TablePane.Column width="1*"/>
+                    </columns>
+                    <rows>
+                        <TablePane.Row height="-1">
+                            <Label text="Sample Manifest Entry" styles="{font:'Arial bold 14'}"/>
+                        </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <TextInput wtkx:id="vrfyManifestTxt" />
+                        </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <Label text="Sample Fetch Entry" wtkx:id="vrfyFetchLbl" styles="{font:'Arial bold 14'}"/>
+                        </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <TextInput wtkx:id="vrfyFetchTxt"/>
+                        </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <Label text="Metadata" styles="{font:'Arial bold 14'}"/>
+                        </TablePane.Row>
+                        <TablePane.Row height="1*">
+                            <Border>
+                                <content>
+                                    <ScrollPane horizontalScrollBarPolicy="fill"
+                                                verticalScrollBarPolicy="fill_to_capacity">
+                                        <view>
+                                            <TableView wtkx:id="metadataTable" styles="{includeTrailingVerticalGridLine:true}">
+                                                <columns>
+                                                    <TableView.Column name="key" width="1*" headerData="Attribute"/>
+                                                    <TableView.Column name="value" width="2*" headerData="Value"/>
 
-                <TablePane.Row height="1*"><BoxPane/></TablePane.Row>
-                <TablePane.Row height="-1" >
-                    <BoxPane TablePane.columnSpan="2" styles="{horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
-                        <PushButton preferredWidth="50" wtkx:id="verifyPreviousBtn">
-                            <buttonData>
-                                <c:ButtonData icon="@go-previous.png" />
-                            </buttonData>
-                            <buttonPressListeners>
-                                <wtkx:script>
-                                    function buttonPressed(button) {
-                                    accordion.setSelectedIndex(accordion.getSelectedIndex() -1 );
-                                    }
-                                </wtkx:script>
-                            </buttonPressListeners>
-                        </PushButton>
-                        <PushButton tooltipText="Create and transmit/save bag" wtkx:id="okBtn" preferredWidth="50">
-                            <buttonData>
-                                <c:ButtonData icon="@package-x-generic.png" />
-                            </buttonData>
-                        </PushButton>
-                    </BoxPane>
-                </TablePane.Row>
-            </rows>
-        </TablePane>
+                                                </columns>
+                                                <tableViewSortListeners>
+                                                    <wtkx:script>
+                                                        function sortChanged(tableView) {
+                                                        var tableData = tableView.getTableData();
+                                                        tableData.setComparator(new org.apache.pivot.wtk.content.TableViewRowComparator(tableView));
+                                                        }
+                                                    </wtkx:script>
+                                                </tableViewSortListeners>
+                                            </TableView>
+                                        </view>
+                                        <columnHeader>
+                                            <TableViewHeader tableView="$metadataTable" sortMode="single_column"
+                                                             styles="{includeTrailingVerticalGridLine:true}"/>
+                                        </columnHeader>
+                                    </ScrollPane>
+                                </content>
+                            </Border>
+                        </TablePane.Row>
+                        <TablePane.Row height="-1">
+                            <Label text="Directories" styles="{font:'Arial bold 14'}"/>
+                        </TablePane.Row>
+                        <TablePane.Row height="1*">
+                            <Border>
+                                <content>
+                                    <ScrollPane  horizontalScrollBarPolicy="fill"
+                                                 verticalScrollBarPolicy="fill_to_capacity">
+                                         <view>
+                                            <TableView wtkx:id="vrfyDirectoryTable" styles="{includeTrailingVerticalGridLine:true}">
+                                                <columns>
+                                                    <TableView.Column name="key" width="1*" headerData="Directory"/>
+                                                    <TableView.Column name="value" width="2*" headerData="Full Path"/>
+
+                                                </columns>
+                                                <tableViewSortListeners>
+                                                    <wtkx:script>
+                                                        function sortChanged(tableView) {
+                                                        var tableData = tableView.getTableData();
+                                                        tableData.setComparator(new org.apache.pivot.wtk.content.TableViewRowComparator(tableView));
+                                                        }
+                                                    </wtkx:script>
+                                                </tableViewSortListeners>
+                                            </TableView>
+                                        </view>
+                                        <columnHeader>
+                                            <TableViewHeader tableView="$vrfyDirectoryTable" sortMode="single_column"
+                                                             styles="{includeTrailingVerticalGridLine:true}"/>
+                                        </columnHeader>
+                                    </ScrollPane>
+                                </content>
+                            </Border>
+
+                        </TablePane.Row>
+                    </rows>
+                </TablePane>
+            </tabs>
+        </TabPane>
     </panels>
 </Accordion>

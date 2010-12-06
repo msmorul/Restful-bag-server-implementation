@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.serialization.SerializationException;
@@ -44,6 +45,7 @@ import org.apache.pivot.wtk.Orientation;
 import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.Sheet;
 import org.apache.pivot.wtk.SheetCloseListener;
+import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.TextInputTextListener;
 import org.apache.pivot.wtk.Window;
@@ -51,6 +53,7 @@ import org.apache.pivot.wtk.content.ButtonData;
 import org.apache.pivot.wtk.content.ButtonDataRenderer;
 import org.apache.pivot.wtkx.WTKX;
 import org.apache.pivot.wtkx.WTKXSerializer;
+import org.chronopolis.ingest.pkg.BagWriter;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.URLUTF8Encoder;
 
@@ -134,6 +137,16 @@ public class CreateHoleyBagDialog extends Dialog {
     private Border vrfyUnreadablePane;
     @WTKX
     private PushButton okBtn;
+    @WTKX
+    private TableView metadataTable;
+    @WTKX
+    private TextInput vrfyFetchTxt;
+    @WTKX
+    private Label vrfyFetchLbl;
+    @WTKX
+    private TextInput vrfyManifestTxt;
+    @WTKX
+    private TableView vrfyDirectoryTable;
 //    @WTKX
 //    private PushButton verifyPreviousBtn;
     private boolean isVerify = false;
@@ -199,7 +212,6 @@ public class CreateHoleyBagDialog extends Dialog {
         public Vote previewSelectedIndexChange(Accordion acrdn, int i) {
             okBtn.setEnabled(false);
 
-            System.out.println(" d " + acrdn.getSelectedIndex() + " i " + i);
             if (i == (acrdn.getPanels().getLength() - 1)) {
                 if (isVerify) {
                     return Vote.APPROVE;
@@ -263,7 +275,6 @@ public class CreateHoleyBagDialog extends Dialog {
                 statusSheet.open(acrdn.getWindow(), new SheetCloseListener() {
 
                     public void sheetClosed(Sheet sheet) {
-                        System.out.println("closing " + sheet.getResult());
 
                         if (!sheet.getResult()) {
                             isVerify = false;
@@ -292,14 +303,19 @@ public class CreateHoleyBagDialog extends Dialog {
                 accordion.setSelectedIndex(accordion.getSelectedIndex() + 1);
                 String dest = (outputGroup.getSelection() == localBtn ? "Local Bag" : "Chronopolis");
                 vrfyDestLbl.setText(dest);
+                vrfyManifestTxt.setText("9a9a-" + workingPackage.getDigest() + "-digest-9a9a  data/" + workingPackage.findRelativeFirstFile());
                 if (typeGroup.getSelection() == holeyBtn) {
                     vrfyTypeLbl.setText("Holey Bag");
                     vrfyPatternLbl.setVisible(true);
                     vrfyPatternHdr.setVisible(true);
+                    vrfyFetchTxt.setVisible(true);
+                    vrfyFetchLbl.setVisible(true);
                 } else {
                     vrfyTypeLbl.setText("Filled Bag");
                     vrfyPatternLbl.setVisible(false);
                     vrfyPatternHdr.setVisible(false);
+                    vrfyFetchTxt.setVisible(false);
+                    vrfyFetchLbl.setVisible(false);
                 }
             }
         }
@@ -345,6 +361,7 @@ public class CreateHoleyBagDialog extends Dialog {
             if (urlTxt.getText() != null) {
                 accordion.setSelectedIndex(accordion.getSelectedIndex() + 1);
                 vrfyPatternLbl.setText(urlTxt.getText());
+                vrfyFetchTxt.setText(sampleUrlLbl.getText() + "  " + workingPackage.findFirstFile().length() + "  data/" + workingPackage.findRelativeFirstFile());
             } else {
                 pane3Message.setText("Please enter a URL base for this holey bag");
 
@@ -365,7 +382,6 @@ public class CreateHoleyBagDialog extends Dialog {
                 c.setConnectTimeout(2000);
                 try {
                     int code = c.getResponseCode();
-                    System.out.println(code + " " + c.getResponseMessage());
                     if (c.getResponseCode() < 200 || c.getResponseCode() > 299) {
                         Alert.alert(MessageType.ERROR, "Transfer error HTTP/"
                                 + c.getResponseCode() + " " + c.getResponseMessage(), button.getWindow());
@@ -483,7 +499,7 @@ public class CreateHoleyBagDialog extends Dialog {
         if (workingPackage.findFirstFile() == null) {
             newTxt = newTxt.replaceAll("\\{d\\}", "").replaceAll("\\{r\\}", "");
         } else {
-            newTxt = newTxt.replaceAll("\\{d\\}", "data" + "/" + workingPackage.findFirstFile()).replaceAll("\\{r\\}", workingPackage.findFirstFile());
+            newTxt = newTxt.replaceAll("\\{d\\}", "data" + "/" + workingPackage.findRelativeFirstFile()).replaceAll("\\{r\\}", workingPackage.findRelativeFirstFile());
         }
         sampleUrlLbl.setText(URLUTF8Encoder.encode(newTxt));
 
@@ -500,7 +516,57 @@ public class CreateHoleyBagDialog extends Dialog {
             transferTxt.setText("newbag.tgz");
             bagfileTxt.setText("newbag.tgz");
         }
+        updateDirectoryView();
         updateSampleUrl();
+        updateMetadataView();
+    }
+
+    private void updateDirectoryView() {
+        List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
+
+        for (File f : workingPackage.getRootList()) {
+            entries.add(new MetadataEntry(f.getName(), f.getAbsolutePath()));
+        }
+        vrfyDirectoryTable.setTableData(entries);
+
+    }
+
+    private void updateMetadataView() {
+        List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
+        for (String key : workingPackage.getMetadataMap()) {
+            entries.add(new MetadataEntry(key, workingPackage.getMetadataMap().get(key)));
+        }
+        entries.add(new MetadataEntry(BagWriter.INFO_BAGGING_DATE, "Calculated on transfer"));
+        entries.add(new MetadataEntry(BagWriter.INFO_PAYLOAD_OXUM,"Calculated on transfer"));
+        entries.add(new MetadataEntry(BagWriter.INFO_BAG_SIZE,"Calculated on transfer"));
+        metadataTable.setTableData(entries);
+    }
+
+    public class MetadataEntry {
+
+        private String key;
+        private String value;
+
+        public MetadataEntry(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 
     private void updateAccordion() {

@@ -76,7 +76,21 @@ public class ChronPackage {
      * 
      * @return first data file (ie, data/somedir/file4.txt)
      */
-    public String findFirstFile() {
+    public String findRelativeFirstFile() {
+        if (rootList.isEmpty()) {
+            return null;
+        }
+        for (File f : rootList) {
+            if (f.exists()) {
+                File first = trollForFirst(f);
+//                System.out.println("f.getAbsolutePath().length()+1 " +(f.getAbsolutePath().length()+1) + " " + first.getAbsolutePath().substring(f.getAbsolutePath().length()+1));
+                return first.getAbsolutePath().substring(f.getAbsolutePath().length()+1);
+            }
+        }
+        return null;
+    }
+
+    public File findFirstFile() {
         if (rootList.isEmpty()) {
             return null;
         }
@@ -88,23 +102,26 @@ public class ChronPackage {
         return null;
     }
 
-    private String trollForFirst(File dir) {
+    private File trollForFirst(File dir) {
 
         File firstDir = null;
 
         for (File f : dir.listFiles()) {
 
             if (f.isFile()) {
-                return dir.getName() + "/" + f.getName();
+//                return dir.getName() + "/" + f.getName();
+                return f;
             } else if (firstDir == null && f.isDirectory()) {
                 firstDir = f;
             }
         }
         if (firstDir == null) {
-            return dir.getName();
+            //return dir.getName();
+            return dir;
         }
 
-        return dir.getName() + "/" + trollForFirst(firstDir);
+//        return dir.getName() + "/" + trollForFirst(firstDir);
+        return trollForFirst(firstDir);
     }
 
     public boolean isReadOnly() {
