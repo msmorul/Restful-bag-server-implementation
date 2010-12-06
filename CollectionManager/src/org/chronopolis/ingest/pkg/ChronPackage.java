@@ -14,14 +14,29 @@ import org.apache.pivot.collections.Map;
  *
  * @author toaster
  */
-public class ChronPackage {
+public class ChronPackage implements Cloneable {
 
     private String name = "";
     private String digest = "SHA-256";
     private List<File> rootList = new ArrayList();
-    private List<ChronPackageListener> listeners = new ArrayList<ChronPackageListener>();
+    private transient List<ChronPackageListener> listeners = new ArrayList<ChronPackageListener>();
     private Map<String, String> metadataMap = new HashMap<String, String>();
     private boolean readOnly = false;
+
+    @Override
+    public ChronPackage clone() {
+        ChronPackage cp = new ChronPackage();
+        cp.setDigest(digest);
+        cp.setName(name);
+        for (String key : metadataMap) {
+            cp.metadataMap.put(key, metadataMap.get(key));
+        }
+        for (File f : rootList) {
+            cp.rootList.add(f);
+        }
+
+        return cp;
+    }
 
     public String getName() {
         return name;
@@ -48,13 +63,12 @@ public class ChronPackage {
     }
 
     private void updateStats(File f, Statistics stats, AbortScanNotifier notifier) {
-        if (!f.canRead())
-        {
-                stats.unreadable++;
-                stats.unreadableFiles.add(f);
-                return;
+        if (!f.canRead()) {
+            stats.unreadable++;
+            stats.unreadableFiles.add(f);
+            return;
         }
-        
+
         if (f.isFile()) {
             stats.files++;
             stats.size += f.length();
@@ -84,7 +98,7 @@ public class ChronPackage {
             if (f.exists()) {
                 File first = trollForFirst(f);
 //                System.out.println("f.getAbsolutePath().length()+1 " +(f.getAbsolutePath().length()+1) + " " + first.getAbsolutePath().substring(f.getAbsolutePath().length()+1));
-                return first.getAbsolutePath().substring(f.getAbsolutePath().length()+1);
+                return first.getAbsolutePath().substring(f.getParentFile().getAbsolutePath().length() + 1);
             }
         }
         return null;
@@ -191,9 +205,6 @@ public class ChronPackage {
         public List<File> getUnreadableFiles() {
             return unreadableFiles;
         }
-
-
-
     }
 
     public static interface AbortScanNotifier {

@@ -150,6 +150,7 @@ public class CreateHoleyBagDialog extends Dialog {
 //    @WTKX
 //    private PushButton verifyPreviousBtn;
     private boolean isVerify = false;
+    private long totalSize;
     ///
     private AccordionSelectionListener accordionSelectionListener = new AccordionSelectionListener() {
 
@@ -249,6 +250,7 @@ public class CreateHoleyBagDialog extends Dialog {
                             vrfyFilesLbl.setText(Long.toString(stats.getFiles()));
                             vrfyDirectoriesLbl.setText(Long.toString(stats.getDirectories()));
                             vrfySizeLbl.setText(Util.formatSize(stats.getSize()));
+                            totalSize = stats.getSize();
                             vrfyUnreadableLbl.setText(Long.toString(stats.getUnreadable()));
                             vrfyUnreadablePane.setVisible(stats.getUnreadable() > 0);
                             vrfyUnreadableList.setListData(stats.getUnreadableFiles());
@@ -256,6 +258,7 @@ public class CreateHoleyBagDialog extends Dialog {
                             vrfyFilesLbl.setText("scan aborted");
                             vrfyDirectoriesLbl.setText("scan aborted");
                             vrfySizeLbl.setText("scan aborted");
+                            totalSize = 0;
                             vrfyUnreadableLbl.setText("scan aborted");
                             vrfyUnreadablePane.setVisible(false);
                         }
@@ -615,6 +618,10 @@ public class CreateHoleyBagDialog extends Dialog {
 
     public void setAcceptButtonData(ButtonData data) {
         okBtn.setButtonData(data);
+    }
+
+    public long getTotalSize() {
+        return totalSize;
     }
 
     private class CollectionButtonRenderer extends ButtonDataRenderer {

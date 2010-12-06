@@ -78,7 +78,7 @@ import org.chronopolis.ingest.pkg.PackageManager;
  */
 public class Main implements Application {
 
-    private static final String PROVIDER = "cdl";
+//    private static final String PROVIDER = "cdl";
     @WTKX
     private ListView ingestedListView;
     @WTKX
@@ -110,6 +110,7 @@ public class Main implements Application {
     // NCAR hack
     private static File defaultDir;
     private static String defaultURLPattern;
+    private static String provider;
     private MenuHandler menuHandler = new MenuHandler.Adapter() {
 
         @Override
@@ -148,6 +149,17 @@ public class Main implements Application {
                         });
                     }
                 });
+
+                Menu.Item duplicateItem = new Menu.Item("Create Duplicate");
+                duplicateItem.setTooltipText("Create a writable duplicate of this package");
+                duplicateItem.getButtonPressListeners().add(new ButtonPressListener() {
+
+                    public void buttonPressed(Button button) {
+                        mgr.getPackageList().add(remPkg.clone());
+                        pendingListView.setSelectedIndex(pendingListView.getListData().getLength() - 1);
+                    }
+                });
+                section.add(duplicateItem);
             }
 
             return false;
@@ -177,6 +189,10 @@ public class Main implements Application {
         return defaultURLPattern;
     }
 
+    public static String getProvider() {
+        return provider;
+    }
+
     public static File getDefaultDirectory() {
         if (defaultDir == null) {
             return new File(System.getProperty("user.home"));
@@ -186,6 +202,7 @@ public class Main implements Application {
     }
 
     public void startup(Display dspl, Map<String, String> map) throws Exception {
+        provider = System.getProperty("jnlp.provider");
         String url = System.getProperty("jnlp.ingest.url");
         defaultURLPattern = System.getProperty("jnlp.urlpattern");
         if (System.getProperty("jnlp.defaultdir") != null && new File(System.getProperty("jnlp.defaultdir")).isDirectory()) {
@@ -208,7 +225,8 @@ public class Main implements Application {
         Authenticator.setDefault(pa);
 
         final PartnerSite umiacs = new PartnerSite();
-        umiacs.setRemoteURL("http://chron-monitor.umiacs.umd.edu:8080/ace-am");
+//        umiacs.setRemoteURL("http://chron-monitor.umiacs.umd.edu:8080/ace-am");
+        umiacs.setRemoteURL("http://chronopolis.sdsc.edu:8080/Ace-am");
         umiacs.setUser("browse");
         umiacs.setPass("browse");
         pa.addSite(umiacs);
@@ -366,7 +384,7 @@ public class Main implements Application {
             } else {
 
                 for (CollectionBean cb : sb.getCollections()) {
-                    if (PROVIDER.equals(cb.getGroup())) {
+                    if (provider.equals(cb.getGroup())) {
                         cbList.add(cb);
                     }
                 }
@@ -407,7 +425,7 @@ public class Main implements Application {
             if (!sheet.getResult()) {
                 return;
             }
-            final ManifestBuilder builder = new ManifestBuilder(workingPackage);
+            final ManifestBuilder builder = new ManifestBuilder(workingPackage,0);
             BuildProgressDialog dialog = new BuildProgressDialog();
 
             File f = digestBrowser.getSelectedFile();
@@ -468,7 +486,7 @@ public class Main implements Application {
         }
 
         public void buttonPressed(final Button button) {
-            final ManifestBuilder builder = new ManifestBuilder(workingPackage);
+            final ManifestBuilder builder = new ManifestBuilder(workingPackage, createBagDialog.getTotalSize());
             final BuildProgressDialog dialog = new BuildProgressDialog();
 
             final OutputStream os;

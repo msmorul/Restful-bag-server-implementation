@@ -30,7 +30,7 @@ public class BuildProgressDialog extends Sheet {
     @WTKX
     private Label totalLabel;
     @WTKX
-    private ActivityIndicator activityIndicator;
+    private Meter progressMeter;
     @WTKX
     private Meter fileMeter;
     private ManifestBuilder builder;
@@ -70,33 +70,58 @@ public class BuildProgressDialog extends Sheet {
 
         if (builder != null) {
             builder.getBuildListeners().add(listener);
+            if (builder.getTotalSize() > 0) {
+                progressMeter.setVisible(true);
+            } else {
+                progressMeter.setVisible(false);
+            }
+            listener.setTotalSize(builder.getTotalSize());
         }
     }
 
     private class BuildListener extends ManifestBuildListener.Adapter {
 
+        private long totalSize = 0;
+        private long totalSeen = 0;
         private long total = 0;
         private long fileSize = 0;
         private long seenSize = 0;
+        private double lastPct = 0;
+
+        public BuildListener() {
+        }
+
+        public void setTotalSize(long totalSize) {
+            this.totalSize = totalSize;
+        }
 
         @Override
         public void writeBytes(ManifestBuilder builder, byte[] block, int offset, int length) {
             seenSize += length;
-            double pct = (double) seenSize / fileSize;
-            fileMeter.setPercentage(pct);
-        }
+            totalSeen += length;
 
+            double filePct = (double) seenSize / fileSize;
+            fileMeter.setPercentage(filePct);
+            if (totalSize > 0) {
+                double overallPct = (double) totalSeen / totalSize;
+                progressMeter.setPercentage(overallPct);
+                if ((overallPct - lastPct) > .02) {
+                    lastPct = overallPct;
+                    progressMeter.setText(Util.formatSize(totalSeen) + " / " + Util.formatSize(totalSize));
+                }
+            }
+        }
 
         @Override
         public void startBuild(ManifestBuilder builder) {
-            activityIndicator.setActive(true);
-
+            if (totalSize > 0) {
+                progressMeter.setText("0 / " + Util.formatSize(totalSize));
+            }
             total = 0;
         }
 
         @Override
         public void endBuild(ManifestBuilder builder) {
-            activityIndicator.setActive(false);
             close(builder.isExecute());
         }
 

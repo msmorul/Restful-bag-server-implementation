@@ -22,8 +22,8 @@
         </TablePane.Row>
 
         <TablePane.Row height="-1">
-            <ActivityIndicator wtkx:id="activityIndicator" styles="{color:'#aa0000'}"
-                               preferredWidth="48" preferredHeight="48"/>
+            <Label text="Overall Progress: " styles="{padding:{left:5,top:00,right:10,bottom:0}}"/><Meter wtkx:id="progressMeter"
+            preferredHeight="16" styles="{gridFrequency: 1}"/>
         </TablePane.Row>
     </rows>
 </TablePane>

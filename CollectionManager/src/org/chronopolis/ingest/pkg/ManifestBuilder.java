@@ -25,9 +25,15 @@ public class ManifestBuilder {
     private MessageDigest digest;
     private byte[] tossBlock = new byte[32768];
     private boolean execute = true;
+    private long totalSize;
 
-    public ManifestBuilder(ChronPackage pkg) {
+    public ManifestBuilder(ChronPackage pkg, long totalSize) {
         this.pkg = pkg;
+        this.totalSize = totalSize;
+    }
+
+    public long getTotalSize() {
+        return totalSize;
     }
 
     public void cancel() {
