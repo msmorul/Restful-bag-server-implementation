@@ -26,7 +26,6 @@ import org.apache.pivot.wtk.ActivityIndicator;
 import org.apache.pivot.wtk.Alert;
 import org.apache.pivot.wtk.ApplicationContext;
 import org.apache.pivot.wtk.ApplicationContextMessageListener;
-import org.apache.pivot.wtk.Border;
 import org.apache.pivot.wtk.BoxPane;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonGroup;
@@ -39,13 +38,11 @@ import org.apache.pivot.wtk.FileBrowser;
 import org.apache.pivot.wtk.FileBrowserListener;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.ListButton;
-import org.apache.pivot.wtk.ListView;
 import org.apache.pivot.wtk.MessageType;
 import org.apache.pivot.wtk.Orientation;
 import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.Sheet;
 import org.apache.pivot.wtk.SheetCloseListener;
-import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.TextInputTextListener;
 import org.apache.pivot.wtk.Window;
@@ -53,6 +50,7 @@ import org.apache.pivot.wtk.content.ButtonData;
 import org.apache.pivot.wtk.content.ButtonDataRenderer;
 import org.apache.pivot.wtkx.WTKX;
 import org.apache.pivot.wtkx.WTKXSerializer;
+import org.chronopolis.ingest.bagger.BagModel;
 import org.chronopolis.ingest.pkg.BagWriter;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.URLUTF8Encoder;
@@ -113,44 +111,45 @@ public class CreateHoleyBagDialog extends Dialog {
     @WTKX
     private PushButton testUrlBtn;
     // pane 4 verify
-    @WTKX
-    private Label vrfyDestLbl;
-    @WTKX
-    private Label vrfyTypeLbl;
-    @WTKX
-    private Label vrfyPatternLbl;
-    @WTKX
-    private Label vrfyLocationLbl;
-    @WTKX
-    private Label vrfyPatternHdr;
-    @WTKX
-    private Label vrfyFilesLbl;
-    @WTKX
-    private Label vrfyDirectoriesLbl;
-    @WTKX
-    private Label vrfySizeLbl;
-    @WTKX
-    private Label vrfyUnreadableLbl;
-    @WTKX
-    private ListView vrfyUnreadableList;
-    @WTKX
-    private Border vrfyUnreadablePane;
-    @WTKX
-    private PushButton okBtn;
-    @WTKX
-    private TableView metadataTable;
-    @WTKX
-    private TextInput vrfyFetchTxt;
-    @WTKX
-    private Label vrfyFetchLbl;
-    @WTKX
-    private TextInput vrfyManifestTxt;
-    @WTKX
-    private TableView vrfyDirectoryTable;
+//    @WTKX
+//    private Label vrfyDestLbl;
+//    @WTKX
+//    private Label vrfyTypeLbl;
+//    @WTKX
+//    private Label vrfyPatternLbl;
+//    @WTKX
+//    private Label vrfyLocationLbl;
+//    @WTKX
+//    private Label vrfyPatternHdr;
+//    @WTKX
+//    private Label vrfyFilesLbl;
+//    @WTKX
+//    private Label vrfyDirectoriesLbl;
+//    @WTKX
+//    private Label vrfySizeLbl;
+//    @WTKX
+//    private Label vrfyUnreadableLbl;
+//    @WTKX
+//    private ListView vrfyUnreadableList;
+//    @WTKX
+//    private Border vrfyUnreadablePane;
+//    @WTKX
+//    private PushButton okBtn;
+//    @WTKX
+//    private TableView metadataTable;
+//    @WTKX
+//    private TextInput vrfyFetchTxt;
+//    @WTKX
+//    private Label vrfyFetchLbl;
+//    @WTKX
+//    private TextInput vrfyManifestTxt;
+//    @WTKX
+//    private TableView vrfyDirectoryTable;
 //    @WTKX
 //    private PushButton verifyPreviousBtn;
     private boolean isVerify = false;
     private long totalSize;
+    private BagModel model;
     ///
     private AccordionSelectionListener accordionSelectionListener = new AccordionSelectionListener() {
 
@@ -308,17 +307,9 @@ public class CreateHoleyBagDialog extends Dialog {
                 vrfyDestLbl.setText(dest);
                 vrfyManifestTxt.setText("9a9a-" + workingPackage.getDigest() + "-digest-9a9a  data/" + workingPackage.findRelativeFirstFile());
                 if (typeGroup.getSelection() == holeyBtn) {
-                    vrfyTypeLbl.setText("Holey Bag");
-                    vrfyPatternLbl.setVisible(true);
-                    vrfyPatternHdr.setVisible(true);
-                    vrfyFetchTxt.setVisible(true);
-                    vrfyFetchLbl.setVisible(true);
+                    model.setBagType(BagModel.BagType.HOLEY);
                 } else {
-                    vrfyTypeLbl.setText("Filled Bag");
-                    vrfyPatternLbl.setVisible(false);
-                    vrfyPatternHdr.setVisible(false);
-                    vrfyFetchTxt.setVisible(false);
-                    vrfyFetchLbl.setVisible(false);
+                    model.setBagType(BagModel.BagType.FILLED);
                 }
             }
         }

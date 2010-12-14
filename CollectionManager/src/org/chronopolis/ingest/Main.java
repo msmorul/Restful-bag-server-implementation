@@ -343,7 +343,6 @@ public class Main implements Application {
                 }
                 detailBorder.setContent(archivePanel);
                 pendingListView.clearSelection();
-//                transferBtn.setEnabled(false);
                 saveBagBtn.setEnabled(false);
                 createBagBtn.setEnabled(true);
             }
@@ -354,7 +353,6 @@ public class Main implements Application {
             public void run() {
                 List<CollectionBean> list = updateCollectionList(umiacs);
                 ingestedListView.setListData(list);
-//                collectionChooseDialog.setListData(list);
                 createBagDialog.setCollectionListData(list);
             }
         });
