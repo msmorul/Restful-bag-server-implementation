@@ -75,11 +75,9 @@
                                 <c:ButtonData icon="@go-previous.png" />
                             </buttonData>
                             <buttonPressListeners>
-                                <bxml:script>
                                     function buttonPressed(button) {
                                     accordion.setSelectedIndex(accordion.getSelectedIndex() -1 );
                                     }
-                                </bxml:script>
                             </buttonPressListeners>
                         </PushButton>
                         <PushButton bxml:id="pane2bNextBtn" preferredWidth="50">

@@ -1,4 +1,4 @@
-<TablePane  bxml:id="verifyPane" Accordion.label="1. Choose Bag Type"
+<TablePane  bxml:id="verifyPane" Accordion.headerData="1. Choose Bag Type"
             xmlns:bxml="http://pivot.apache.org/bxml"
             xmlns="org.apache.pivot.wtk"
             xmlns:c="org.apache.pivot.wtk.content"

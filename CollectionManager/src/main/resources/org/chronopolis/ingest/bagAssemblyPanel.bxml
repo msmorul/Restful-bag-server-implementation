@@ -31,9 +31,7 @@
                         <rows>
                             <TablePane.Row height="1*">
                                 <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" styles="{backgroundColor:'#fafafa'}">
-                                    <!--<view>-->
-                                        <ListView bxml:id="rootList" styles="{backgroundColor:'#fafafa'}"/>
-                                    <!--</view>-->
+                                    <ListView bxml:id="rootList" styles="{backgroundColor:'#fafafa'}"/>
                                 </ScrollPane>
                             </TablePane.Row>
                             <TablePane.Row height="-1">

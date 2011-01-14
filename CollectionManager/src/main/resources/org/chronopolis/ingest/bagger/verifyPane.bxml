@@ -1,9 +1,9 @@
-<TabPane  bxml:id="verifyPane" Accordion.label="Verify Bag Creation"
+<TabPane  bxml:id="verifyPane" Accordion.headerData="Verify Bag Creation"
           xmlns:bxml="http://pivot.apache.org/bxml"
           xmlns="org.apache.pivot.wtk"
           xmlns:c="org.apache.pivot.wtk.content">
     <tabs>
-        <TablePane TabPane.label="Overview &amp; Submit" styles="{verticalSpacing:6,padding:10}">
+        <TablePane TabPane.tabData="Overview &amp; Submit" styles="{verticalSpacing:6,padding:10}">
             <columns>
                 <TablePane.Column width="150"/>
                 <TablePane.Column width="1*"/>
@@ -66,11 +66,9 @@
                                 <c:ButtonData icon="@go-previous.png" />
                             </buttonData>
                             <buttonPressListeners>
-                                <bxml:script>
-                                    function buttonPressed(button) {
-                                    accordion.setSelectedIndex(accordion.getSelectedIndex() -1 );
-                                    }
-                                </bxml:script>
+                                function buttonPressed(button) {
+                                accordion.setSelectedIndex(accordion.getSelectedIndex() -1 );
+                                }
                             </buttonPressListeners>
                         </PushButton>
                         <PushButton tooltipText="Create and transmit/save bag" bxml:id="okBtn" preferredWidth="50">
@@ -82,7 +80,7 @@
                 </TablePane.Row>
             </rows>
         </TablePane>
-        <TablePane TabPane.label="Bag Contents" styles="{verticalSpacing:6,padding:10}">
+        <TablePane TabPane.tabData="Bag Contents" styles="{verticalSpacing:6,padding:10}">
             <columns>
                 <TablePane.Column width="1*"/>
             </columns>
@@ -115,12 +113,10 @@
 
                                         </columns>
                                         <tableViewSortListeners>
-                                            <bxml:script>
-                                                function sortChanged(tableView) {
-                                                var tableData = tableView.getTableData();
-                                                tableData.setComparator(new org.apache.pivot.wtk.content.TableViewRowComparator(tableView));
-                                                }
-                                            </bxml:script>
+                                            function sortChanged(tableView) {
+                                            var tableData = tableView.getTableData();
+                                            tableData.setComparator(new org.apache.pivot.wtk.content.TableViewRowComparator(tableView));
+                                            }
                                         </tableViewSortListeners>
                                     </TableView>
                                 </view>
@@ -137,32 +133,26 @@
                 </TablePane.Row>
                 <TablePane.Row height="1*">
                     <Border>
-                        <content>
-                            <ScrollPane  horizontalScrollBarPolicy="fill"
-                                         verticalScrollBarPolicy="fill_to_capacity">
-                                <view>
-                                    <TableView bxml:id="vrfyDirectoryTable" styles="{includeTrailingVerticalGridLine:true}">
-                                        <columns>
-                                            <TableView.Column name="key" width="1*" headerData="Directory"/>
-                                            <TableView.Column name="value" width="2*" headerData="Full Path"/>
+                        <ScrollPane  horizontalScrollBarPolicy="fill"
+                                     verticalScrollBarPolicy="fill_to_capacity">
+                            <TableView bxml:id="vrfyDirectoryTable" styles="{includeTrailingVerticalGridLine:true}">
+                                <columns>
+                                    <TableView.Column name="key" width="1*" headerData="Directory"/>
+                                    <TableView.Column name="value" width="2*" headerData="Full Path"/>
 
-                                        </columns>
-                                        <tableViewSortListeners>
-                                            <bxml:script>
-                                                function sortChanged(tableView) {
-                                                var tableData = tableView.getTableData();
-                                                tableData.setComparator(new org.apache.pivot.wtk.content.TableViewRowComparator(tableView));
-                                                }
-                                            </bxml:script>
-                                        </tableViewSortListeners>
-                                    </TableView>
-                                </view>
-                                <columnHeader>
-                                    <TableViewHeader tableView="$vrfyDirectoryTable" sortMode="single_column"
-                                                     styles="{includeTrailingVerticalGridLine:true}"/>
-                                </columnHeader>
-                            </ScrollPane>
-                        </content>
+                                </columns>
+                                <tableViewSortListeners>
+                                    function sortChanged(tableView) {
+                                    var tableData = tableView.getTableData();
+                                    tableData.setComparator(new org.apache.pivot.wtk.content.TableViewRowComparator(tableView));
+                                    }
+                                </tableViewSortListeners>
+                            </TableView>
+                            <columnHeader>
+                                <TableViewHeader tableView="$vrfyDirectoryTable" sortMode="single_column"
+                                                 styles="{includeTrailingVerticalGridLine:true}"/>
+                            </columnHeader>
+                        </ScrollPane>
                     </Border>
 
                 </TablePane.Row>

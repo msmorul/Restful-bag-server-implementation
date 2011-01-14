@@ -3,18 +3,42 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>ingest</artifactId>
     <groupId>org.chronopolis.ingest</groupId>
+    <artifactId>ingest</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.chronopolis.ingest</groupId>
   <artifactId>collection-manager</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <name>Collection Manager</name>
   <url>http://maven.apache.org</url>
     <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>org.chronopolis.ingest.Main</mainClass>
+          <!-- optional -->
+          <!-- <workingDirectory>/tmp</workingDirectory>
+          <arguments>
+            <argument>-X</argument>
+            <argument>myproject:dist</argument>
+          </arguments> -->
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 
   <dependencies>
@@ -40,9 +64,9 @@
       <version>1.1</version>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>org.chronopolis.ingest</groupId>
       <artifactId>ace-am-lib</artifactId>
-      <version>${project.version}</version>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>

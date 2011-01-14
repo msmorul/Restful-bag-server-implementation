@@ -10,7 +10,7 @@
         <chron:ArchivedCollectionPanel bxml:id="archivePanel"/>
         <chron:BagAssemblyPanel bxml:id="assemblyPanel"/>
         <!--<chron:ChooseCollectionDialog bxml:id="collectionChooseDialog"/> -->
-        <bagger:ChooseBagPane bxml:id="createBagDialog"/>
+        <bagger:CreateBagDialog bxml:id="createBagDialog"/>
         <bxml:include bxml:id="aboutDialog" src="aboutDialog.bxml"/>
         <FileBrowserSheet bxml:id="digestBrowser" mode="SAVE_AS"/>
     </bxml:define>
