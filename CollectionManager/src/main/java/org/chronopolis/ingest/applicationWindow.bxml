@@ -45,7 +45,7 @@
                                                                     pendingListView.getListData().add(newPkg);
                                                                     pendingListView.setSelectedIndex(pendingListView.getListData().getLength() -1);
                                                                     }
-                                                                </wtbxmlkx:script>
+                                                                </bxml:script>
                                                             </buttonPressListeners>
                                                         </Menu.Item>
                                                         <Menu.Item buttonData="Create Collection"/>

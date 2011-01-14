@@ -53,6 +53,7 @@ import org.apache.pivot.wtk.SheetStateListener;
 import org.apache.pivot.wtk.Span;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ListViewItemRenderer;
+import org.chronopolis.ingest.bagger.CreateBagDialog;
 import org.chronopolis.ingest.pkg.BagBuildListener;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.ChronPackageListener;
@@ -97,8 +98,10 @@ public class Main implements Application {
     private Menu.Item createBagBtn;
     @BXML
     private FileBrowserSheet digestBrowser;
+//    @BXML
+//    private CreateHoleyBagDialog createBagDialog;
     @BXML
-    private CreateHoleyBagDialog createBagDialog;
+    private CreateBagDialog createBagDialog;
     @BXML(id = "aboutDialog.buildLbl")
     private Label buildLbl;
     @BXML(id = "aboutDialog.dateLbl")
@@ -354,11 +357,11 @@ public class Main implements Application {
             public void run() {
                 List<CollectionBean> list = updateCollectionList(umiacs);
                 ingestedListView.setListData(list);
-                createBagDialog.setCollectionListData(list);
+//                createBagDialog.setCollectionListData(list);
             }
         });
 
-        createBagDialog.getAcceptButtonPressListeners().add(new TansferBagListener());
+//        createBagDialog.getAcceptButtonPressListeners().add(new TansferBagListener());
         mainW.open(dspl);
 
         ResourceBundle bundle = java.util.ResourceBundle.getBundle("version");
@@ -485,104 +488,104 @@ public class Main implements Application {
         }
 
         public void buttonPressed(final Button button) {
-            final ManifestBuilder builder = new ManifestBuilder(workingPackage, createBagDialog.getTotalSize());
-            final BuildProgressDialog dialog = new BuildProgressDialog();
-
-            final OutputStream os;
-            final HttpURLConnection connection;
-
-            if (createBagDialog.isLocal()) {
-                File f = createBagDialog.getBagFile();
-
-                try {
-                    os = new GZIPOutputStream(new FileOutputStream(f));
-
-                    connection = null;
-                } catch (IOException ioe) {
-                    Alert.alert(MessageType.ERROR, "Error opening bag file", mainW);
-                    return;
-                }
-            } else {
-                //Open Chron input stream
-                try {
-                    URL newURL = new URL(chronURL + "/" + createBagDialog.getBagName());
-                    if (createBagDialog.isHoley()) {
-                        connection = null;
-                        os = new DelayedTransferStream(newURL);
-                    } else {
-                        connection = (HttpURLConnection) newURL.openConnection();
-                        connection.setChunkedStreamingMode(32768);
-                        connection.setDoOutput(true);
-                        connection.setRequestMethod("PUT");
-//                    System.out.println("opening " + newURL);
-                        os = new GZIPOutputStream(connection.getOutputStream());
-                    }
-
-                } catch (IOException ioe) {
-                    Alert.alert(MessageType.ERROR, "Error opening chronopolis connection: ("
-                            + ioe.getClass().getName() + ") " + ioe.getMessage(), mainW);
-                    return;
-                }
-            }
-
-            BagBuildListener writer = new BagBuildListener(workingPackage, os, createBagDialog.isHoley());
-            writer.setCloseOutput(true);
-            if (createBagDialog.isHoley()) {
-                writer.setUrlPattern(createBagDialog.getUrlPattern());
-            }
-
-            builder.getBuildListeners().add(writer);
-
-            dialog.setBuilder(builder);
-            dialog.open(mainW, new SheetCloseListener() {
-
-                public void sheetClosed(Sheet sheet) {
-                    builder.cancel();
-                    if (os instanceof DelayedTransferStream) {
-                        DelayedTransferStream dts = (DelayedTransferStream) os;
-                        if (dts.getResponseCode() < 200 || dts.getResponseCode() > 299) {
-                            Alert.alert(MessageType.ERROR, "Transfer error HTTP/" + dts.getResponseCode() + " " + dts.getResponseMessage(), mainW);
-                            return;
-                        }
-                    } else if (connection != null) {
-                        try {
-                            if (connection.getResponseCode() < 200 || connection.getResponseCode() > 299) {
-                                Alert.alert(MessageType.ERROR, "Transfer error HTTP/" + connection.getResponseCode() + " " + connection.getResponseMessage(), mainW);
-                                return;
-                            }
-                        } catch (IOException ioe) {
-                        }
-                        connection.disconnect();
-
-                    }
-
-                    if (sheet.getResult()) {
-                        if (createBagDialog.isLocal()) {
-                            Alert.alert(MessageType.INFO, "New Bag Created: " + createBagDialog.getBagFile().getPath(), mainW);
-                        } else {
-                            Alert.alert(MessageType.INFO, "Chronopolis Transfer Successful", mainW);
-                        }
-                        if (!createBagDialog.isLocal()) {
-                            workingPackage.setReadOnly(true);
-                        }
-                    } else {
-                        Alert.alert(MessageType.ERROR, "Aborted!", mainW);
-
-                    }
-                }
-            });
-            Thread thread = new Thread(new Runnable() {
-
-                public void run() {
-                    try {
-                        builder.scanPackage();
-                    } catch (Exception ioe) {
-                        dialog.close();
-                        ioe.printStackTrace();
-                    }
-                }
-            });
-            thread.start();
+//            final ManifestBuilder builder = new ManifestBuilder(workingPackage, createBagDialog.getTotalSize());
+//            final BuildProgressDialog dialog = new BuildProgressDialog();
+//
+//            final OutputStream os;
+//            final HttpURLConnection connection;
+//
+//            if (createBagDialog.isLocal()) {
+//                File f = createBagDialog.getBagFile();
+//
+//                try {
+//                    os = new GZIPOutputStream(new FileOutputStream(f));
+//
+//                    connection = null;
+//                } catch (IOException ioe) {
+//                    Alert.alert(MessageType.ERROR, "Error opening bag file", mainW);
+//                    return;
+//                }
+//            } else {
+//                //Open Chron input stream
+//                try {
+//                    URL newURL = new URL(chronURL + "/" + createBagDialog.getBagName());
+//                    if (createBagDialog.isHoley()) {
+//                        connection = null;
+//                        os = new DelayedTransferStream(newURL);
+//                    } else {
+//                        connection = (HttpURLConnection) newURL.openConnection();
+//                        connection.setChunkedStreamingMode(32768);
+//                        connection.setDoOutput(true);
+//                        connection.setRequestMethod("PUT");
+////                    System.out.println("opening " + newURL);
+//                        os = new GZIPOutputStream(connection.getOutputStream());
+//                    }
+//
+//                } catch (IOException ioe) {
+//                    Alert.alert(MessageType.ERROR, "Error opening chronopolis connection: ("
+//                            + ioe.getClass().getName() + ") " + ioe.getMessage(), mainW);
+//                    return;
+//                }
+//            }
+//
+//            BagBuildListener writer = new BagBuildListener(workingPackage, os, createBagDialog.isHoley());
+//            writer.setCloseOutput(true);
+//            if (createBagDialog.isHoley()) {
+//                writer.setUrlPattern(createBagDialog.getUrlPattern());
+//            }
+//
+//            builder.getBuildListeners().add(writer);
+//
+//            dialog.setBuilder(builder);
+//            dialog.open(mainW, new SheetCloseListener() {
+//
+//                public void sheetClosed(Sheet sheet) {
+//                    builder.cancel();
+//                    if (os instanceof DelayedTransferStream) {
+//                        DelayedTransferStream dts = (DelayedTransferStream) os;
+//                        if (dts.getResponseCode() < 200 || dts.getResponseCode() > 299) {
+//                            Alert.alert(MessageType.ERROR, "Transfer error HTTP/" + dts.getResponseCode() + " " + dts.getResponseMessage(), mainW);
+//                            return;
+//                        }
+//                    } else if (connection != null) {
+//                        try {
+//                            if (connection.getResponseCode() < 200 || connection.getResponseCode() > 299) {
+//                                Alert.alert(MessageType.ERROR, "Transfer error HTTP/" + connection.getResponseCode() + " " + connection.getResponseMessage(), mainW);
+//                                return;
+//                            }
+//                        } catch (IOException ioe) {
+//                        }
+//                        connection.disconnect();
+//
+//                    }
+//
+//                    if (sheet.getResult()) {
+//                        if (createBagDialog.isLocal()) {
+//                            Alert.alert(MessageType.INFO, "New Bag Created: " + createBagDialog.getBagFile().getPath(), mainW);
+//                        } else {
+//                            Alert.alert(MessageType.INFO, "Chronopolis Transfer Successful", mainW);
+//                        }
+//                        if (!createBagDialog.isLocal()) {
+//                            workingPackage.setReadOnly(true);
+//                        }
+//                    } else {
+//                        Alert.alert(MessageType.ERROR, "Aborted!", mainW);
+//
+//                    }
+//                }
+//            });
+//            Thread thread = new Thread(new Runnable() {
+//
+//                public void run() {
+//                    try {
+//                        builder.scanPackage();
+//                    } catch (Exception ioe) {
+//                        dialog.close();
+//                        ioe.printStackTrace();
+//                    }
+//                }
+//            });
+//            thread.start();
 
         }
     }
