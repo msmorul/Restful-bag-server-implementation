@@ -66,7 +66,7 @@ public class BagWriter {
      */
     public void addFetchEntry(String url, long size, String relpath) {
 
-        fetchList.add(URLUTF8Encoder.encode(url) + "  " + size + "  " + relpath);
+        fetchList.add(url + "  " + size + "  " + relpath);
     }
 
     public void addDigestEntry(String relpath, String digest) {

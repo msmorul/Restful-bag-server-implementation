@@ -51,9 +51,11 @@ import org.apache.pivot.wtk.content.ButtonDataRenderer;
 import org.apache.pivot.wtkx.WTKX;
 import org.apache.pivot.wtkx.WTKXSerializer;
 import org.chronopolis.ingest.bagger.BagModel;
+import org.chronopolis.ingest.bagger.VerifyPane;
 import org.chronopolis.ingest.pkg.BagWriter;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.URLUTF8Encoder;
+import org.chronopolis.ingest.pkg.UrlFormatter;
 
 /**
  * TODO: each pane should be its own class
@@ -111,6 +113,8 @@ public class CreateHoleyBagDialog extends Dialog {
     @WTKX
     private PushButton testUrlBtn;
     // pane 4 verify
+    @WTKX
+    private VerifyPane verifyPane;
 //    @WTKX
 //    private Label vrfyDestLbl;
 //    @WTKX
@@ -323,6 +327,7 @@ public class CreateHoleyBagDialog extends Dialog {
                 pane2aMessage.setText("Please select collection or enter bag name");
             } else {
                 accordion.setSelectedIndex(accordion.getSelectedIndex() + 1);
+//                model.set
                 vrfyLocationLbl.setText(transferTxt.getText());
             }
         }
@@ -344,7 +349,8 @@ public class CreateHoleyBagDialog extends Dialog {
                 pane2bMessage.setText("Cannot write to selected directory");
             } else {
                 accordion.setSelectedIndex(accordion.getSelectedIndex() + 1);
-                vrfyLocationLbl.setText(bagFile.getPath());
+                model.setSaveFile(bagFile);
+//                vrfyLocationLbl.setText(bagFile.getPath());
             }
         }
     };
@@ -354,8 +360,9 @@ public class CreateHoleyBagDialog extends Dialog {
             pane3Message.setText("");
             if (urlTxt.getText() != null) {
                 accordion.setSelectedIndex(accordion.getSelectedIndex() + 1);
-                vrfyPatternLbl.setText(urlTxt.getText());
-                vrfyFetchTxt.setText(sampleUrlLbl.getText() + "  " + workingPackage.findFirstFile().length() + "  data/" + workingPackage.findRelativeFirstFile());
+                model.setUrlPattern(urlTxt.getText());
+//                vrfyPatternLbl.setText(urlTxt.getText());
+//                vrfyFetchTxt.setText(sampleUrlLbl.getText() + "  " + workingPackage.findFirstFile().length() + "  data/" + workingPackage.findRelativeFirstFile());
             } else {
                 pane3Message.setText("Please enter a URL base for this holey bag");
 
@@ -457,6 +464,7 @@ public class CreateHoleyBagDialog extends Dialog {
 
                     File bagFile = new File(browser.getRootDirectory(), bagfileTxt.getText());
                     saveFileLbl.setText(bagFile.getAbsolutePath());
+                    model.setSaveFile(bagFile);
                 }
             }
         });
@@ -495,6 +503,8 @@ public class CreateHoleyBagDialog extends Dialog {
         } else {
             newTxt = newTxt.replaceAll("\\{d\\}", "data" + "/" + workingPackage.findRelativeFirstFile()).replaceAll("\\{r\\}", workingPackage.findRelativeFirstFile());
         }
+//        UrlFormatter fmt = new UrlFormatter(workingPackage, txt)
+
         sampleUrlLbl.setText(URLUTF8Encoder.encode(newTxt));
 
     }
@@ -505,8 +515,10 @@ public class CreateHoleyBagDialog extends Dialog {
         accordion.setSelectedIndex(0);
         if (workingPackage.getName() != null && workingPackage.getName().length() > 0) {
             bagfileTxt.setText(workingPackage.getName() + ".tgz");
+            model.setChronopolisBag(workingPackage.getName() + ".tgz");
             transferTxt.setText(workingPackage.getName() + ".tgz");
         } else {
+            model.setChronopolisBag("newbag.tgz");
             transferTxt.setText("newbag.tgz");
             bagfileTxt.setText("newbag.tgz");
         }
@@ -525,43 +537,34 @@ public class CreateHoleyBagDialog extends Dialog {
 
     }
 
-    private void updateMetadataView() {
-        List<MetadataEntry> entries = new ArrayList<MetadataEntry>();
-        for (String key : workingPackage.getMetadataMap()) {
-            entries.add(new MetadataEntry(key, workingPackage.getMetadataMap().get(key)));
-        }
-        entries.add(new MetadataEntry(BagWriter.INFO_BAGGING_DATE, "Calculated on transfer"));
-        entries.add(new MetadataEntry(BagWriter.INFO_PAYLOAD_OXUM,"Calculated on transfer"));
-        entries.add(new MetadataEntry(BagWriter.INFO_BAG_SIZE,"Calculated on transfer"));
-        metadataTable.setTableData(entries);
-    }
+    
 
-    public class MetadataEntry {
-
-        private String key;
-        private String value;
-
-        public MetadataEntry(String key, String value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-    }
+//    public static class MetadataEntry {
+//
+//        private String key;
+//        private String value;
+//
+//        public MetadataEntry(String key, String value) {
+//            this.key = key;
+//            this.value = value;
+//        }
+//
+//        public String getKey() {
+//            return key;
+//        }
+//
+//        public String getValue() {
+//            return value;
+//        }
+//
+//        public void setKey(String key) {
+//            this.key = key;
+//        }
+//
+//        public void setValue(String value) {
+//            this.value = value;
+//        }
+//    }
 
     private void updateAccordion() {
         int selectedIndex = accordion.getSelectedIndex();
@@ -604,11 +607,11 @@ public class CreateHoleyBagDialog extends Dialog {
     }
 
     public ListenerList<ButtonPressListener> getAcceptButtonPressListeners() {
-        return okBtn.getButtonPressListeners();
+        return verifyPane.getAcceptButtonPressListeners();
     }
 
     public void setAcceptButtonData(ButtonData data) {
-        okBtn.setButtonData(data);
+        verifyPane.setAcceptButtonData(data);
     }
 
     public long getTotalSize() {

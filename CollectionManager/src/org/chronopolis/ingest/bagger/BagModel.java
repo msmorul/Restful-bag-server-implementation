@@ -57,45 +57,8 @@ public class BagModel {
         return chronopolisBag;
     }
 
-    public void setChronopolisBag(String chronopolisBag) {
-        String old = this.chronopolisBag;
-        this.chronopolisBag = chronopolisBag;
-        for (BagModelListener l : listenerList) {
-            l.chronopoligBagChanged(this, old);
-        }
-    }
-
-    public IngestionType getIngestionType() {
-        return ingestionType;
-    }
-
-    public void setIngestionType(IngestionType ingestionType) {
-        IngestionType old = this.ingestionType;
-        this.ingestionType = ingestionType;
-        for (BagModelListener l : listenerList) {
-            l.ingestionTypeChanged(this, old);
-        }
-    }
-
     public BagType getBagType() {
         return bagType;
-    }
-
-    public void setBagType(BagType bagType) {
-        BagType old = this.bagType;
-        this.bagType = bagType;
-        for (BagModelListener l : listenerList) {
-            l.bagTypeChanged(this, bagType);
-        }
-    }
-
-    public void setChronPackage(ChronPackage chronPackage) {
-        ChronPackage old = this.chronPackage;
-        this.chronPackage = chronPackage;
-        for (BagModelListener l : listenerList) {
-            l.chronPackageChanged(this, old);
-        }
-
     }
 
     public ChronPackage getChronPackage() {
@@ -110,12 +73,38 @@ public class BagModel {
         return urlPattern;
     }
 
+    public IngestionType getIngestionType() {
+        return ingestionType;
+    }
+
+    public void setChronopolisBag(String chronopolisBag) {
+        String old = this.chronopolisBag;
+        this.chronopolisBag = chronopolisBag;
+        listenerList.chronopolisBagChanged(this, old);
+    }
+
+    public void setIngestionType(IngestionType ingestionType) {
+        IngestionType old = this.ingestionType;
+        this.ingestionType = ingestionType;
+        listenerList.ingestionTypeChanged(this, old);
+    }
+
+    public void setBagType(BagType bagType) {
+        BagType old = this.bagType;
+        this.bagType = bagType;
+        listenerList.bagTypeChanged(this, old);
+    }
+
+    public void setChronPackage(ChronPackage chronPackage) {
+        ChronPackage old = this.chronPackage;
+        this.chronPackage = chronPackage;
+        listenerList.chronPackageChanged(this, old);
+    }
+
     public void setSaveFile(File saveFile) {
         File old = this.saveFile;
         this.saveFile = saveFile;
-        for (BagModelListener l : listenerList) {
-            l.saveFileChanged(this, old);
-        }
+        listenerList.saveFileChanged(this, old);
     }
 
     public void setUrlPattern(String urlPattern) {
@@ -125,6 +114,36 @@ public class BagModel {
     }
 
     public class BagModelListenerList extends ListenerList<BagModelListener> {
+
+        void chronopolisBagChanged(BagModel model, String old) {
+            for (BagModelListener l : listenerList) {
+                l.chronopoligBagChanged(model, old);
+            }
+        }
+
+        void ingestionTypeChanged(BagModel model, IngestionType old) {
+            for (BagModelListener l : listenerList) {
+                l.ingestionTypeChanged(model, old);
+            }
+        }
+
+        void bagTypeChanged(BagModel model, BagType old) {
+            for (BagModelListener l : listenerList) {
+                l.bagTypeChanged(model, bagType);
+            }
+        }
+
+        void chronPackageChanged(BagModel model, ChronPackage old) {
+            for (BagModelListener l : listenerList) {
+                l.chronPackageChanged(model, old);
+            }
+        }
+
+        void saveFileChanged(BagModel model, File old) {
+            for (BagModelListener l : listenerList) {
+                l.saveFileChanged(model, old);
+            }
+        }
 
         void urlPatternChanged(BagModel model, String old) {
             for (BagModelListener l : this) {

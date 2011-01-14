@@ -19,9 +19,9 @@ public class ChronPackage implements Cloneable {
     private String name = "";
     private String digest = "SHA-256";
     private List<File> rootList = new ArrayList();
-    private transient List<ChronPackageListener> listeners = new ArrayList<ChronPackageListener>();
     private Map<String, String> metadataMap = new HashMap<String, String>();
     private boolean readOnly = false;
+    private transient List<ChronPackageListener> listeners = new ArrayList<ChronPackageListener>();
 
     @Override
     public ChronPackage clone() {
@@ -50,12 +50,18 @@ public class ChronPackage implements Cloneable {
         }
     }
 
+    /**
+     * Scan package to determine various statistics, # files, etc.
+     *
+     * @param notifier abort notification
+     * @return statistics, or null if aborted
+     */
     public Statistics createStatistics(AbortScanNotifier notifier) {
         Statistics stats = new Statistics();
         for (File f : rootList) {
             updateStats(f, stats, notifier);
         }
-        if (notifier.aborted()) {
+        if (notifier != null && notifier.aborted()) {
             return null;
         } else {
             return stats;
@@ -75,7 +81,7 @@ public class ChronPackage implements Cloneable {
         } else if (f.isDirectory()) {
             stats.directories++;
             for (File f2 : f.listFiles()) {
-                if (notifier.aborted()) {
+                if (notifier != null && notifier.aborted()) {
                     return;
                 }
                 updateStats(f2, stats, notifier);
@@ -104,6 +110,10 @@ public class ChronPackage implements Cloneable {
         return null;
     }
 
+    /**
+     * 
+     * @return first file in package
+     */
     public File findFirstFile() {
         if (rootList.isEmpty()) {
             return null;

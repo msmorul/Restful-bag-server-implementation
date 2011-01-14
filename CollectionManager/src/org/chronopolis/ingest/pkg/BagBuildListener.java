@@ -20,7 +20,7 @@ public class BagBuildListener extends ManifestBuildListener.Adapter {
     private ChronPackage pkg;
     private boolean holey = false;
     private BagWriter writer;
-    private String urlPattern;
+    private UrlFormatter formatter;
     private boolean closeOutput = false;
     private long totalBytes = 0;
     private long totalFiles = 0;
@@ -45,7 +45,7 @@ public class BagBuildListener extends ManifestBuildListener.Adapter {
     }
 
     public void setUrlPattern(String urlPatter) {
-        this.urlPattern = urlPatter;
+        this.formatter = new UrlFormatter(urlPatter);
     }
 
     @Override
@@ -77,11 +77,7 @@ public class BagBuildListener extends ManifestBuildListener.Adapter {
     @Override
     public void startItem(ManifestBuilder builder, long size, String item) {
         if (holey) {
-            String replacementPkg = Matcher.quoteReplacement(pkg.getName());
-            String rawpath = Matcher.quoteReplacement(item);
-            String datapath = "data/" + rawpath;
-
-            String url = urlPattern.replaceAll("\\{b\\}", replacementPkg).replaceAll("\\{d\\}", datapath).replaceAll("\\{r\\}", rawpath);
+            String url = formatter.format(item);
             writer.addFetchEntry(url, size, "data/" + item);
         } else {
             try {
