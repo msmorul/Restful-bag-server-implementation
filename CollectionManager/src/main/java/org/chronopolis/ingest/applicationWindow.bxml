@@ -1,18 +1,18 @@
 <Window title="Chronopolis Collection Manager" maximized="true"
-        xmlns:wtkx="http://pivot.apache.org/wtkx"
+        xmlns:bxml="http://pivot.apache.org/bxml"
         xmlns:c="org.apache.pivot.wtk.content"
         xmlns="org.apache.pivot.wtk"
         xmlns:effects="org.apache.pivot.wtk.effects"
         xmlns:chron="org.chronopolis.ingest"
-        wtkx:id="mainw">
-    <wtkx:define>
-        <chron:ArchivedCollectionPanel wtkx:id="archivePanel"/>
-        <chron:BagAssemblyPanel wtkx:id="assemblyPanel"/>
-        <!--<chron:ChooseCollectionDialog wtkx:id="collectionChooseDialog"/> -->
-        <chron:CreateHoleyBagDialog wtkx:id="createBagDialog"/>
-        <wtkx:include wtkx:id="aboutDialog" src="aboutDialog.wtkx"/>
-        <FileBrowserSheet wtkx:id="digestBrowser" mode="SAVE_AS"/>
-    </wtkx:define>
+        bxml:id="mainw">
+    <bxml:define>
+        <chron:ArchivedCollectionPanel bxml:id="archivePanel"/>
+        <chron:BagAssemblyPanel bxml:id="assemblyPanel"/>
+        <!--<chron:ChooseCollectionDialog bxml:id="collectionChooseDialog"/> -->
+        <chron:CreateHoleyBagDialog bxml:id="createBagDialog"/>
+        <bxml:include bxml:id="aboutDialog" src="aboutDialog.bxml"/>
+        <FileBrowserSheet bxml:id="digestBrowser" mode="SAVE_AS"/>
+    </bxml:define>
     <content>
         <TablePane>
             <columns><TablePane.Column width="1*"/></columns>
@@ -38,14 +38,14 @@
                                                         <Menu.Item buttonData="New bag">
 
                                                             <buttonPressListeners>
-                                                                <wtkx:script>
+                                                                <bxml:script>
                                                                     function buttonPressed(button) {
                                                                     var newPkg = new org.chronopolis.ingest.pkg.ChronPackage();
                                                                     newPkg.setDigest('SHA-256');
                                                                     pendingListView.getListData().add(newPkg);
                                                                     pendingListView.setSelectedIndex(pendingListView.getListData().getLength() -1);
                                                                     }
-                                                                </wtkx:script>
+                                                                </wtbxmlkx:script>
                                                             </buttonPressListeners>
                                                         </Menu.Item>
                                                         <Menu.Item buttonData="Create Collection"/>
@@ -64,23 +64,23 @@
                                                 <sections>
                                                     <Menu.Section>
                                                         <Menu.Item enabled="false" buttonData="Create/Transfer Bag" 
-                                                        tooltipText="Transfer Bag to Chronopolis" wtkx:id="createBagBtn" >
+                                                        tooltipText="Transfer Bag to Chronopolis" bxml:id="createBagBtn" >
 
                                                             <buttonPressListeners>
-                                                                <wtkx:script>
+                                                                <bxml:script>
                                                                     function buttonPressed(button) {
                                                                     createBagDialog.open(mainw);
                                                                     }
-                                                                </wtkx:script>
+                                                                </bxml:script>
                                                             </buttonPressListeners>
                                                         </Menu.Item>
-                                                        <Menu.Item enabled="false" wtkx:id="saveBagBtn" buttonData="Save Bag Manifest">
+                                                        <Menu.Item enabled="false" bxml:id="saveBagBtn" buttonData="Save Bag Manifest">
                                                             <buttonPressListeners>
-                                                                <wtkx:script>
+                                                                <bxml:script>
                                                                     function buttonPressed(button) {
                                                                     digestBrowser.open(mainw);
                                                                     }
-                                                                </wtkx:script>
+                                                                </bxml:script>
                                                             </buttonPressListeners>
                                                         </Menu.Item>
                                                     </Menu.Section>
@@ -96,12 +96,12 @@
                                             <chron:ConfigurableReflection yTranslate="-20"/>
                                         </decorators>
                                         <componentMouseButtonListeners>
-                                            <wtkx:script>
+                                            <bxml:script>
                                                 function mouseClick(component, button, x, i, count)
                                                 {
                                                 aboutDialog.open(mainw);
                                                 }
-                                            </wtkx:script>
+                                            </bxml:script>
                                         </componentMouseButtonListeners>
                                     </Label>
                                 </BoxPane>
@@ -120,7 +120,7 @@
                                         <content>
                                             <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" >
                                                 <view>
-                                                    <ListView wtkx:id="ingestedListView"/>
+                                                    <ListView bxml:id="ingestedListView"/>
                                                 </view>
                                             </ScrollPane>
                                         </content>
@@ -131,7 +131,7 @@
                                         <content>
                                             <ScrollPane horizontalScrollBarPolicy="fill_to_capacity">
                                                 <view>
-                                                    <ListView wtkx:id="pendingListView"/>
+                                                    <ListView bxml:id="pendingListView"/>
                                                 </view>
                                             </ScrollPane>
                                         </content>
@@ -141,7 +141,7 @@
 
                         </left>
                         <right>
-                            <Border styles="{cornerRadii: 10, padding:5, backgroundColor:'#f7f5ee'}" wtkx:id="detailBorder"/>
+                            <Border styles="{cornerRadii: 10, padding:5, backgroundColor:'#f7f5ee'}" bxml:id="detailBorder"/>
 
                         </right>
                     </SplitPane>

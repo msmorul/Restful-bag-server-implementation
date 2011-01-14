@@ -6,10 +6,12 @@ package org.chronopolis.ingest;
 
 import java.io.File;
 import java.io.IOException;
+import org.apache.pivot.beans.BXML;
+import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.serialization.SerializationException;
-import org.apache.pivot.wtk.ApplicationContext;
-import org.apache.pivot.wtk.ApplicationContextMessageListener;
+import org.apache.pivot.util.MessageBus;
+import org.apache.pivot.util.MessageBusListener;
 import org.apache.pivot.wtk.Border;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
@@ -29,10 +31,8 @@ import org.apache.pivot.wtk.SheetCloseListener;
 import org.apache.pivot.wtk.SheetStateListener;
 import org.apache.pivot.wtk.Span;
 import org.apache.pivot.wtk.TextInput;
-import org.apache.pivot.wtk.TextInputTextListener;
+import org.apache.pivot.wtk.TextInputContentListener;
 import org.apache.pivot.wtk.content.ListViewItemRenderer;
-import org.apache.pivot.wtkx.WTKX;
-import org.apache.pivot.wtkx.WTKXSerializer;
 import org.chronopolis.ingest.pkg.BagWriter;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.ChronPackageListener;
@@ -44,19 +44,19 @@ import org.chronopolis.ingest.pkg.ChronPackageListener;
 public class BagAssemblyPanel extends Border {
 
     private ChronPackage workingBag;
-    @WTKX
+    @BXML
     private ListView rootList;
-    @WTKX
+    @BXML
     private TextInput nameText;
-    @WTKX
+    @BXML
     private FileBrowserSheet browser;
-    @WTKX
+    @BXML
     private PushButton addFilesBtn;
-    @WTKX
+    @BXML
     private ListButton digestListBtn;
-    @WTKX
+    @BXML
     private PushButton removeBtn;
-    @WTKX
+    @BXML
     private PushButton removeFileBtn;
     private ChronPackageListener listener = new ChrListener();
     private ButtonPressListener removeItemListener = new ButtonPressListener() {
@@ -72,7 +72,6 @@ public class BagAssemblyPanel extends Border {
             });
         }
     };
-
     private ButtonPressListener addItemlistener = new ButtonPressListener() {
 
         public void buttonPressed(Button button) {
@@ -84,9 +83,10 @@ public class BagAssemblyPanel extends Border {
         @Override
         public boolean configureContextMenu(Component cmpnt, Menu menu, int i, int y) {
 
-            if (workingBag.isReadOnly())
+            if (workingBag.isReadOnly()) {
                 return false;
-            
+            }
+
             Menu.Section section = new Menu.Section();
             menu.getSections().add(section);
 
@@ -107,8 +107,8 @@ public class BagAssemblyPanel extends Border {
     public BagAssemblyPanel() {
         try {
 
-            WTKXSerializer serializer = new WTKXSerializer();
-            Component pkgPane = (Component) serializer.readObject(this, "bagAssemblyPanel.wtkx");
+            BXMLSerializer serializer = new BXMLSerializer();
+            Component pkgPane = (Component) serializer.readObject(BagAssemblyPanel.class, "bagAssemblyPanel.bxml");
 
             serializer.bind(this);
             setContent(pkgPane);
@@ -138,6 +138,10 @@ public class BagAssemblyPanel extends Border {
 
         rootList.getListViewSelectionListeners().add(new ListViewSelectionListener() {
 
+            public void selectedItemChanged(ListView lv, Object previousSelectedItem) {
+                removeFileBtn.setEnabled(lv.getSelectedItem() != null && !workingBag.isReadOnly());
+            }
+
             public void selectedRangeAdded(ListView lv, int i, int i1) {
                 removeFileBtn.setEnabled(lv.getSelectedItem() != null && !workingBag.isReadOnly());
             }
@@ -166,8 +170,9 @@ public class BagAssemblyPanel extends Border {
             }
         });
 
-        nameText.getTextInputTextListeners().add(new TextInputTextListener() {
+        nameText.getTextInputContentListeners().add(new TextInputContentListener.Adapter() {
 
+            @Override
             public void textChanged(TextInput ti) {
                 if (workingBag != null) {
                     workingBag.setName(ti.getText());
@@ -187,22 +192,26 @@ public class BagAssemblyPanel extends Border {
             }
         });
 
-        ApplicationContext.subscribe(ChronPackage.class, new ApplicationContextMessageListener<ChronPackage>() {
+        MessageBus.subscribe(ChronPackage.class, new MessageBusListener<ChronPackage>() {
 
             public void messageSent(ChronPackage t) {
                 setWorkingBag(t);
             }
         });
 
+        digestListBtn.getListButtonSelectionListeners().add(new ListButtonSelectionListener.Adapter() {
 
-        digestListBtn.getListButtonSelectionListeners().add(new ListButtonSelectionListener() {
-
-            public void selectedIndexChanged(ListButton lb, int i) {
-                if (i > -1) {
-                    String s = (String) lb.getSelectedItem();
-                    workingBag.setDigest(s);
-                }
+            @Override
+            public void selectedItemChanged(ListButton lb, Object previousSelectedItem) {
+                String s = (String) lb.getSelectedItem();
+                workingBag.setDigest(s);
             }
+//
+//            public void selectedIndexChanged(ListButton lb, int i) {
+//                if (i > -1) {
+//
+//                }
+//            }
         });
     }
 

@@ -1,9 +1,9 @@
-<TablePane xmlns:wtkx="http://pivot.apache.org/wtkx"
+<TablePane xmlns:bxml="http://pivot.apache.org/bxml"
            xmlns="org.apache.pivot.wtk"
            xmlns:chron="org.chronopolis.ingest">
 
     <define>
-        <FileBrowserSheet wtkx:id="browser" mode="SAVE_TO"/>
+        <FileBrowserSheet bxml:id="browser" mode="SAVE_TO"/>
     </define>
 
     <columns>
@@ -13,11 +13,11 @@
         <TablePane.Row height="-1" >
             <BoxPane styles="{padding:{left:10,top:10,right:15,bottom:15},verticalAlignment:'center'}">
                 <Label text="Name:"/>
-                <TextInput wtkx:id="nameText" width="250"/>
+                <TextInput bxml:id="nameText" width="250"/>
                 <Label  text="Digest:" styles="{padding:{left:15,top:0,right:0,bottom:0}}"/>
-                <ListButton wtkx:id="digestListBtn" listData="['SHA-256','SHA-512','MD5']"></ListButton>
+                <ListButton bxml:id="digestListBtn" listData="['SHA-256','SHA-512','MD5']"></ListButton>
                 <BoxPane styles="{padding:{left:15,top:0,right:0,bottom:0}}">
-                    <PushButton wtkx:id="removeBtn" buttonData="Remove Bag"/>
+                    <PushButton bxml:id="removeBtn" buttonData="Remove Bag"/>
                 </BoxPane>
             </BoxPane>
         </TablePane.Row>
@@ -32,22 +32,22 @@
                             <TablePane.Row height="1*">
                                 <ScrollPane horizontalScrollBarPolicy="fill_to_capacity" styles="{backgroundColor:'#fafafa'}">
                                     <view>
-                                        <ListView wtkx:id="rootList" styles="{backgroundColor:'#fafafa'}"/>
+                                        <ListView bxml:id="rootList" styles="{backgroundColor:'#fafafa'}"/>
                                     </view>
                                 </ScrollPane>
                             </TablePane.Row>
                             <TablePane.Row height="-1">
                                 <BoxPane styles="{padding:{left:10,top:10,right:5,bottom:5}}">
-                                    <PushButton buttonData="Add Directory" wtkx:id="addFilesBtn">
+                                    <PushButton buttonData="Add Directory" bxml:id="addFilesBtn">
                                         <buttonPressListeners>
-                                            <wtkx:script>
+                                            <bxml:script>
                                                 function buttonPressed(button) {
                                                 browser.open(button.getWindow());
                                                 }
-                                            </wtkx:script>
+                                            </bxml:script>
                                         </buttonPressListeners>
                                     </PushButton>
-                                    <PushButton buttonData="Remove Directory" enabled="false" wtkx:id="removeFileBtn"/>
+                                    <PushButton buttonData="Remove Directory" enabled="false" bxml:id="removeFileBtn"/>
                                         
                                 </BoxPane>
                             </TablePane.Row>

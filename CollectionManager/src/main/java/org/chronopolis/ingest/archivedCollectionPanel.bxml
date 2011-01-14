@@ -1,4 +1,4 @@
-<TablePane xmlns:wtkx="http://pivot.apache.org/wtkx"
+<TablePane xmlns:bxml="http://pivot.apache.org/bxml"
            xmlns="org.apache.pivot.wtk">
 
     <columns>
@@ -40,12 +40,12 @@
                                 <left>
                                     <ScrollPane styles="{backgroundColor:'#fafafa'}">
                                         <view>
-                                            <TreeView styles="{backgroundColor:'#fafafa'}" wtkx:id="fileTreeView"/>
+                                            <TreeView styles="{backgroundColor:'#fafafa'}" bxml:id="fileTreeView"/>
                                         </view>
                                     </ScrollPane>
                                 </left>
                                 <right>
-                                    <Border wtkx:id="fileDetailsPane">
+                                    <Border bxml:id="fileDetailsPane">
                                         <content>
                                             <TablePane styles="{padding:{left:10,top:10,right:15,bottom:15}}">
                                                 <columns>
@@ -80,12 +80,12 @@
                                 <left>
                                     <ScrollPane styles="{backgroundColor:'#fafafa'}">
                                         <view>
-                                            <ListView styles="{backgroundColor:'#fafafa'}" wtkx:id="reportListView"/>
+                                            <ListView styles="{backgroundColor:'#fafafa'}" bxml:id="reportListView"/>
                                         </view>
                                     </ScrollPane>
                                 </left>
                                 <right>
-                                    <Border wtkx:id="reportDetailsPane">
+                                    <Border bxml:id="reportDetailsPane">
                                         <content>
                                             <TablePane styles="{padding:{left:10,top:10,right:15,bottom:15}}">
                                                 <columns>

@@ -19,15 +19,18 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.zip.GZIPOutputStream;
+import org.apache.pivot.beans.BXML;
+import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.ListListener;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.collections.Sequence;
+import org.apache.pivot.util.MessageBus;
+import org.apache.pivot.util.MessageBusListener;
 import org.apache.pivot.wtk.Alert;
 import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.ApplicationContext;
-import org.apache.pivot.wtk.ApplicationContextMessageListener;
 import org.apache.pivot.wtk.Border;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
@@ -50,8 +53,6 @@ import org.apache.pivot.wtk.SheetStateListener;
 import org.apache.pivot.wtk.Span;
 import org.apache.pivot.wtk.Window;
 import org.apache.pivot.wtk.content.ListViewItemRenderer;
-import org.apache.pivot.wtkx.WTKX;
-import org.apache.pivot.wtkx.WTKXSerializer;
 import org.chronopolis.ingest.pkg.BagBuildListener;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.ChronPackageListener;
@@ -79,30 +80,30 @@ import org.chronopolis.ingest.pkg.PackageManager;
 public class Main implements Application {
 
 //    private static final String PROVIDER = "cdl";
-    @WTKX
+    @BXML
     private ListView ingestedListView;
-    @WTKX
+    @BXML
     private ListView pendingListView;
-    @WTKX
+    @BXML
     private Border detailBorder;
-    @WTKX
+    @BXML
     private BagAssemblyPanel assemblyPanel;
-    @WTKX
+    @BXML
     private ArchivedCollectionPanel archivePanel;
     private Window mainW;
-    @WTKX
+    @BXML
     private Menu.Item saveBagBtn;
-    @WTKX
+    @BXML
     private Menu.Item createBagBtn;
-    @WTKX
+    @BXML
     private FileBrowserSheet digestBrowser;
-    @WTKX
+    @BXML
     private CreateHoleyBagDialog createBagDialog;
-    @WTKX(id = "aboutDialog.buildLbl")
+    @BXML(id = "aboutDialog.buildLbl")
     private Label buildLbl;
-    @WTKX(id = "aboutDialog.dateLbl")
+    @BXML(id = "aboutDialog.dateLbl")
     private Label dateLbl;
-    @WTKX(id = "aboutDialog.img")
+    @BXML(id = "aboutDialog.img")
     private ImageView aboutImage;
     private static PartnerSite aceSite;
     private static PackageManager mgr;
@@ -233,8 +234,8 @@ public class Main implements Application {
         aceSite = umiacs;
 
         // build app
-        WTKXSerializer serializer = new WTKXSerializer();
-        mainW = (Window) serializer.readObject(this, "applicationWindow.wtkx");
+        BXMLSerializer serializer = new BXMLSerializer();
+        mainW = (Window) serializer.readObject(Main.class, "applicationWindow.bxml");
         serializer.bind(this);
 
         pendingListView.getListViewListeners().add(new ListViewListener.Adapter() {
@@ -296,7 +297,7 @@ public class Main implements Application {
             @Override
             public void selectedRangesChanged(ListView lv, Sequence<Span> sqnc) {
                 if (pendingListView.getSelectedItem() != null) {
-                    ApplicationContext.sendMessage(pendingListView.getSelectedItem());
+                    MessageBus.sendMessage(pendingListView.getSelectedItem());
 //                    createbagBtn.setEnabled(!((ChronPackage) pendingListView.getSelectedItem()).isReadOnly());
                     saveBagBtn.setEnabled(true);
                     createBagBtn.setEnabled(true);
@@ -339,7 +340,7 @@ public class Main implements Application {
             public void selectedRangesChanged(ListView lv, Sequence<Span> sqnc) {
 
                 if (ingestedListView.getSelectedItem() != null) {
-                    ApplicationContext.sendMessage(ingestedListView.getSelectedItem());
+                    MessageBus.sendMessage(ingestedListView.getSelectedItem());
                 }
                 detailBorder.setContent(archivePanel);
                 pendingListView.clearSelection();
@@ -410,7 +411,7 @@ public class Main implements Application {
         private ChronPackage workingPackage;
 
         public SaveBagListener() {
-            ApplicationContext.subscribe(ChronPackage.class, new ApplicationContextMessageListener<ChronPackage>() {
+            MessageBus.subscribe(ChronPackage.class, new MessageBusListener<ChronPackage>() {
 
                 public void messageSent(ChronPackage t) {
                     workingPackage = t;
@@ -475,7 +476,7 @@ public class Main implements Application {
         private ChronPackage workingPackage;
 
         public TansferBagListener() {
-            ApplicationContext.subscribe(ChronPackage.class, new ApplicationContextMessageListener<ChronPackage>() {
+            MessageBus.subscribe(ChronPackage.class, new MessageBusListener<ChronPackage>() {
 
                 public void messageSent(ChronPackage t) {
                     workingPackage = t;

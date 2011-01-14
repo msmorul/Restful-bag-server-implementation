@@ -1,13 +1,13 @@
-<Accordion xmlns:wtkx="http://pivot.apache.org/wtkx"
-           xmlns="org.apache.pivot.wtk" wtkx:id="accordion"
+<Accordion xmlns:bxml="http://pivot.apache.org/bxml"
+           xmlns="org.apache.pivot.wtk" bxml:id="accordion"
            xmlns:c="org.apache.pivot.wtk.content">
-    <wtkx:define>
-        <ButtonGroup wtkx:id="outputGroup"/>
-        <ButtonGroup wtkx:id="typeGroup"/>
+    <bxml:define>
+        <ButtonGroup bxml:id="outputGroup"/>
+        <ButtonGroup bxml:id="typeGroup"/>
 
 
         <TablePane enabled="false" Accordion.label="2. Choose Chronopolis Collection"
-                   wtkx:id="remoteFilePane" styles="{verticalSpacing:5,padding:15}" visible="true">
+                   bxml:id="remoteFilePane" styles="{verticalSpacing:5,padding:15}" visible="true">
             <columns>
                 <TablePane.Column width="-1"/>
                 <TablePane.Column width="1*"/>
@@ -15,29 +15,29 @@
             <rows>
                 <!-- <TablePane.Row height="1*">
                     <Label text="Collection"/>
-                    <ListButton wtkx:id="collectionListButton" />
+                    <ListButton bxml:id="collectionListButton" />
                 </TablePane.Row> -->
                 <TablePane.Row height="-1">
                     <Label text="Transfer Bag Name:"/>
-                    <TextInput wtkx:id="transferTxt" />
+                    <TextInput bxml:id="transferTxt" />
                 </TablePane.Row>
                 <TablePane.Row height="1*"><BoxPane /></TablePane.Row>
                 <TablePane.Row height="-1" >
                     <BoxPane TablePane.columnSpan="2" styles="{verticalAlignment:'center',horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
-                        <Label wtkx:id="pane2aMessage"/>
+                        <Label bxml:id="pane2aMessage"/>
                         <PushButton preferredWidth="50">
                             <buttonData>
                                 <c:ButtonData icon="@go-previous.png" />
                             </buttonData>
                             <buttonPressListeners>
-                                <wtkx:script>
+                                <bxml:script>
                                     function buttonPressed(button) {
                                     accordion.setSelectedIndex(accordion.getSelectedIndex() -1 );
                                     }
-                                </wtkx:script>
+                                </bxml:script>
                             </buttonPressListeners>
                         </PushButton>
-                        <PushButton wtkx:id="pane2aNextBtn" preferredWidth="50">
+                        <PushButton bxml:id="pane2aNextBtn" preferredWidth="50">
                             <buttonData>
                                 <c:ButtonData icon="@go-next.png" />
                             </buttonData>
@@ -49,7 +49,7 @@
 
 
         <TablePane enabled="false" Accordion.label="2. Choose Bag File"
-                   wtkx:id="localFilePane"
+                   bxml:id="localFilePane"
                    styles="{verticalSpacing:5,padding:15}" visible="true">
             <columns>
                 <TablePane.Column width="-1"/>
@@ -57,32 +57,32 @@
             </columns>
             <rows>
                 <TablePane.Row height="1*">
-                    <FileBrowser TablePane.columnSpan="2" wtkx:id="browser"/>
+                    <FileBrowser TablePane.columnSpan="2" bxml:id="browser"/>
                 </TablePane.Row>
                 <TablePane.Row height="-1">
                     <Label text="File Name:" styles="{padding:{left:5,top:5,right:10,bottom:0}}"/>
-                    <TextInput text="new-bag.tgz" wtkx:id="bagfileTxt"/>
+                    <TextInput text="new-bag.tgz" bxml:id="bagfileTxt"/>
                 </TablePane.Row>
                 <TablePane.Row height="-1">
-                    <Label TablePane.columnSpan="2" wtkx:id="saveFileLbl"
+                    <Label TablePane.columnSpan="2" bxml:id="saveFileLbl"
                            styles="{padding:{left:5,top:5,right:10,bottom:0}}"/>
                 </TablePane.Row>
                 <TablePane.Row height="-1" >
                     <BoxPane TablePane.columnSpan="2" styles="{verticalAlignment:'center',horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
-                        <Label wtkx:id="pane2bMessage"/>
+                        <Label bxml:id="pane2bMessage"/>
                         <PushButton preferredWidth="50">
                             <buttonData>
                                 <c:ButtonData icon="@go-previous.png" />
                             </buttonData>
                             <buttonPressListeners>
-                                <wtkx:script>
+                                <bxml:script>
                                     function buttonPressed(button) {
                                     accordion.setSelectedIndex(accordion.getSelectedIndex() -1 );
                                     }
-                                </wtkx:script>
+                                </bxml:script>
                             </buttonPressListeners>
                         </PushButton>
-                        <PushButton wtkx:id="pane2bNextBtn" preferredWidth="50">
+                        <PushButton bxml:id="pane2bNextBtn" preferredWidth="50">
                             <buttonData>
                                 <c:ButtonData icon="@go-next.png" />
                             </buttonData>
@@ -94,7 +94,7 @@
 
 
         <TablePane enabled="false" Accordion.label="3. Configure Holey Bag"
-                   visible="false" wtkx:id="holeyBagPane"
+                   visible="false" bxml:id="holeyBagPane"
                    styles="{verticalSpacing:5,horizontalSpacing:10,padding:15}">
             <columns>
                 <TablePane.Column width="-1"/>
@@ -102,13 +102,13 @@
             </columns>
             <rows>
                 <TablePane.Row height="-1">
-                    <Label text="URL Template:"/><TextInput wtkx:id="urlTxt"  text="http://your_webserver_here.com/bags/{b}/{d}"/>
+                    <Label text="URL Template:"/><TextInput bxml:id="urlTxt"  text="http://your_webserver_here.com/bags/{b}/{d}"/>
                 </TablePane.Row>
                 <TablePane.Row height="-1">
-                    <Label text="Sample Data URL:"/><TextInput  wtkx:id="sampleUrlLbl" />
+                    <Label text="Sample Data URL:"/><TextInput  bxml:id="sampleUrlLbl" />
                 </TablePane.Row>
                 <TablePane.Row height="-1">
-                    <PushButton wtkx:id="testUrlBtn" buttonData="Test URL" tooltipText="Test the url listed above"/>
+                    <PushButton bxml:id="testUrlBtn" buttonData="Test URL" tooltipText="Test the url listed above"/>
                 </TablePane.Row>
                 <TablePane.Row height="-1">
                     <Border preferredHeight="200" styles="{color:10}" TablePane.columnSpan="2">
@@ -120,20 +120,20 @@
                 <TablePane.Row height="1*"><BoxPane/></TablePane.Row>
                 <TablePane.Row height="-1" >
                     <BoxPane TablePane.columnSpan="2" styles="{verticalAlignment:'center',horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
-                        <Label wtkx:id="pane3Message"/>
+                        <Label bxml:id="pane3Message"/>
                         <PushButton preferredWidth="50">
                             <buttonData>
                                 <c:ButtonData icon="@go-previous.png" />
                             </buttonData>
                             <buttonPressListeners>
-                                <wtkx:script>
+                                <bxml:script>
                                     function buttonPressed(button) {
                                     accordion.setSelectedIndex(accordion.getSelectedIndex() -1 );
                                     }
-                                </wtkx:script>
+                                </bxml:script>
                             </buttonPressListeners>
                         </PushButton>
-                        <PushButton wtkx:id="pane3NextBtn" preferredWidth="50">
+                        <PushButton bxml:id="pane3NextBtn" preferredWidth="50">
                             <buttonData>
                                 <c:ButtonData icon="@go-next.png" />
                             </buttonData>
@@ -143,7 +143,7 @@
             </rows>
         </TablePane>
 
-    </wtkx:define>
+    </bxml:define>
     <panels>
         <TablePane Accordion.label="1. Choose Bag Type"
                    styles="{verticalSpacing:15,padding:15}">
@@ -159,13 +159,13 @@
                     <BoxPane styles="{horizontalAlignment:'center',padding:{left:0,top:25,right:0,bottom:0}}" orientation="vertical" >
                         <PushButton preferredWidth="75" preferredHeight="75"
                                     enabled="false" styles="{backgroundColor:'#ffffff'}"
-                                    toggleButton="true" wtkx:id="chronopolisBtn"
+                                    toggleButton="true" bxml:id="chronopolisBtn"
                                     tooltipText="Send Bag to Chronopolis" buttonGroup="$outputGroup">
                             <buttonData>
                                 <c:ButtonData icon="@chronopolisTransfer.png" />
                             </buttonData>
                             <buttonStateListeners>
-                                <wtkx:script>
+                                <bxml:script>
                                     function stateChanged(button, oldstate)
                                     {
                                     if (button.getState() == "SELECTED")
@@ -176,20 +176,20 @@
                                     remoteFilePane.setEnabled(false);
                                     }
                                     }
-                                </wtkx:script>
+                                </bxml:script>
                             </buttonStateListeners>
                         </PushButton>
                         <Label text="Chronopolis"/>
                     </BoxPane>
                     <BoxPane styles="{horizontalAlignment:'center',padding:{left:0,top:25,right:0,bottom:0}}" orientation="vertical" >
-                        <PushButton wtkx:id="localBtn" preferredWidth="75" preferredHeight="75"
+                        <PushButton bxml:id="localBtn" preferredWidth="75" preferredHeight="75"
                                     toggleButton="true" tooltipText="Save Bag Locally"
                                     buttonGroup="$outputGroup" styles="{backgroundColor:'#ffffff'}">
                             <buttonData>
                                 <c:ButtonData icon="@localBag.png" />
                             </buttonData>
                             <buttonStateListeners>
-                                <wtkx:script>
+                                <bxml:script>
                                     function stateChanged(button, oldstate)
                                     {
                                     if (button.getState() == "SELECTED")
@@ -200,7 +200,7 @@
                                     localFilePane.setEnabled(false);
                                     }
                                     }
-                                </wtkx:script>
+                                </bxml:script>
                             </buttonStateListeners>
                         </PushButton>
                         <Label text="Local Bag"/>
@@ -213,14 +213,14 @@
                     <BoxPane styles="{horizontalAlignment:'center',padding:{left:0,top:25,right:0,bottom:0}}"
                              orientation="vertical" >
 
-                        <PushButton wtkx:id="holeyBtn" toggleButton="true" buttonGroup="$typeGroup"
+                        <PushButton bxml:id="holeyBtn" toggleButton="true" buttonGroup="$typeGroup"
                                     preferredWidth="75" preferredHeight="75"
                                     styles="{backgroundColor:'#ffffff'}">
                             <buttonData>
                                 <c:ButtonData icon="@localBag.png" />
                             </buttonData>
                             <buttonStateListeners>
-                                <wtkx:script>
+                                <bxml:script>
                                     function stateChanged(button, oldstate)
                                     {
                                     if (button.getState() == "SELECTED")
@@ -229,26 +229,26 @@
                                     holeyBagPane.setEnabled(false);
                                     }
                                     }
-                                </wtkx:script>
+                                </bxml:script>
                             </buttonStateListeners>
                         </PushButton>
                         <Label text="Holey Bag"/>
                     </BoxPane>
                     <BoxPane styles="{horizontalAlignment:'center',padding:{left:0,top:25,right:0,bottom:0}}" orientation="vertical" >
 
-                        <PushButton wtkx:id="completeBtn"  toggleButton="true"
+                        <PushButton bxml:id="completeBtn"  toggleButton="true"
                                     buttonGroup="$typeGroup"  preferredWidth="75" preferredHeight="75"
                                     styles="{backgroundColor:'#ffffff'}">
                             <buttonData>
                                 <c:ButtonData icon="@localBag.png" />
                             </buttonData>
                             <buttonStateListeners>
-                                <wtkx:script>
+                                <bxml:script>
                                     function stateChanged(button, oldstate)
                                     {
                                     accordion.getPanels().remove(holeyBagPane);
                                     }
-                                </wtkx:script>
+                                </bxml:script>
                             </buttonStateListeners>
                         </PushButton>
                         <Label text="Filled Bag"/>
@@ -256,8 +256,8 @@
                 </TablePane.Row>
                 <TablePane.Row height="-1" >
                     <BoxPane TablePane.columnSpan="2" styles="{verticalAlignment:'center',horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
-                        <Label wtkx:id="pane1Message"/>
-                        <PushButton wtkx:id="pane1NextBtn" preferredWidth="50">
+                        <Label bxml:id="pane1Message"/>
+                        <PushButton bxml:id="pane1NextBtn" preferredWidth="50">
                             <buttonData>
                                 <c:ButtonData icon="@go-next.png" />
                             </buttonData>
@@ -269,7 +269,7 @@
         </TablePane>
 
 
-        <BoxPane wtkx:id="fillerPane" Accordion.label="Choose Bag Destination"/>
+        <BoxPane bxml:id="fillerPane" Accordion.label="Choose Bag Destination"/>
 
         
     </panels>

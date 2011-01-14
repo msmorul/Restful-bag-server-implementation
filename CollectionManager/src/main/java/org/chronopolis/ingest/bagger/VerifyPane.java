@@ -7,6 +7,8 @@ package org.chronopolis.ingest.bagger;
 import edu.umiacs.ace.json.Strings;
 import java.io.File;
 import java.io.IOException;
+import org.apache.pivot.beans.BXML;
+import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.Map;
@@ -22,8 +24,6 @@ import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.content.ButtonData;
-import org.apache.pivot.wtkx.WTKX;
-import org.apache.pivot.wtkx.WTKXSerializer;
 import org.chronopolis.ingest.bagger.BagModel.BagType;
 import org.chronopolis.ingest.bagger.BagModel.IngestionType;
 import org.chronopolis.ingest.pkg.BagWriter;
@@ -36,39 +36,39 @@ import org.chronopolis.ingest.pkg.UrlFormatter;
  */
 public class VerifyPane extends Border {
 
-    @WTKX
+    @BXML
     private Label vrfyDestLbl;
-    @WTKX
+    @BXML
     private Label vrfyTypeLbl;
-    @WTKX
+    @BXML
     private Label vrfyPatternLbl;
-    @WTKX
+    @BXML
     private Label vrfyLocationLbl;
-    @WTKX
+    @BXML
     private Label vrfyPatternHdr;
-    @WTKX
+    @BXML
     private Label vrfyFilesLbl;
-    @WTKX
+    @BXML
     private Label vrfyDirectoriesLbl;
-    @WTKX
+    @BXML
     private Label vrfySizeLbl;
-    @WTKX
+    @BXML
     private Label vrfyUnreadableLbl;
-    @WTKX
+    @BXML
     private ListView vrfyUnreadableList;
-    @WTKX
+    @BXML
     private Border vrfyUnreadablePane;
-    @WTKX
+    @BXML
     private PushButton okBtn;
-    @WTKX
+    @BXML
     private TableView metadataTable;
-    @WTKX
+    @BXML
     private TextInput vrfyFetchTxt;
-    @WTKX
+    @BXML
     private Label vrfyFetchLbl;
-    @WTKX
+    @BXML
     private TextInput vrfyManifestTxt;
-    @WTKX
+    @BXML
     private TableView vrfyDirectoryTable;
     private BagModel model;
     private BagModelListener listener = new MyListener();
@@ -78,9 +78,9 @@ public class VerifyPane extends Border {
 
         try {
 
-            WTKXSerializer serializer = new WTKXSerializer();
-            Component pkgPane = (Component) serializer.readObject(this, "verifyPane.wtkx");
-
+            BXMLSerializer serializer = new BXMLSerializer();
+            Component pkgPane = (Component) serializer.readObject(
+                    VerifyPane.class, "verifyPane.bxml");
             serializer.bind(this);
             setContent(pkgPane);
             metadataTable.setTableData(metadataTableModel);

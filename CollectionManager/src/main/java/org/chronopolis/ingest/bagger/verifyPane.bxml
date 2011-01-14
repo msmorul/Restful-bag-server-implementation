@@ -1,5 +1,5 @@
-<TabPane  wtkx:id="verifyPane" Accordion.label="Verify Bag Creation"
-          xmlns:wtkx="http://pivot.apache.org/wtkx"
+<TabPane  bxml:id="verifyPane" Accordion.label="Verify Bag Creation"
+          xmlns:bxml="http://pivot.apache.org/bxml"
           xmlns="org.apache.pivot.wtk"
           xmlns:c="org.apache.pivot.wtk.content">
     <tabs>
@@ -11,47 +11,47 @@
             <rows>
                 <TablePane.Row height="-1">
                     <Label text="Destination:" styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyDestLbl" />
+                    <Label bxml:id="vrfyDestLbl" />
                 </TablePane.Row>
                 <TablePane.Row height="-1">
                     <Label text="Bag Type:" styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyTypeLbl" />
+                    <Label bxml:id="vrfyTypeLbl" />
                 </TablePane.Row>
                 <TablePane.Row height="-1">
-                    <Label text="URL Pattern:" wtkx:id="vrfyPatternHdr" styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyPatternLbl" />
+                    <Label text="URL Pattern:" bxml:id="vrfyPatternHdr" styles="{font:'Arial bold 14'}"/>
+                    <Label bxml:id="vrfyPatternLbl" />
                 </TablePane.Row>
                 <TablePane.Row height="-1">
                     <Label text="Bag Location: " styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyLocationLbl" />
+                    <Label bxml:id="vrfyLocationLbl" />
                 </TablePane.Row>
 
                 <TablePane.Row height="-1">
                     <Label text="Total Files: " styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyFilesLbl" />
+                    <Label bxml:id="vrfyFilesLbl" />
                 </TablePane.Row>
 
                 <TablePane.Row height="-1">
                     <Label text="Total Directories: " styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyDirectoriesLbl" />
+                    <Label bxml:id="vrfyDirectoriesLbl" />
                 </TablePane.Row>
 
                 <TablePane.Row height="-1">
                     <Label text="Size: " styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfySizeLbl" />
+                    <Label bxml:id="vrfySizeLbl" />
                 </TablePane.Row>
 
                 <TablePane.Row height="-1">
                     <Label text="Unreadable files: " styles="{font:'Arial bold 14'}"/>
-                    <Label wtkx:id="vrfyUnreadableLbl" />
+                    <Label bxml:id="vrfyUnreadableLbl" />
                 </TablePane.Row>
                 <TablePane.Row height="1*">
-                    <Border  TablePane.columnSpan="2" wtkx:id="vrfyUnreadablePane">
+                    <Border  TablePane.columnSpan="2" bxml:id="vrfyUnreadablePane">
                         <content>
                             <ScrollPane horizontalScrollBarPolicy="fill"
                                         verticalScrollBarPolicy="fill_to_capacity">
                                 <view>
-                                    <ListView wtkx:id="vrfyUnreadableList"/>
+                                    <ListView bxml:id="vrfyUnreadableList"/>
                                 </view>
                             </ScrollPane>
                         </content>
@@ -61,19 +61,19 @@
                 <!--<TablePane.Row height="1*"><BoxPane/></TablePane.Row>-->
                 <TablePane.Row height="-1" >
                     <BoxPane TablePane.columnSpan="2" styles="{horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
-                        <PushButton preferredWidth="50" wtkx:id="verifyPreviousBtn">
+                        <PushButton preferredWidth="50" bxml:id="verifyPreviousBtn">
                             <buttonData>
                                 <c:ButtonData icon="@go-previous.png" />
                             </buttonData>
                             <buttonPressListeners>
-                                <wtkx:script>
+                                <bxml:script>
                                     function buttonPressed(button) {
                                     accordion.setSelectedIndex(accordion.getSelectedIndex() -1 );
                                     }
-                                </wtkx:script>
+                                </bxml:script>
                             </buttonPressListeners>
                         </PushButton>
-                        <PushButton tooltipText="Create and transmit/save bag" wtkx:id="okBtn" preferredWidth="50">
+                        <PushButton tooltipText="Create and transmit/save bag" bxml:id="okBtn" preferredWidth="50">
                             <buttonData>
                                 <c:ButtonData icon="@package-x-generic.png" />
                             </buttonData>
@@ -91,13 +91,13 @@
                     <Label text="Sample Manifest Entry" styles="{font:'Arial bold 14'}"/>
                 </TablePane.Row>
                 <TablePane.Row height="-1">
-                    <TextInput wtkx:id="vrfyManifestTxt" />
+                    <TextInput bxml:id="vrfyManifestTxt" />
                 </TablePane.Row>
                 <TablePane.Row height="-1">
-                    <Label text="Sample Fetch Entry" wtkx:id="vrfyFetchLbl" styles="{font:'Arial bold 14'}"/>
+                    <Label text="Sample Fetch Entry" bxml:id="vrfyFetchLbl" styles="{font:'Arial bold 14'}"/>
                 </TablePane.Row>
                 <TablePane.Row height="-1">
-                    <TextInput wtkx:id="vrfyFetchTxt"/>
+                    <TextInput bxml:id="vrfyFetchTxt"/>
                 </TablePane.Row>
                 <TablePane.Row height="-1">
                     <Label text="Metadata" styles="{font:'Arial bold 14'}"/>
@@ -108,19 +108,19 @@
                             <ScrollPane horizontalScrollBarPolicy="fill"
                                         verticalScrollBarPolicy="fill_to_capacity">
                                 <view>
-                                    <TableView wtkx:id="metadataTable" styles="{includeTrailingVerticalGridLine:true}">
+                                    <TableView bxml:id="metadataTable" styles="{includeTrailingVerticalGridLine:true}">
                                         <columns>
                                             <TableView.Column name="key" width="1*" headerData="Attribute"/>
                                             <TableView.Column name="value" width="2*" headerData="Value"/>
 
                                         </columns>
                                         <tableViewSortListeners>
-                                            <wtkx:script>
+                                            <bxml:script>
                                                 function sortChanged(tableView) {
                                                 var tableData = tableView.getTableData();
                                                 tableData.setComparator(new org.apache.pivot.wtk.content.TableViewRowComparator(tableView));
                                                 }
-                                            </wtkx:script>
+                                            </bxml:script>
                                         </tableViewSortListeners>
                                     </TableView>
                                 </view>
@@ -141,19 +141,19 @@
                             <ScrollPane  horizontalScrollBarPolicy="fill"
                                          verticalScrollBarPolicy="fill_to_capacity">
                                 <view>
-                                    <TableView wtkx:id="vrfyDirectoryTable" styles="{includeTrailingVerticalGridLine:true}">
+                                    <TableView bxml:id="vrfyDirectoryTable" styles="{includeTrailingVerticalGridLine:true}">
                                         <columns>
                                             <TableView.Column name="key" width="1*" headerData="Directory"/>
                                             <TableView.Column name="value" width="2*" headerData="Full Path"/>
 
                                         </columns>
                                         <tableViewSortListeners>
-                                            <wtkx:script>
+                                            <bxml:script>
                                                 function sortChanged(tableView) {
                                                 var tableData = tableView.getTableData();
                                                 tableData.setComparator(new org.apache.pivot.wtk.content.TableViewRowComparator(tableView));
                                                 }
-                                            </wtkx:script>
+                                            </bxml:script>
                                         </tableViewSortListeners>
                                     </TableView>
                                 </view>

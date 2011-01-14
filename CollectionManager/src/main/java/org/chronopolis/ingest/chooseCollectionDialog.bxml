@@ -1,4 +1,4 @@
-<TablePane xmlns:wtkx="http://pivot.apache.org/wtkx"
+<TablePane xmlns:bxml="http://pivot.apache.org/bxml"
            xmlns="org.apache.pivot.wtk">
 
     <columns>
@@ -7,21 +7,21 @@
     <rows>
         <TablePane.Row height="1*" >
             <Border><content>
-            <ListButton wtkx:id="collectionListButton"/>
+            <ListButton bxml:id="collectionListButton"/>
             </content></Border>
         </TablePane.Row>
         <TablePane.Row height="-1" >
             <BoxPane styles="{horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
-                <PushButton wtkx:id="cancelBtn" buttonData="Cancel">
+                <PushButton bxml:id="cancelBtn" buttonData="Cancel">
                     <buttonPressListeners>
-                        <wtkx:script>
+                        <bxml:script>
                             function buttonPressed(button) {
                             button.getWindow().close();
                             }
-                        </wtkx:script>
+                        </bxml:script>
                     </buttonPressListeners>
                     </PushButton>
-                <PushButton wtkx:id="okBtn" buttonData="Transfer"/>
+                <PushButton bxml:id="okBtn" buttonData="Transfer"/>
             </BoxPane>
         </TablePane.Row>
     </rows>

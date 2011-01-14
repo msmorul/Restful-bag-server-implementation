@@ -1,4 +1,4 @@
-<Dialog xmlns:wtkx="http://pivot.apache.org/wtkx"
+<Dialog xmlns:bxml="http://pivot.apache.org/bxml"
         xmlns="org.apache.pivot.wtk"
         preferredWidth="350" preferredHeight="400"
         title="About Chronopolis Data Manager">
@@ -16,7 +16,7 @@
                         <rows>
                             <TablePane.Row height="-1" >
                                 <BoxPane TablePane.columnSpan="2" styles="{padding:{top:25,bottom:0,left:0,right:0},verticalAlignment:'center',horizontalAlignment:'center'}">
-                                    <ImageView wtkx:id="img" image="@trash.jpg"/>
+                                    <ImageView bxml:id="img" image="@trash.jpg"/>
                                 </BoxPane>
                             </TablePane.Row>
                             <TablePane.Row height="-1" >
@@ -29,12 +29,12 @@
                             </TablePane.Row>
                             <TablePane.Row>
                                 <Label text="Build:" styles="{padding:{top:0,bottom:0,left:50,right:0}}"/>
-                                <Label wtkx:id="buildLbl" />
+                                <Label bxml:id="buildLbl" />
                             </TablePane.Row>
 
                             <TablePane.Row height="-1" >
                                 <Label text="Build Date:" styles="{padding:{top:0,bottom:0,left:50,right:0}}"/>
-                                <Label wtkx:id="dateLbl" />
+                                <Label bxml:id="dateLbl" />
                             </TablePane.Row>
 
                         </rows>

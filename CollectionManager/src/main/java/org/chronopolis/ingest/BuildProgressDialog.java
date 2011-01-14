@@ -5,8 +5,9 @@
 package org.chronopolis.ingest;
 
 import java.io.IOException;
+import org.apache.pivot.beans.BXML;
+import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.serialization.SerializationException;
-import org.apache.pivot.wtk.ActivityIndicator;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.Display;
 import org.apache.pivot.wtk.Label;
@@ -14,8 +15,6 @@ import org.apache.pivot.wtk.Meter;
 import org.apache.pivot.wtk.Sheet;
 import org.apache.pivot.wtk.SheetCloseListener;
 import org.apache.pivot.wtk.Window;
-import org.apache.pivot.wtkx.WTKX;
-import org.apache.pivot.wtkx.WTKXSerializer;
 import org.chronopolis.ingest.pkg.ManifestBuildListener;
 import org.chronopolis.ingest.pkg.ManifestBuilder;
 
@@ -25,13 +24,13 @@ import org.chronopolis.ingest.pkg.ManifestBuilder;
  */
 public class BuildProgressDialog extends Sheet {
 
-    @WTKX
+    @BXML
     private Label fileLabel;
-    @WTKX
+    @BXML
     private Label totalLabel;
-    @WTKX
+    @BXML
     private Meter progressMeter;
-    @WTKX
+    @BXML
     private Meter fileMeter;
     private ManifestBuilder builder;
     private BuildListener listener = new BuildListener();
@@ -40,8 +39,8 @@ public class BuildProgressDialog extends Sheet {
 
         try {
 
-            WTKXSerializer serializer = new WTKXSerializer();
-            Component mainW = (Component) serializer.readObject(this, "buildProgressDialog.wtkx");
+            BXMLSerializer serializer = new BXMLSerializer();
+            Component mainW = (Component) serializer.readObject(BuildProgressDialog.class, "buildProgressDialog.bxml");
             serializer.bind(this);
             setContent(mainW);
 

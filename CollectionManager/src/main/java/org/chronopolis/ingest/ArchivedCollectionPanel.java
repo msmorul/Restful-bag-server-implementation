@@ -12,13 +12,16 @@ import edu.umiacs.ace.json.StatusBean.CollectionBean;
 import edu.umiacs.ace.json.SummaryBean;
 import edu.umiacs.ace.json.SummaryBean.Summary;
 import java.io.IOException;
+import org.apache.pivot.beans.BXML;
+import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.collections.Sequence.Tree.Path;
 import org.apache.pivot.serialization.SerializationException;
+import org.apache.pivot.util.MessageBus;
+import org.apache.pivot.util.MessageBusListener;
 import org.apache.pivot.wtk.ApplicationContext;
-import org.apache.pivot.wtk.ApplicationContextMessageListener;
 import org.apache.pivot.wtk.Border;
 import org.apache.pivot.wtk.ListView;
 import org.apache.pivot.wtk.ListViewSelectionListener;
@@ -30,8 +33,6 @@ import org.apache.pivot.wtk.TreeViewBranchListener;
 import org.apache.pivot.wtk.TreeViewSelectionListener;
 import org.apache.pivot.wtk.content.ListViewItemRenderer;
 import org.apache.pivot.wtk.content.TreeViewNodeRenderer;
-import org.apache.pivot.wtkx.WTKX;
-import org.apache.pivot.wtkx.WTKXSerializer;
 
 /**
  *
@@ -39,25 +40,25 @@ import org.apache.pivot.wtkx.WTKXSerializer;
  */
 public class ArchivedCollectionPanel extends Border {
 
-    @WTKX
+    @BXML
     private TreeView fileTreeView;
-    @WTKX
+    @BXML
     private Border fileDetailsPane;
-    @WTKX
+    @BXML
     private ListView reportListView;
-    @WTKX
+    @BXML
     private Border reportDetailsPane;
     private CollectionBean currentCollection = null;
 
     public ArchivedCollectionPanel() {
 
         try {
-            WTKXSerializer serializer = new WTKXSerializer();
-            TablePane mainW = (TablePane) serializer.readObject(this, "archivedCollectionPanel.wtkx");
+            BXMLSerializer serializer = new BXMLSerializer();
+            TablePane mainW = (TablePane) serializer.readObject(ArchivedCollectionPanel.class, "archivedCollectionPanel.bxml");
             serializer.bind(this);
             setContent(mainW);
 
-            ApplicationContext.subscribe(CollectionBean.class, new ApplicationContextMessageListener<CollectionBean>() {
+            MessageBus.subscribe(CollectionBean.class, new MessageBusListener<CollectionBean>() {
 
                 public void messageSent(CollectionBean t) {
                     currentCollection = t;

@@ -6,6 +6,8 @@ package org.chronopolis.ingest;
 
 import edu.umiacs.ace.json.StatusBean.CollectionBean;
 import java.io.IOException;
+import org.apache.pivot.beans.BXML;
+import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.collections.List;
 import org.apache.pivot.serialization.SerializationException;
 import org.apache.pivot.util.ListenerList;
@@ -17,8 +19,6 @@ import org.apache.pivot.wtk.ListButton;
 import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.content.ButtonData;
 import org.apache.pivot.wtk.content.ButtonDataRenderer;
-import org.apache.pivot.wtkx.WTKX;
-import org.apache.pivot.wtkx.WTKXSerializer;
 
 /**
  *
@@ -26,18 +26,18 @@ import org.apache.pivot.wtkx.WTKXSerializer;
  */
 public class ChooseCollectionDialog extends Dialog {
 
-    @WTKX
+    @BXML
     private ListButton collectionListButton;
-    @WTKX
+    @BXML
     private PushButton okBtn;
-    @WTKX
+    @BXML
     private PushButton cancelBtn;
 
     public ChooseCollectionDialog() {
         try {
 
-            WTKXSerializer serializer = new WTKXSerializer();
-            Component mainW = (Component) serializer.readObject(this, "chooseCollectionDialog.wtkx");
+            BXMLSerializer serializer = new BXMLSerializer();
+            Component mainW = (Component) serializer.readObject(ChooseCollectionDialog.class, "chooseCollectionDialog.bxml");
             serializer.bind(this);
             setContent(mainW);
 
