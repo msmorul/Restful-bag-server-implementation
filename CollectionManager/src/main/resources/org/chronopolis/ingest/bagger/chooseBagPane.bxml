@@ -1,9 +1,13 @@
-<TabPane  bxml:id="verifyPane" Accordion.label="1. Choose Bag Type"
-          xmlns:bxml="http://pivot.apache.org/bxml"
-          xmlns="org.apache.pivot.wtk"
-          xmlns:c="org.apache.pivot.wtk.content"
-          styles="{verticalSpacing:15,padding:15}">
+<TablePane  bxml:id="verifyPane" Accordion.label="1. Choose Bag Type"
+            xmlns:bxml="http://pivot.apache.org/bxml"
+            xmlns="org.apache.pivot.wtk"
+            xmlns:c="org.apache.pivot.wtk.content"
+            styles="{verticalSpacing:15,padding:15}">
 
+    <bxml:define>
+        <ButtonGroup bxml:id="outputGroup"/>
+        <ButtonGroup bxml:id="typeGroup"/>
+    </bxml:define>
     <columns>
         <TablePane.Column width="1*"/>
         <TablePane.Column width="1*"/>
@@ -115,4 +119,4 @@
             </BoxPane>
         </TablePane.Row>
     </rows>
-</TabPane>
+</TablePane>

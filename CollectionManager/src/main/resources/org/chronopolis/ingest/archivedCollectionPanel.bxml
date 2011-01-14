@@ -1,0 +1,122 @@
+<TablePane xmlns:bxml="http://pivot.apache.org/bxml"
+           xmlns="org.apache.pivot.wtk">
+
+    <columns>
+        <TablePane.Column width="1*"/>
+    </columns>
+    <rows>
+        <TablePane.Row height="-1" >
+            <TablePane styles="{padding:{left:10,top:10,right:15,bottom:15}}">
+                <columns>
+                    <TablePane.Column width="-1"/>
+                    <TablePane.Column width="1*"/>
+                </columns>
+                <rows>
+                    <TablePane.Row>
+                        <Label text="Name" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                        <BoxPane><Label textKey="name"/><Label text="/"/><Label textKey="group"/></BoxPane>
+                    </TablePane.Row>
+                    <TablePane.Row>
+                        <Label text="Errors" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                        <Label textKey="totalErrors"/>
+                    </TablePane.Row>
+                     <TablePane.Row>
+                        <Label text="Items" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                        <Label textKey="totalFiles"/>
+                    </TablePane.Row>
+                    <TablePane.Row>
+                        <Label text="Size" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                        <Label textKey="totalSize"/>
+                    </TablePane.Row>
+                </rows>
+            </TablePane>
+        </TablePane.Row>
+        <TablePane.Row height="1*">
+            <Border styles="{padding:{left:10,right:10,top:10,bottom:10},thickness:0}">
+                <content>
+                    <TabPane styles="{activeTabColor:'#FFFFFF'}">
+                        <tabs>
+                            <SplitPane splitRatio="0.43" TabPane.tabData="Browse">
+                                <left>
+                                    <ScrollPane styles="{backgroundColor:'#fafafa'}">
+                                        <view>
+                                            <TreeView styles="{backgroundColor:'#fafafa'}" bxml:id="fileTreeView"/>
+                                        </view>
+                                    </ScrollPane>
+                                </left>
+                                <right>
+                                    <Border bxml:id="fileDetailsPane">
+                                        <content>
+                                            <TablePane styles="{padding:{left:10,top:10,right:15,bottom:15}}">
+                                                <columns>
+                                                    <TablePane.Column width="-1"/>
+                                                    <TablePane.Column width="1*"/>
+                                                </columns>
+                                                <rows>
+                                                    <TablePane.Row>
+                                                        <Label text="Name" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                                                        <Label textKey="path"/>
+                                                    </TablePane.Row>
+                                                    <TablePane.Row>
+                                                        <Label text="Digest" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                                                        <Label textKey="fileDigest"/>
+                                                    </TablePane.Row>
+                                                    <TablePane.Row>
+                                                        <Label text="Size" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                                                        <Label textKey="size"/>
+                                                    </TablePane.Row>
+                                                    <TablePane.Row>
+                                                        <Label text="State" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                                                        <Label textKey="state"/>
+                                                    </TablePane.Row>
+                                                </rows>
+                                            </TablePane>
+                                        </content>
+                                    </Border>
+                                </right>
+                            </SplitPane>
+
+                            <SplitPane splitRatio="0.43" TabPane.tabData="Reports">
+                                <left>
+                                    <ScrollPane styles="{backgroundColor:'#fafafa'}">
+                                        <view>
+                                            <ListView styles="{backgroundColor:'#fafafa'}" bxml:id="reportListView"/>
+                                        </view>
+                                    </ScrollPane>
+                                </left>
+                                <right>
+                                    <Border bxml:id="reportDetailsPane">
+                                        <content>
+                                            <TablePane styles="{padding:{left:10,top:10,right:15,bottom:15}}">
+                                                <columns>
+                                                    <TablePane.Column width="-1"/>
+                                                    <TablePane.Column width="1*"/>
+                                                </columns>
+                                                <rows>
+                                                    <TablePane.Row>
+                                                        <Label text="Name" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                                                        <Label textKey="reportName"/>
+                                                    </TablePane.Row>
+                                                    <TablePane.Row>
+                                                        <Label text="Start" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                                                        <Label textKey="start"/>
+                                                    </TablePane.Row>
+                                                    <TablePane.Row>
+                                                        <Label text="End" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                                                        <Label textKey="end"/>
+                                                    </TablePane.Row>
+                                                    
+                                                </rows>
+                                            </TablePane>
+                                        </content>
+                                    </Border>
+                                </right>
+                            </SplitPane>
+
+                        </tabs>
+                    </TabPane>
+                </content>
+            </Border>
+        </TablePane.Row>
+    </rows>
+</TablePane>
