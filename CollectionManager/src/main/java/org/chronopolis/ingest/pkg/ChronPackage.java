@@ -188,6 +188,11 @@ public class ChronPackage implements Cloneable {
         return listeners;
     }
 
+    @Override
+    public String toString() {
+        return "name: " + name + " digest: " + digest;
+    }
+
     public class Statistics {
 
         private long size = 0;

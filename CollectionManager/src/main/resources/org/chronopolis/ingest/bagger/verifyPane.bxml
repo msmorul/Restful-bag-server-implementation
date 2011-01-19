@@ -1,9 +1,10 @@
-<TabPane  bxml:id="verifyPane" Accordion.headerData="Verify Bag Creation"
+<TabPane  bxml:id="verifyPane"
           xmlns:bxml="http://pivot.apache.org/bxml"
           xmlns="org.apache.pivot.wtk"
           xmlns:c="org.apache.pivot.wtk.content">
     <tabs>
-        <TablePane TabPane.tabData="Overview &amp; Submit" styles="{verticalSpacing:6,padding:10}">
+        <TablePane TabPane.tabData="Overview &amp; Submit"
+                   styles="{verticalSpacing:6,padding:10}">
             <columns>
                 <TablePane.Column width="150"/>
                 <TablePane.Column width="1*"/>
@@ -18,7 +19,8 @@
                     <Label bxml:id="vrfyTypeLbl" />
                 </TablePane.Row>
                 <TablePane.Row height="-1">
-                    <Label text="URL Pattern:" bxml:id="vrfyPatternHdr" styles="{font:'Arial bold 14'}"/>
+                    <Label text="URL Pattern:" bxml:id="vrfyPatternHdr"
+                           styles="{font:'Arial bold 14'}"/>
                     <Label bxml:id="vrfyPatternLbl" />
                 </TablePane.Row>
                 <TablePane.Row height="-1">
@@ -60,18 +62,16 @@
 
                 <!--<TablePane.Row height="1*"><BoxPane/></TablePane.Row>-->
                 <TablePane.Row height="-1" >
-                    <BoxPane TablePane.columnSpan="2" styles="{horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
-                        <PushButton preferredWidth="50" bxml:id="verifyPreviousBtn">
+                    <BoxPane TablePane.columnSpan="2"
+                             styles="{horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
+                        <PushButton preferredWidth="50" bxml:id="previousBtn">
                             <buttonData>
                                 <c:ButtonData icon="@go-previous.png" />
                             </buttonData>
-                            <buttonPressListeners>
-                                function buttonPressed(button) {
-                                accordion.setSelectedIndex(accordion.getSelectedIndex() -1 );
-                                }
-                            </buttonPressListeners>
+
                         </PushButton>
-                        <PushButton tooltipText="Create and transmit/save bag" bxml:id="okBtn" preferredWidth="50">
+                        <PushButton tooltipText="Create and transmit/save bag"
+                                    bxml:id="nextBtn" preferredWidth="50">
                             <buttonData>
                                 <c:ButtonData icon="@package-x-generic.png" />
                             </buttonData>

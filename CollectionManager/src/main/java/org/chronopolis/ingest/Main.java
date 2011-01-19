@@ -207,6 +207,8 @@ public class Main implements Application {
 
     public void startup(Display dspl, Map<String, String> map) throws Exception {
         provider = System.getProperty("jnlp.provider");
+        if (provider == null)
+            provider = "";
         String url = System.getProperty("jnlp.ingest.url");
         defaultURLPattern = System.getProperty("jnlp.urlpattern");
         if (System.getProperty("jnlp.defaultdir") != null && new File(System.getProperty("jnlp.defaultdir")).isDirectory()) {
@@ -302,6 +304,7 @@ public class Main implements Application {
                 if (pendingListView.getSelectedItem() != null) {
                     MessageBus.sendMessage(pendingListView.getSelectedItem());
 //                    createbagBtn.setEnabled(!((ChronPackage) pendingListView.getSelectedItem()).isReadOnly());
+                    
                     saveBagBtn.setEnabled(true);
                     createBagBtn.setEnabled(true);
                 } else {
@@ -362,17 +365,18 @@ public class Main implements Application {
         });
 
 //        createBagDialog.getAcceptButtonPressListeners().add(new TansferBagListener());
+        
         mainW.open(dspl);
 
-        ResourceBundle bundle = java.util.ResourceBundle.getBundle("version");
-        buildLbl.setText(bundle.getString("build.num"));
-        dateLbl.setText(bundle.getString("build.date"));
+//        ResourceBundle bundle = java.util.ResourceBundle.getBundle("version");
+//        buildLbl.setText(bundle.getString("build.num"));
+//        dateLbl.setText(bundle.getString("build.date"));
         // Pretty picture in the about box ;) Better than pemulis' twitter feed
-        if (System.currentTimeMillis() % 2 == 1) {
-            aboutImage.setImage(Main.class.getResource("trash.jpg"));
-        } else {
-            aboutImage.setImage(Main.class.getResource("barge.jpg"));
-        }
+//        if (System.currentTimeMillis() % 2 == 1) {
+//            aboutImage.setImage(Main.class.getResource("trash.jpg"));
+//        } else {
+//            aboutImage.setImage(Main.class.getResource("barge.jpg"));
+//        }
     }
 
     private List<CollectionBean> updateCollectionList(PartnerSite site) {
@@ -393,7 +397,7 @@ public class Main implements Application {
             }
             return cbList;
         } catch (Exception e) {
-
+            e.printStackTrace();
             Alert.alert("Error reading collections " + e.getMessage(), mainW);
             return null;
         }

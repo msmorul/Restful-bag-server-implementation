@@ -1,4 +1,4 @@
-<TablePane  bxml:id="verifyPane" Accordion.headerData="1. Choose Bag Type"
+<TablePane  bxml:id="verifyPane"
             xmlns:bxml="http://pivot.apache.org/bxml"
             xmlns="org.apache.pivot.wtk"
             xmlns:c="org.apache.pivot.wtk.content"
@@ -25,18 +25,7 @@
                     <buttonData>
                         <c:ButtonData icon="@chronopolisTransfer.png" />
                     </buttonData>
-                    <buttonStateListeners>
-                        function stateChanged(button, oldstate)
-                        {
-                        if (button.getState() == "SELECTED")
-                        {
-                        accordion.getPanels().remove(fillerPane);
-                        accordion.getPanels().remove(localFilePane);
-                        accordion.getPanels().insert(remoteFilePane,1);
-                        remoteFilePane.setEnabled(false);
-                        }
-                        }
-                    </buttonStateListeners>
+                    
                 </PushButton>
                 <Label text="Chronopolis"/>
             </BoxPane>
@@ -47,18 +36,7 @@
                     <buttonData>
                         <c:ButtonData icon="@localBag.png" />
                     </buttonData>
-                    <buttonStateListeners>
-                        function stateChanged(button, oldstate)
-                        {
-                        if (button.getState() == "SELECTED")
-                        {
-                        accordion.getPanels().remove(fillerPane);
-                        accordion.getPanels().remove(remoteFilePane);
-                        accordion.getPanels().insert(localFilePane,1);
-                        localFilePane.setEnabled(false);
-                        }
-                        }
-                    </buttonStateListeners>
+
                 </PushButton>
                 <Label text="Local Bag"/>
             </BoxPane>
@@ -76,16 +54,7 @@
                     <buttonData>
                         <c:ButtonData icon="@localBag.png" />
                     </buttonData>
-                    <buttonStateListeners>
-                        function stateChanged(button, oldstate)
-                        {
-                        if (button.getState() == "SELECTED")
-                        {
-                        accordion.getPanels().insert(holeyBagPane,accordion.getPanels().indexOf(verifyPane) );
-                        holeyBagPane.setEnabled(false);
-                        }
-                        }
-                    </buttonStateListeners>
+
                 </PushButton>
                 <Label text="Holey Bag"/>
             </BoxPane>
@@ -97,20 +66,15 @@
                     <buttonData>
                         <c:ButtonData icon="@localBag.png" />
                     </buttonData>
-                    <buttonStateListeners>
-                        function stateChanged(button, oldstate)
-                        {
-                        accordion.getPanels().remove(holeyBagPane);
-                        }
-                    </buttonStateListeners>
+
                 </PushButton>
                 <Label text="Filled Bag"/>
             </BoxPane>
         </TablePane.Row>
         <TablePane.Row height="-1" >
             <BoxPane TablePane.columnSpan="2" styles="{verticalAlignment:'center',horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
-                <Label bxml:id="pane1Message"/>
-                <PushButton bxml:id="pane1NextBtn" preferredWidth="50">
+                <Label bxml:id="errorMessage"/>
+                <PushButton bxml:id="nextBtn" preferredWidth="50">
                     <buttonData>
                         <c:ButtonData icon="@go-next.png" />
                     </buttonData>

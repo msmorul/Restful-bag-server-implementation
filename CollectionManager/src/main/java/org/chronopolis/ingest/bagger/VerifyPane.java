@@ -6,36 +6,46 @@ package org.chronopolis.ingest.bagger;
 
 import edu.umiacs.ace.json.Strings;
 import java.io.File;
-import java.io.IOException;
 import org.apache.pivot.beans.BXML;
-import org.apache.pivot.beans.BXMLSerializer;
 import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.List;
-import org.apache.pivot.collections.Map;
-import org.apache.pivot.collections.MapListener;
-import org.apache.pivot.serialization.SerializationException;
-import org.apache.pivot.util.ListenerList;
+import org.apache.pivot.util.Vote;
+import org.apache.pivot.wtk.Accordion;
 import org.apache.pivot.wtk.Border;
-import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.ListView;
-import org.apache.pivot.wtk.PushButton;
 import org.apache.pivot.wtk.TableView;
 import org.apache.pivot.wtk.TextInput;
-import org.apache.pivot.wtk.content.ButtonData;
 import org.chronopolis.ingest.bagger.BagModel.BagType;
 import org.chronopolis.ingest.bagger.BagModel.IngestionType;
 import org.chronopolis.ingest.pkg.BagWriter;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.UrlFormatter;
+import org.apache.log4j.Logger;
+import org.apache.pivot.util.concurrent.Task;
+import org.apache.pivot.util.concurrent.TaskExecutionException;
+import org.apache.pivot.util.concurrent.TaskListener;
+import org.apache.pivot.wtk.ActivityIndicator;
+import org.apache.pivot.wtk.Alert;
+import org.apache.pivot.wtk.BoxPane;
+import org.apache.pivot.wtk.Button;
+import org.apache.pivot.wtk.ButtonPressListener;
+import org.apache.pivot.wtk.ComponentListener;
+import org.apache.pivot.wtk.MessageType;
+import org.apache.pivot.wtk.Orientation;
+import org.apache.pivot.wtk.PushButton;
+import org.apache.pivot.wtk.Sheet;
+import org.apache.pivot.wtk.SheetCloseListener;
+import org.chronopolis.ingest.Util;
 
 /**
  *
  * @author toaster
  */
-public class VerifyPane extends Border {
+public class VerifyPane extends BasePanel {
 
+    private static final Logger LOG = Logger.getLogger(VerifyPane.class);
     @BXML
     private Label vrfyDestLbl;
     @BXML
@@ -59,8 +69,6 @@ public class VerifyPane extends Border {
     @BXML
     private Border vrfyUnreadablePane;
     @BXML
-    private PushButton okBtn;
-    @BXML
     private TableView metadataTable;
     @BXML
     private TextInput vrfyFetchTxt;
@@ -70,46 +78,130 @@ public class VerifyPane extends Border {
     private TextInput vrfyManifestTxt;
     @BXML
     private TableView vrfyDirectoryTable;
-    private BagModel model;
     private BagModelListener listener = new MyListener();
     private List<MetadataPair> metadataTableModel = new ArrayList<MetadataPair>();
+    private Boolean runVerify;
+    private StatisticsStatusSheet statusSheet = new StatisticsStatusSheet();
+    private ButtonPressListener statsSheetCloseListener = new ButtonPressListener() {
+
+        public void buttonPressed(Button button) {
+            runVerify = false;
+        }
+    };
+    private Task<ChronPackage.Statistics> updateTask = new Task<ChronPackage.Statistics>() {
+
+        @Override
+        public ChronPackage.Statistics execute() throws TaskExecutionException {
+            try {
+                return getBagModel().getChronPackage().createStatistics(
+                        new ChronPackage.AbortScanNotifier() {
+
+                            public boolean aborted() {
+                                return !runVerify;
+                            }
+                        });
+            } finally {
+                runVerify = false;
+            }
+        }
+    };
+    private TaskListener<ChronPackage.Statistics> taskListener = new TaskListener<ChronPackage.Statistics>() {
+
+        public void taskExecuted(Task<ChronPackage.Statistics> task) {
+            ChronPackage.Statistics stats = task.getResult();
+            if (stats != null) {
+                vrfyFilesLbl.setText(Long.toString(stats.getFiles()));
+                vrfyDirectoriesLbl.setText(Long.toString(stats.getDirectories()));
+                vrfySizeLbl.setText(Util.formatSize(stats.getSize()));
+                vrfyUnreadableLbl.setText(Long.toString(stats.getUnreadable()));
+                vrfyUnreadablePane.setVisible(stats.getUnreadable() > 0);
+                vrfyUnreadableList.setListData(stats.getUnreadableFiles());
+            } else {
+                vrfyFilesLbl.setText("scan aborted");
+                vrfyDirectoriesLbl.setText("scan aborted");
+                vrfySizeLbl.setText("scan aborted");
+                vrfyUnreadableLbl.setText("scan aborted");
+                vrfyUnreadablePane.setVisible(false);
+            }
+            setErrorMessage(null);
+            statusSheet.close(true);
+        }
+
+        public void executeFailed(Task<ChronPackage.Statistics> task) {
+            setErrorMessage("Reading Package Failed");
+            if (!runVerify) {
+
+                Alert.alert(MessageType.ERROR, "Could not scan bag", VerifyPane.this.getWindow());
+            }
+            statusSheet.close(true);
+        }
+    };
+    private ComponentListener openListener = new ComponentListener.Adapter() {
+
+        @Override
+        public void visibleChanged(Component component) {
+
+            if (component.isVisible() && runVerify) {
+
+                statusSheet.open(VerifyPane.this.getWindow(), new SheetCloseListener() {
+
+                    public void sheetClosed(Sheet sheet) {
+
+                        if (!sheet.getResult()) {
+                            runVerify = false;
+                        }
+                    }
+                });
+                updateTask.execute(taskListener);
+            }
+        }
+    };
 
     public VerifyPane() {
-
-        try {
-
-            BXMLSerializer serializer = new BXMLSerializer();
-            Component pkgPane = (Component) serializer.readObject(
-                    VerifyPane.class, "verifyPane.bxml");
-            serializer.bind(this);
-            setContent(pkgPane);
-            metadataTable.setTableData(metadataTableModel);
-
-        } catch (SerializationException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        super("verifyPane.bxml");
+        Accordion.setHeaderData(this, "Verify Bag Contents");
+        metadataTable.setTableData(metadataTableModel);
+        getComponentListeners().add(openListener);
+        statusSheet.getCloseButtonPressListeners().add(statsSheetCloseListener);
     }
 
-    public void setModel(BagModel model) {
-        if (this.model != null) {
-            this.model.getModelListenerList().remove(listener);
+    @Override
+    protected void modelChanged(BagModel old) {
+        if (old != null) {
+            old.getModelListenerList().remove(listener);
         }
-        this.model = model;
-        if (this.model != null) {
-            this.model.getModelListenerList().add(listener);
+        BagModel model = getBagModel();
+        if (model != null) {
+            model.getModelListenerList().add(listener);
         }
+
+        runVerify = true;
         updateBagType(model);
         updateUrl(model);
+        updateLocation(model);
+        updateIngestionType(model);
+        updateMetadata(model);
+        updateDirectoryList(model);
     }
 
-    public ListenerList<ButtonPressListener> getAcceptButtonPressListeners() {
-        return okBtn.getButtonPressListeners();
+    public Vote isComplete() {
+        return Vote.APPROVE;
     }
 
-    public void setAcceptButtonData(ButtonData data) {
-        okBtn.setButtonData(data);
+    private void updateDirectoryList(BagModel model) {
+        ChronPackage chronPackage = model.getChronPackage();
+
+        vrfyManifestTxt.setText("9a9a-" + chronPackage.getDigest()
+                + "-digest-9a9a  data/" + chronPackage.findRelativeFirstFile());
+
+        List<MetadataPair> fileTableModel = new ArrayList<MetadataPair>();
+
+        for (File f : chronPackage.getRootList()) {
+            MetadataPair mp = new MetadataPair(f.getName(), f.getPath());
+            fileTableModel.add(mp);
+        }
+
+        vrfyDirectoryTable.setTableData(fileTableModel);
     }
 
     private void updateBagType(BagModel model) {
@@ -132,17 +224,20 @@ public class VerifyPane extends Border {
     }
 
     private void updateUrl(BagModel model) {
-        if (model == null || Strings.isEmpty(model.getUrlPattern())) {
-            vrfyPatternLbl.setText("");
-            vrfyFetchTxt.setText("");
-        } else {
+        vrfyPatternLbl.setText("");
+        vrfyFetchTxt.setText("");
+
+        if (model != null && !Strings.isEmpty(model.getUrlPattern())) {
+
             UrlFormatter fmt = new UrlFormatter(model.getChronPackage(),
                     model.getUrlPattern());
             String firstFile = model.getChronPackage().findRelativeFirstFile();
             vrfyPatternLbl.setText(model.getUrlPattern());
-            vrfyFetchTxt.setText(fmt.format(firstFile) + "  "
-                    + model.getChronPackage().findFirstFile().length()
-                    + "  data/" + firstFile);
+            if (firstFile != null) {
+                vrfyFetchTxt.setText(fmt.format(firstFile) + "  "
+                        + model.getChronPackage().findFirstFile().length()
+                        + "  data/" + firstFile);
+            }
         }
     }
 
@@ -153,63 +248,46 @@ public class VerifyPane extends Border {
             vrfyDestLbl.setText("None Selected");
         }
     }
-    private MapListener metadatalistener = new MapListener.Adapter<String,String>() {
 
-        @Override
-        public void mapCleared(Map map) {
-            metadataTableModel.clear();
-            metadataTableModel.add(new MetadataPair(BagWriter.INFO_BAGGING_DATE,
-                    "Calculated on transfer"));
-            metadataTableModel.add(new MetadataPair(BagWriter.INFO_PAYLOAD_OXUM,
-                    "Calculated on transfer"));
-            metadataTableModel.add(new MetadataPair(BagWriter.INFO_BAG_SIZE,
-                    "Calculated on transfer"));
+    private void updateLocation(BagModel model) {
+        vrfyLocationLbl.setText("");
+        if (model != null) {
+            if (model.getIngestionType() == IngestionType.LOCAL
+                    && model.getSaveFile() != null) {
+                vrfyLocationLbl.setText(model.getSaveFile().getPath());
+            } else if (model.getIngestionType() == IngestionType.CHRONOPOLIS
+                    && model.getChronopolisBag() != null) {
+                vrfyLocationLbl.setText(model.getChronopolisBag());
+            }
+        }
+    }
+
+    private void updateMetadata(BagModel model) {
+        metadataTableModel.clear();
+        for (String key : model.getChronPackage().getMetadataMap()) {
+            String value = model.getChronPackage().getMetadataMap().get(key);
+            metadataTableModel.add(new MetadataPair(key, value));
         }
 
-        @Override
-        public void valueAdded(Map<String,String> map, String key) {
-            metadataTableModel.add(new MetadataPair(key, map.get(key)));
-        }
-
-        @Override
-        public void valueRemoved(Map map, String key, String value) {
-            metadataTableModel.remove(new MetadataPair(key, value));
-        }
-
-        @Override
-        public void valueUpdated(Map<String,String> map, String key,
-                String previousValue) {
-            MetadataPair mp = new MetadataPair(key, previousValue);
-            int location = metadataTableModel.indexOf(mp);
-            MetadataPair regPair = metadataTableModel.get(location);
-            regPair.setValue(map.get(key));
-        }
-    };
+        metadataTableModel.add(new MetadataPair(BagWriter.INFO_BAGGING_DATE,
+                "Calculated on transfer"));
+        metadataTableModel.add(new MetadataPair(BagWriter.INFO_PAYLOAD_OXUM,
+                "Calculated on transfer"));
+        metadataTableModel.add(new MetadataPair(BagWriter.INFO_BAG_SIZE,
+                "Calculated on transfer"));
+    }
 
     private class MyListener implements BagModelListener {
 
         public void chronPackageChanged(BagModel model, ChronPackage oldpackage) {
-            if (oldpackage != null) {
-                oldpackage.getMetadataMap().getMapListeners().remove(metadatalistener);
-            }
-            metadataTableModel.clear();
-            for (String key : model.getChronPackage().getMetadataMap()) {
-                String value = model.getChronPackage().getMetadataMap().get(key);
-                metadataTableModel.add(new MetadataPair(key, value));
-            }
-
-            metadataTableModel.add(new MetadataPair(BagWriter.INFO_BAGGING_DATE,
-                    "Calculated on transfer"));
-            metadataTableModel.add(new MetadataPair(BagWriter.INFO_PAYLOAD_OXUM,
-                    "Calculated on transfer"));
-            metadataTableModel.add(new MetadataPair(BagWriter.INFO_BAG_SIZE,
-                    "Calculated on transfer"));
-
-            model.getChronPackage().getMetadataMap().getMapListeners().add(metadatalistener);
+            //TODO: Should we deep-bind listeners to chron package items
+            updateMetadata(model);
+            updateDirectoryList(model);
         }
 
         public void ingestionTypeChanged(BagModel model, IngestionType oldType) {
             updateIngestionType(model);
+            updateLocation(model);
         }
 
         public void bagTypeChanged(BagModel model, BagType oldType) {
@@ -221,11 +299,11 @@ public class VerifyPane extends Border {
         }
 
         public void saveFileChanged(BagModel model, File oldFile) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            updateLocation(model);
         }
 
-        public void chronopoligBagChanged(BagModel mode, String oldbagname) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public void chronopoligBagChanged(BagModel model, String oldbagname) {
+            updateLocation(model);
         }
     }
 }

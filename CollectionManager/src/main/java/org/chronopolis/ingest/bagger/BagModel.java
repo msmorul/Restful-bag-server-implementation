@@ -7,6 +7,7 @@ package org.chronopolis.ingest.bagger;
 import java.io.File;
 import org.apache.pivot.util.ListenerList;
 import org.chronopolis.ingest.pkg.ChronPackage;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -48,6 +49,7 @@ public class BagModel {
     private File saveFile;
     private String chronopolisBag;
     private BagModelListenerList listenerList = new BagModelListenerList();
+    private static final Logger LOG = Logger.getLogger(BagModel.class);
 
     public ListenerList<BagModelListener> getModelListenerList() {
         return listenerList;
@@ -78,36 +80,42 @@ public class BagModel {
     }
 
     public void setChronopolisBag(String chronopolisBag) {
+        LOG.trace("BagModel/chronopolisBag: " + chronopolisBag);
         String old = this.chronopolisBag;
         this.chronopolisBag = chronopolisBag;
         listenerList.chronopolisBagChanged(this, old);
     }
 
     public void setIngestionType(IngestionType ingestionType) {
+        LOG.trace("BagModel/ingestionType: " + ingestionType);
         IngestionType old = this.ingestionType;
         this.ingestionType = ingestionType;
         listenerList.ingestionTypeChanged(this, old);
     }
 
     public void setBagType(BagType bagType) {
+        LOG.trace("BagModel/bagType: " + bagType);
         BagType old = this.bagType;
         this.bagType = bagType;
         listenerList.bagTypeChanged(this, old);
     }
 
     public void setChronPackage(ChronPackage chronPackage) {
+        LOG.trace("BagModel/chronPacakge: " + chronPackage);
         ChronPackage old = this.chronPackage;
         this.chronPackage = chronPackage;
         listenerList.chronPackageChanged(this, old);
     }
 
     public void setSaveFile(File saveFile) {
+        LOG.trace("BagModel/saveFile: " + saveFile);
         File old = this.saveFile;
         this.saveFile = saveFile;
         listenerList.saveFileChanged(this, old);
     }
 
     public void setUrlPattern(String urlPattern) {
+        LOG.trace("BagModel/urlPattern: " + urlPattern);
         String old = this.urlPattern;
         this.urlPattern = urlPattern;
         listenerList.urlPatternChanged(this, old);
@@ -116,38 +124,56 @@ public class BagModel {
     public class BagModelListenerList extends ListenerList<BagModelListener> {
 
         void chronopolisBagChanged(BagModel model, String old) {
-            for (BagModelListener l : listenerList) {
-                l.chronopoligBagChanged(model, old);
+            if (model.getChronopolisBag() != null
+                    && !model.getChronopolisBag().equals(old)) {
+                for (BagModelListener l : listenerList) {
+                    l.chronopoligBagChanged(model, old);
+                }
             }
         }
 
         void ingestionTypeChanged(BagModel model, IngestionType old) {
-            for (BagModelListener l : listenerList) {
-                l.ingestionTypeChanged(model, old);
+            if (model.getIngestionType() != null
+                    && !model.getIngestionType().equals(old)) {
+                for (BagModelListener l : listenerList) {
+                    l.ingestionTypeChanged(model, old);
+                }
             }
         }
 
         void bagTypeChanged(BagModel model, BagType old) {
-            for (BagModelListener l : listenerList) {
-                l.bagTypeChanged(model, bagType);
+            if (model.getBagType() != null 
+                    && !model.getBagType().equals(old)) {
+                for (BagModelListener l : listenerList) {
+                    l.bagTypeChanged(model, old);
+                }
             }
         }
 
         void chronPackageChanged(BagModel model, ChronPackage old) {
-            for (BagModelListener l : listenerList) {
-                l.chronPackageChanged(model, old);
+            if (model.getChronPackage() != null
+                    && !model.getChronPackage().equals(old)) {
+                for (BagModelListener l : listenerList) {
+                    l.chronPackageChanged(model, old);
+                }
             }
         }
 
         void saveFileChanged(BagModel model, File old) {
-            for (BagModelListener l : listenerList) {
-                l.saveFileChanged(model, old);
+            if (model.getSaveFile() != null
+                    && !model.getSaveFile().equals(old)) {
+                for (BagModelListener l : listenerList) {
+                    l.saveFileChanged(model, old);
+                }
             }
         }
 
         void urlPatternChanged(BagModel model, String old) {
-            for (BagModelListener l : this) {
-                l.urlPatternChanged(model, old);
+            if (model.getUrlPattern() != null
+                    && !model.getUrlPattern().equals(old)) {
+                for (BagModelListener l : this) {
+                    l.urlPatternChanged(model, old);
+                }
             }
         }
     }
