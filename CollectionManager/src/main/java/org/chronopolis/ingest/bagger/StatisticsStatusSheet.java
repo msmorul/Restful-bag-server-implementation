@@ -8,7 +8,6 @@ package org.chronopolis.ingest.bagger;
 import org.apache.pivot.util.ListenerList;
 import org.apache.pivot.wtk.ActivityIndicator;
 import org.apache.pivot.wtk.BoxPane;
-import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.Orientation;

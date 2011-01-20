@@ -21,6 +21,7 @@ import org.chronopolis.ingest.bagger.BagModel.BagType;
 import org.chronopolis.ingest.bagger.BagModel.IngestionType;
 import org.chronopolis.ingest.pkg.BagWriter;
 import org.chronopolis.ingest.pkg.ChronPackage;
+import org.chronopolis.ingest.pkg.ChronPackage.Statistics;
 import org.chronopolis.ingest.pkg.UrlFormatter;
 import org.apache.log4j.Logger;
 import org.apache.pivot.util.concurrent.Task;
@@ -109,6 +110,7 @@ public class VerifyPane extends BasePanel {
 
         public void taskExecuted(Task<ChronPackage.Statistics> task) {
             ChronPackage.Statistics stats = task.getResult();
+            getBagModel().setBagStats(stats);
             if (stats != null) {
                 vrfyFilesLbl.setText(Long.toString(stats.getFiles()));
                 vrfyDirectoriesLbl.setText(Long.toString(stats.getDirectories()));
@@ -278,6 +280,9 @@ public class VerifyPane extends BasePanel {
     }
 
     private class MyListener implements BagModelListener {
+
+        public void bagStatsChanged(BagModel model, Statistics old) {
+        }
 
         public void chronPackageChanged(BagModel model, ChronPackage oldpackage) {
             //TODO: Should we deep-bind listeners to chron package items

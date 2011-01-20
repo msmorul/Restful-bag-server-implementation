@@ -145,6 +145,12 @@ public class CreateBagDialog extends Dialog {
             panelAccordion.setSelectedIndex(panelAccordion.getSelectedIndex() + 1);
         }
     };
+    private ButtonPressListener finishBagButtonPressListener = new ButtonPressListener() {
+
+        public void buttonPressed(Button button) {
+            CreateBagDialog.this.close(true);
+        }
+    };
 
     public CreateBagDialog() {
 
@@ -154,7 +160,7 @@ public class CreateBagDialog extends Dialog {
         choosePane.getNextButtonPressListeners().add(nextButtonListener);
         panelAccordion.getPanels().add(choosePane);
 
-//        verifyPane.getNextButtonPressListeners().add(nextButtonListener);
+        verifyPane.getNextButtonPressListeners().add(finishBagButtonPressListener);
         verifyPane.getPreviousButtonPressListeners().add(prevButtonListener);
         panelAccordion.getPanels().add(verifyPane);
 
@@ -163,7 +169,6 @@ public class CreateBagDialog extends Dialog {
 
         setUrlPattern.getNextButtonPressListeners().add(nextButtonListener);
         setUrlPattern.getPreviousButtonPressListeners().add(prevButtonListener);
-
 
         MessageBus.subscribe(ChronPackage.class, messagebuslistener);
 

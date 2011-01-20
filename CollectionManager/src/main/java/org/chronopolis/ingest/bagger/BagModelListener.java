@@ -8,6 +8,7 @@ import java.io.File;
 import org.chronopolis.ingest.bagger.BagModel.BagType;
 import org.chronopolis.ingest.bagger.BagModel.IngestionType;
 import org.chronopolis.ingest.pkg.ChronPackage;
+import org.chronopolis.ingest.pkg.ChronPackage.Statistics;
 
 /**
  *
@@ -27,8 +28,13 @@ public interface BagModelListener {
 
     public void chronopoligBagChanged(BagModel mode, String oldbagname);
 
+    public void bagStatsChanged(BagModel model, ChronPackage.Statistics old);
+
     public class Adaptor implements BagModelListener
     {
+
+        public void bagStatsChanged(BagModel model, Statistics old) {
+        }
 
         public void chronPackageChanged(BagModel model, ChronPackage oldpackage) {
         }

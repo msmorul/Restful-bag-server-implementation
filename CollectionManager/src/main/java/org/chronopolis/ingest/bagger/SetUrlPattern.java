@@ -78,7 +78,6 @@ public class SetUrlPattern extends BasePanel {
                 HttpURLConnection c = (HttpURLConnection) u.openConnection();
                 c.setConnectTimeout(2000);
                 try {
-//                    int code = c.getResponseCode();
                     if (c.getResponseCode() < 200 || c.getResponseCode() > 299) {
                         Alert.alert(MessageType.ERROR, "Transfer error HTTP/"
                                 + c.getResponseCode() + " " + c.getResponseMessage(), button.getWindow());

@@ -8,6 +8,7 @@ import java.io.File;
 import org.apache.pivot.util.ListenerList;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.apache.log4j.Logger;
+import org.chronopolis.ingest.pkg.ChronPackage.Statistics;
 
 /**
  *
@@ -49,10 +50,15 @@ public class BagModel {
     private File saveFile;
     private String chronopolisBag;
     private BagModelListenerList listenerList = new BagModelListenerList();
+    private Statistics bagStats = null;
     private static final Logger LOG = Logger.getLogger(BagModel.class);
 
     public ListenerList<BagModelListener> getModelListenerList() {
         return listenerList;
+    }
+
+    public Statistics getBagStats() {
+        return bagStats;
     }
 
     public String getChronopolisBag() {
@@ -77,6 +83,13 @@ public class BagModel {
 
     public IngestionType getIngestionType() {
         return ingestionType;
+    }
+
+    public void setBagStats(Statistics bagStats) {
+        LOG.debug("BagModel/stats: " + bagStats.getSize());
+        Statistics old = this.bagStats;
+        this.bagStats = bagStats;
+        listenerList.bagStatsChanged(this,old);
     }
 
     public void setChronopolisBag(String chronopolisBag) {
@@ -123,6 +136,15 @@ public class BagModel {
 
     public class BagModelListenerList extends ListenerList<BagModelListener> {
 
+        void bagStatsChanged(BagModel model, Statistics old) {
+            if (model.getBagStats() != null
+                    && !model.getBagStats().equals(old)) {
+                for (BagModelListener l : listenerList) {
+                    l.bagStatsChanged(model, old);
+                }
+            }
+        }
+
         void chronopolisBagChanged(BagModel model, String old) {
             if (model.getChronopolisBag() != null
                     && !model.getChronopolisBag().equals(old)) {
@@ -142,7 +164,7 @@ public class BagModel {
         }
 
         void bagTypeChanged(BagModel model, BagType old) {
-            if (model.getBagType() != null 
+            if (model.getBagType() != null
                     && !model.getBagType().equals(old)) {
                 for (BagModelListener l : listenerList) {
                     l.bagTypeChanged(model, old);
