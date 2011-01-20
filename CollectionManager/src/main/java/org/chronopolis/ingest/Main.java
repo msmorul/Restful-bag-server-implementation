@@ -21,32 +21,20 @@ import org.apache.pivot.collections.ListListener;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.util.MessageBus;
-import org.apache.pivot.util.MessageBusListener;
 import org.apache.pivot.wtk.Alert;
 import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.ApplicationContext;
-import org.apache.pivot.wtk.Button;
-import org.apache.pivot.wtk.ButtonPressListener;
-import org.apache.pivot.wtk.Component;
 import org.apache.pivot.wtk.DesktopApplicationContext;
 import org.apache.pivot.wtk.Display;
-import org.apache.pivot.wtk.ImageView;
-import org.apache.pivot.wtk.Label;
 import org.apache.pivot.wtk.ListView;
 import org.apache.pivot.wtk.ListViewListener;
-import org.apache.pivot.wtk.Menu;
-import org.apache.pivot.wtk.MenuHandler;
-import org.apache.pivot.wtk.MessageType;
-import org.apache.pivot.wtk.Prompt;
-import org.apache.pivot.wtk.Sheet;
-import org.apache.pivot.wtk.SheetCloseListener;
 import org.apache.pivot.wtk.Window;
-import org.chronopolis.ingest.bagger.CreateBagDialog;
 import org.chronopolis.ingest.messages.SaveBagMessage;
 import org.chronopolis.ingest.messages.TransferBagMessage;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.ChronPackageListener;
 import org.chronopolis.ingest.pkg.PackageManager;
+import org.apache.log4j.Logger;
 
 /**
  * Package storage: bdb digest & path
@@ -70,16 +58,16 @@ import org.chronopolis.ingest.pkg.PackageManager;
  */
 public class Main implements Application {
 
+    private static final Logger LOG = Logger.getLogger(Main.class);
     @BXML
     private ListView ingestedListView;
     @BXML
     private ListView pendingListView;
     private Window mainW;
-    @BXML(id = "aboutDialog.img")
     private static PartnerSite aceSite;
     private static PackageManager mgr;
     private static URL chronURL;
-    // NCAR hack
+    // Default settings
     private static File defaultDir;
     private static String defaultURLPattern;
     private static String provider;
@@ -87,6 +75,8 @@ public class Main implements Application {
     private static final String PARAM_INGEST_URL = "jnlp.ingest.url";
     private static final String PARAM_URL_PATTERN = "jnlp.urlpattern";
     private static final String PARAM_DEFAULT_DIR = "jnlp.defaultdir";
+    private static final String DEFAULT_PROVIDER = "duracloud";
+    
 
     /**
      * @param args the command line arguments
@@ -116,7 +106,7 @@ public class Main implements Application {
     }
 
     public static File getDefaultDirectory() {
-       return defaultDir;
+        return defaultDir;
     }
 
     public void startup(Display dspl, Map<String, String> map) throws Exception {
@@ -124,30 +114,32 @@ public class Main implements Application {
         // set provider
         provider = System.getProperty(PARAM_PROVIDER);
         if (provider == null) {
-            provider = "";
+            provider = DEFAULT_PROVIDER; // default provider, only exists at umiacs
         }
+        LOG.info("Provider: " + provider);
 
         // set ingestion url
         String url = System.getProperty(PARAM_INGEST_URL);
         if (!Strings.isEmpty(url)) {
             chronURL = new URL(url);
         }
+        LOG.info("Ingest URL: " + chronURL);
 
         // set starting directory for browse windows
         String defaultDirectory = System.getProperty(PARAM_DEFAULT_DIR);
-        if ( defaultDirectory!= null && new File(defaultDirectory).isDirectory()) {
+        if (defaultDirectory != null && new File(defaultDirectory).isDirectory()) {
             defaultDir = new File(defaultDirectory);
-        }
-        else
-        {
+        } else {
             defaultDir = new File(System.getProperty("user.home"));
         }
+        LOG.info("Working directory: " + defaultDir);
 
         // Set default url pattern
         defaultURLPattern = System.getProperty(PARAM_URL_PATTERN);
         if (Strings.isEmpty(defaultURLPattern)) {
             defaultURLPattern = "http://your_webserver_here.com/bags/{b}/{d}";
         }
+        LOG.info("Default URL Pattern: " + defaultURLPattern);
 
         mgr = new PackageManager();
 
@@ -156,7 +148,7 @@ public class Main implements Application {
         Authenticator.setDefault(pa);
 
         aceSite = new PartnerSite();
-        aceSite.setRemoteURL("http://chronopolis.sdsc.edu:8080/Ace-am");
+        aceSite.setRemoteURL("http://chron-monitor.umiacs.umd.edu:8080/ace-am");
         aceSite.setUser("browse");
         aceSite.setPass("browse");
         pa.addSite(aceSite);
@@ -219,13 +211,13 @@ public class Main implements Application {
                 listView.getListData().getListListeners().add(listener);
             }
         });
-        
+
         pendingListView.setListData(mgr.getPackageList());
 
         MessageBus.subscribe(SaveBagMessage.class, new ManifestSaveAction());
         MessageBus.subscribe(TransferBagMessage.class, new TransferBagAction());
 
-        
+
         ApplicationContext.queueCallback(new Runnable() {
 
             public void run() {

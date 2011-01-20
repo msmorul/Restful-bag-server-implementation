@@ -48,6 +48,8 @@ public class ArchivedCollectionPanel extends Border {
     private ListView reportListView;
     @BXML
     private Border reportDetailsPane;
+    @BXML
+    private TablePane collectionTable;
     private CollectionBean currentCollection = null;
 
     public ArchivedCollectionPanel() {
@@ -64,7 +66,8 @@ public class ArchivedCollectionPanel extends Border {
                     currentCollection = t;
                     loadFileTree();
                     loadReports();
-                    ArchivedCollectionPanel.this.load(t);
+                    collectionTable.load(t);
+                    //ArchivedCollectionPanel.this.load(t);
                 }
             });
 
@@ -92,7 +95,6 @@ public class ArchivedCollectionPanel extends Border {
                     PartnerSite site = Main.getAceSite();
                     JsonGateway gateway = JsonGateway.getGateway();
                     SummaryBean reportbean = gateway.getSummaryBean(site);
-//                    System.out.println("rb " + reportbean);
                     List ll = new ArrayList();
                     reportListView.setListData(ll);
                     for (Summary s : reportbean.getSummaries()) {
@@ -158,7 +160,6 @@ public class ArchivedCollectionPanel extends Border {
         public void selectedPathsChanged(TreeView treeView, Sequence<Path> previousSelectedPaths) {
 
             Object o = treeView.getSelectedNode();
-//            System.out.println("item " + o);
             if (o instanceof AceItem) {
                 fileDetailsPane.load(o);
             } else if (o instanceof LabeledList) {
