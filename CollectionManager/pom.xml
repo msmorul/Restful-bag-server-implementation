@@ -37,6 +37,42 @@
           </arguments> -->
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo.webstart</groupId>
+        <artifactId>webstart-maven-plugin</artifactId>
+        <executions>
+        <execution>
+        <goals>
+            <goal>jnlp</goal>
+          </goals>
+        </execution>
+        </executions>
+        <configuration>
+          <libPath>lib</libPath>
+          <jnlp>
+            <mainClass>org.chronopolis.ingest.Main</mainClass>
+          </jnlp>
+          <sign>
+            <keystore>fillme</keystore>
+            <keypass>fillme</keypass>
+            <storepass>fillme</storepass>
+            <alias>fillme</alias>
+            <dnameCn>fillme</dnameCn>
+             <dnameOu>fillme</dnameOu>
+             <dnameO>fillme</dnameO>
+             <dnameL>fillme</dnameL>
+             <dnameSt>fillme</dnameSt>
+             <dnameC>fillme</dnameC>
+             <verify>true</verify>
+            <keystoreConfig>
+               <delete>true</delete> <!-- delete the keystore -->
+               <gen>true</gen>       <!-- optional shortcut to generate the store. -->
+             </keystoreConfig>
+          </sign>
+          <verbose>true</verbose>
+        </configuration>
+            
+      </plugin>
     </plugins>
   </build>
 
