@@ -12,6 +12,9 @@ import org.apache.pivot.util.MessageBusListener;
 import org.apache.pivot.wtk.Accordion;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.Dialog;
+import org.apache.pivot.wtk.DialogCloseListener;
+import org.apache.pivot.wtk.Display;
+import org.apache.pivot.wtk.Window;
 import org.chronopolis.ingest.bagger.BagModel.BagType;
 import org.chronopolis.ingest.bagger.BagModel.IngestionType;
 import org.chronopolis.ingest.pkg.ChronPackage;
@@ -181,6 +184,12 @@ public class CreateBagDialog extends Dialog {
         setContent(panelAccordion);
     }
 
+    @Override
+    public void open(Display display, Window owner, DialogCloseListener dialogCloseListener) {
+        super.open(display, owner, dialogCloseListener);
+        panelAccordion.setSelectedIndex(0);
+    }
+
     public void setBagModel(BagModel bagModel) {
         if (this.bagModel != null) {
             this.bagModel.getModelListenerList().remove(bagupdatelistener);
@@ -195,10 +204,10 @@ public class CreateBagDialog extends Dialog {
             if (bagModel.getBagType() == BagType.HOLEY) {
                 panelAccordion.getPanels().insert(setUrlPattern, 1);
             }
+            
             if (bagModel.getIngestionType() == IngestionType.CHRONOPOLIS) {
                 panelAccordion.getPanels().insert(remotePane,1);
-            }
-            if (bagModel.getIngestionType() == IngestionType.LOCAL) {
+            } else if (bagModel.getIngestionType() == IngestionType.LOCAL) {
                 panelAccordion.getPanels().insert(chooseLocalBag, 1);
             }
         }
