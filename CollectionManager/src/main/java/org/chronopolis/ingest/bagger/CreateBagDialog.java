@@ -33,6 +33,7 @@ public class CreateBagDialog extends Dialog {
     private BasePanel choosePane = new ChooseBagPane();
     private BasePanel chooseLocalBag = new ChooseLocalBag();
     private BasePanel setUrlPattern = new SetUrlPattern();
+    private BasePanel remotePane = new RemoteDestinationPane();
     private Map<ChronPackage, BagModel> modelCache = new HashMap<ChronPackage, BagModel>();
     private static final Logger LOG = Logger.getLogger(CreateBagDialog.class);
     private BagModelListener bagupdatelistener = new BagModelListener.Adaptor() {
@@ -40,11 +41,11 @@ public class CreateBagDialog extends Dialog {
         @Override
         public void ingestionTypeChanged(BagModel model, IngestionType oldType) {
             if (model.getIngestionType() == IngestionType.CHRONOPOLIS) {
-                //panelAccordion.getPanels().insert(setChronopolisLocation, 1);
+                panelAccordion.getPanels().insert(remotePane, 1);
                 panelAccordion.getPanels().remove(chooseLocalBag);
             } else {
                 panelAccordion.getPanels().insert(chooseLocalBag, 1);
-                //panelAccordion.getPanels().remove(setChronopolisLocation);
+                panelAccordion.getPanels().remove(remotePane);
             }
             updateAccordion();
         }
@@ -167,6 +168,9 @@ public class CreateBagDialog extends Dialog {
         chooseLocalBag.getNextButtonPressListeners().add(nextButtonListener);
         chooseLocalBag.getPreviousButtonPressListeners().add(prevButtonListener);
 
+        remotePane.getNextButtonPressListeners().add(nextButtonListener);
+        remotePane.getPreviousButtonPressListeners().add(prevButtonListener);
+
         setUrlPattern.getNextButtonPressListeners().add(nextButtonListener);
         setUrlPattern.getPreviousButtonPressListeners().add(prevButtonListener);
 
@@ -182,7 +186,7 @@ public class CreateBagDialog extends Dialog {
             this.bagModel.getModelListenerList().remove(bagupdatelistener);
         }
         panelAccordion.getPanels().remove(chooseLocalBag);
-        //panelAccordion.getPanels().remove(setChronopolisLocation);
+        panelAccordion.getPanels().remove(remotePane);
         panelAccordion.getPanels().remove(setUrlPattern);
 
         this.bagModel = bagModel;
@@ -192,7 +196,7 @@ public class CreateBagDialog extends Dialog {
                 panelAccordion.getPanels().insert(setUrlPattern, 1);
             }
             if (bagModel.getIngestionType() == IngestionType.CHRONOPOLIS) {
-                //panelAccordion.getPanels().insert(setChronopolisLocation,1);
+                panelAccordion.getPanels().insert(remotePane,1);
             }
             if (bagModel.getIngestionType() == IngestionType.LOCAL) {
                 panelAccordion.getPanels().insert(chooseLocalBag, 1);
@@ -202,6 +206,7 @@ public class CreateBagDialog extends Dialog {
         verifyPane.setBagModel(bagModel);
         setUrlPattern.setBagModel(bagModel);
         chooseLocalBag.setBagModel(bagModel);
+        remotePane.setBagModel(bagModel);
 
         panelAccordion.setSelectedIndex(0);
         updateAccordion();

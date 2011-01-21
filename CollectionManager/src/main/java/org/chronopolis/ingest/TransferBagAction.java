@@ -24,6 +24,7 @@ import org.chronopolis.ingest.pkg.ChronPackage.Statistics;
 import org.chronopolis.ingest.pkg.DelayedTransferStream;
 import org.chronopolis.ingest.pkg.ManifestBuilder;
 import org.apache.log4j.Logger;
+import org.chronopolis.ingest.pkg.URLUTF8Encoder;
 
 /**
  *
@@ -58,7 +59,7 @@ public final class TransferBagAction implements MessageBusListener<TransferBagMe
         } else {
             //Open Chron input stream
             try {
-                URL newURL = new URL(Main.getURL() + "/" + model.getChronopolisBag());
+                URL newURL = new URL(Main.getURL() + "/" + URLUTF8Encoder.encode(model.getChronopolisBag()));
                 if (model.getBagType() == BagModel.BagType.HOLEY) {
                     connection = null;
                     os = new DelayedTransferStream(newURL);

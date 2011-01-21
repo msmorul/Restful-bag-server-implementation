@@ -29,12 +29,11 @@
         </executions>
         <configuration>
           <mainClass>org.chronopolis.ingest.Main</mainClass>
-          <!-- optional -->
-          <!-- <workingDirectory>/tmp</workingDirectory>
-          <arguments>
-            <argument>-X</argument>
-            <argument>myproject:dist</argument>
-          </arguments> -->
+          <systemProperties>
+            <property>
+              <key>jnlp.ingest.url</key><value>http://chronopolis.sdsc.edu:8080/BagCatcher/bag</value>
+            </property>
+          </systemProperties> 
         </configuration>
       </plugin>
       <plugin>
@@ -57,12 +56,12 @@
             <keypass>fillme</keypass>
             <storepass>fillme</storepass>
             <alias>fillme</alias>
-            <dnameCn>fillme</dnameCn>
-             <dnameOu>fillme</dnameOu>
-             <dnameO>fillme</dnameO>
-             <dnameL>fillme</dnameL>
-             <dnameSt>fillme</dnameSt>
-             <dnameC>fillme</dnameC>
+            <dnameCn>UMD</dnameCn>
+             <dnameOu>UMIACS</dnameOu>
+             <dnameO>Chronopolis</dnameO>
+             <dnameL>College Park</dnameL>
+             <dnameSt>MD</dnameSt>
+             <dnameC>Ingestion</dnameC>
              <verify>true</verify>
             <keystoreConfig>
                <delete>true</delete> <!-- delete the keystore -->

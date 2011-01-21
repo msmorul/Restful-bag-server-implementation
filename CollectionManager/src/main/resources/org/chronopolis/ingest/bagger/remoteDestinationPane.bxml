@@ -1,0 +1,36 @@
+<TablePane xmlns:bxml="http://pivot.apache.org/wtkx"
+           xmlns="org.apache.pivot.wtk"
+           xmlns:c="org.apache.pivot.wtk.content"
+           styles="{verticalSpacing:5,padding:15}" visible="true">
+    <columns>
+        <TablePane.Column width="-1"/>
+        <TablePane.Column width="1*"/>
+    </columns>
+    <rows>
+        <!-- <TablePane.Row height="1*">
+                    <Label text="Collection"/>
+                    <ListButton wtkx:id="collectionListButton" />
+                </TablePane.Row> -->
+        <TablePane.Row height="-1">
+            <Label text="Transfer Bag Name:"/>
+            <TextInput bxml:id="transferTxt" />
+        </TablePane.Row>
+        <TablePane.Row height="1*"><BoxPane /></TablePane.Row>
+        <TablePane.Row height="-1" >
+            <BoxPane TablePane.columnSpan="2"
+            styles="{verticalAlignment:'center',horizontalAlignment:'right',padding:{left:5,top:5,right:25,bottom:0}}">
+                <Label bxml:id="errorMessage"/>
+                <PushButton preferredWidth="50" bxml:id="previousBtn">
+                    <buttonData>
+                        <c:ButtonData icon="@go-previous.png" />
+                    </buttonData>
+                </PushButton>
+                <PushButton bxml:id="nextBtn" preferredWidth="50">
+                    <buttonData>
+                        <c:ButtonData icon="@go-next.png" />
+                    </buttonData>
+                </PushButton>
+            </BoxPane>
+        </TablePane.Row>
+    </rows>
+</TablePane>

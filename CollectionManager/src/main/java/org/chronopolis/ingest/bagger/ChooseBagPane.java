@@ -10,6 +10,7 @@ import org.apache.pivot.wtk.Accordion;
 import org.apache.pivot.wtk.Button;
 import org.apache.pivot.wtk.ButtonPressListener;
 import org.apache.pivot.wtk.PushButton;
+import org.chronopolis.ingest.Main;
 import org.chronopolis.ingest.bagger.BagModel.BagType;
 import org.chronopolis.ingest.bagger.BagModel.IngestionType;
 
@@ -57,6 +58,7 @@ public class ChooseBagPane extends BasePanel {
         super("chooseBagPane.bxml");
 
         Accordion.setHeaderData(this, "1. Choose Bag Type");
+        chronopolisBtn.setEnabled(Main.getURL() != null);
         chronopolisBtn.getButtonPressListeners().add(chronopolisBtnListener);
         localBtn.getButtonPressListeners().add(localBtnListener);
         holeyBtn.getButtonPressListeners().add(holeyBtnListener);

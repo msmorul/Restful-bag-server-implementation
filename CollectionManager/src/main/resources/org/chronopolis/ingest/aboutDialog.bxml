@@ -19,7 +19,7 @@
 
                 <TablePane.Row height="-1" >
                     <Label text="Version:" styles="{padding:{top:0,bottom:0,left:50,right:0}}" />
-                    <Label text="0.1"/>
+                    <Label text="0.2"/>
                 </TablePane.Row>
                 <TablePane.Row>
                     <Label text="Build:" styles="{padding:{top:0,bottom:0,left:50,right:0}}"/>
