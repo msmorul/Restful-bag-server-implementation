@@ -182,7 +182,6 @@ public class ApplicationWindow extends Window implements Bindable {
 
         ingestedListView.getListViewSelectionListeners().add(ingestListSelectionListener);
         ingestedListView.setItemRenderer(new CollectionBeanRenderer());
-
         digestBrowser.setRootDirectory(Main.getDefaultDirectory());
         digestBrowser.getSheetStateListeners().add(new SheetStateListener.Adapter() {
 

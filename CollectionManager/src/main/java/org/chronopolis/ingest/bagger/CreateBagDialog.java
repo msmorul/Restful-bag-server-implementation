@@ -204,9 +204,9 @@ public class CreateBagDialog extends Dialog {
             if (bagModel.getBagType() == BagType.HOLEY) {
                 panelAccordion.getPanels().insert(setUrlPattern, 1);
             }
-            
+
             if (bagModel.getIngestionType() == IngestionType.CHRONOPOLIS) {
-                panelAccordion.getPanels().insert(remotePane,1);
+                panelAccordion.getPanels().insert(remotePane, 1);
             } else if (bagModel.getIngestionType() == IngestionType.LOCAL) {
                 panelAccordion.getPanels().insert(chooseLocalBag, 1);
             }
