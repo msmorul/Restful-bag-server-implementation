@@ -142,9 +142,17 @@ public class SetUrlPattern extends BasePanel {
 
     private void updateFromModel() {
         BagModel model = getBagModel();
-        if (model != null && !urlTxt.getText().equals(model.getUrlPattern())) {
-            urlTxt.setText(getBagModel().getUrlPattern());
+        if (model != null) {
+            if (!urlTxt.getText().equals(model.getUrlPattern())) {
+                urlTxt.setText(getBagModel().getUrlPattern());
+            }
+            UrlFormatter uf = new UrlFormatter(model.getChronPackage(), model.getUrlPattern());
+            String sf = model.getChronPackage().findRelativeFirstFile();
+            if (sf != null) {
+                sampleUrlLbl.setText(uf.format(sf));
+            }
         }
+
         updateNext();
     }
 }

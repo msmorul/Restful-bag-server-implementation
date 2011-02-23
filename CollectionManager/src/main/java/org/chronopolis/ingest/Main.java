@@ -76,7 +76,7 @@ public class Main implements Application {
     private static final String PARAM_URL_PATTERN = "jnlp.urlpattern";
     private static final String PARAM_DEFAULT_DIR = "jnlp.defaultdir";
     private static final String DEFAULT_PROVIDER = "duracloud";
-    
+    private static final String DEFAULT_INGEST = "http://localhost:8080/bag";
 
     /**
      * @param args the command line arguments
@@ -122,6 +122,8 @@ public class Main implements Application {
         String url = System.getProperty(PARAM_INGEST_URL);
         if (!Strings.isEmpty(url)) {
             chronURL = new URL(url);
+        } else {
+            chronURL = new URL(DEFAULT_INGEST);
         }
         LOG.info("Ingest URL: " + chronURL);
 

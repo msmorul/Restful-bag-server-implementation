@@ -45,6 +45,15 @@ public class RemoteDestinationPane extends BasePanel {
         transferTxt.getTextInputContentListeners().add(txtListener);
     }
 
+    private void updateNext() {
+        BagModel model = getBagModel();
+        if (Strings.isEmpty(model.getChronopolisBag())) {
+            setErrorMessage("Please enter a deposit name for this bag");
+        } else {
+            setErrorMessage("");
+        }
+    }
+
     @Override
     protected void modelChanged(BagModel old) {
         if (old != null) {
@@ -67,6 +76,7 @@ public class RemoteDestinationPane extends BasePanel {
     }
 
     private void updateFromModel() {
+        updateNext();
         BagModel model = getBagModel();
         if (model == null) {
             transferTxt.setText("");
