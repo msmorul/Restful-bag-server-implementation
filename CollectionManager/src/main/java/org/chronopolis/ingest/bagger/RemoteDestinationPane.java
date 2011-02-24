@@ -8,7 +8,10 @@ import edu.umiacs.ace.json.Strings;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.util.Vote;
 import org.apache.pivot.wtk.TextInput;
+import org.apache.pivot.wtk.Accordion;
 import org.apache.pivot.wtk.TextInputContentListener;
+import org.chronopolis.ingest.pkg.ChronPackage;
+import org.chronopolis.ingest.pkg.ChronPackageListener;
 
 /**
  *
@@ -26,6 +29,7 @@ public class RemoteDestinationPane extends BasePanel {
             getBagModel().setChronopolisBag(textInput.getText());
         }
     };
+    
     private BagModelListener bagListener = new BagModelListener.Adaptor() {
 
         @Override
@@ -41,7 +45,7 @@ public class RemoteDestinationPane extends BasePanel {
 
     public RemoteDestinationPane() {
         super("remoteDestinationPane.bxml");
-        setTitle("2. Choose Chronopolis Collection");
+        Accordion.setHeaderData(this, "2. Choose Chronopolis Collection");
         transferTxt.getTextInputContentListeners().add(txtListener);
     }
 

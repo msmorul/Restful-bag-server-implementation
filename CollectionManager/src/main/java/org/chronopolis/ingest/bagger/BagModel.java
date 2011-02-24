@@ -9,6 +9,7 @@ import org.apache.pivot.util.ListenerList;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.apache.log4j.Logger;
 import org.chronopolis.ingest.pkg.ChronPackage.Statistics;
+import org.chronopolis.ingest.pkg.ChronPackageListener;
 
 /**
  *
@@ -52,6 +53,13 @@ public class BagModel {
     private BagModelListenerList listenerList = new BagModelListenerList();
     private Statistics bagStats = null;
     private static final Logger LOG = Logger.getLogger(BagModel.class);
+    private ChronPackageListener pkgListener = new ChronPackageListener.Adapter() {
+
+        @Override
+        public void nameChanged(ChronPackage pkg, String oldname) {
+            setChronopolisBag(pkg.getName());
+        }
+    };
 
     public ListenerList<BagModelListener> getModelListenerList() {
         return listenerList;
@@ -89,7 +97,7 @@ public class BagModel {
         LOG.debug("BagModel/stats: " + bagStats.getSize());
         Statistics old = this.bagStats;
         this.bagStats = bagStats;
-        listenerList.bagStatsChanged(this,old);
+        listenerList.bagStatsChanged(this, old);
     }
 
     public void setChronopolisBag(String chronopolisBag) {
@@ -114,8 +122,15 @@ public class BagModel {
     }
 
     public void setChronPackage(ChronPackage chronPackage) {
+
         LOG.trace("BagModel/chronPacakge: " + chronPackage);
         ChronPackage old = this.chronPackage;
+        if (old != null) {
+            old.getChronPackageListeners().remove(pkgListener);
+        }
+        if (chronPackage != null) {
+            chronPackage.getChronPackageListeners().add(pkgListener);
+        }
         this.chronPackage = chronPackage;
         listenerList.chronPackageChanged(this, old);
     }

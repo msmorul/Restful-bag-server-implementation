@@ -49,6 +49,11 @@ public class SetUrlPattern extends BasePanel {
             }
             updateNext();
         }
+
+        @Override
+        public void chronopoligBagChanged(BagModel mode, String oldbagname) {
+            updateFromModel();
+        }
     };
     private ButtonPressListener resetUrlButtonListener = new ButtonPressListener() {
 
@@ -99,6 +104,12 @@ public class SetUrlPattern extends BasePanel {
             }
         }
     };
+
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        updateFromModel();
+    }
 
     public SetUrlPattern() {
         super("setUrlPattern.bxml");
