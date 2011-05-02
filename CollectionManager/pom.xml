@@ -6,6 +6,7 @@
     <groupId>org.chronopolis.ingest</groupId>
     <artifactId>ingest</artifactId>
     <version>1.0-SNAPSHOT</version>
+<relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>collection-manager</artifactId>
   <name>Collection Manager</name>
@@ -39,6 +40,7 @@
       <plugin>
         <groupId>org.codehaus.mojo.webstart</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
+        <version>1.0-beta-1</version>
         <executions>
         <execution>
         <phase>package</phase>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.chronopolis.ingest</groupId>
-  <artifactId>ingest</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <groupId>org.chronopolis.ingest</groupId>
+    <artifactId>ingest</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-  <name>Ingest Tools</name>
-  <url>http://adapt.umiacs.umd.edu/ace</url>
+    <name>Ingest Tools</name>
+    <url>http://adapt.umiacs.umd.edu/ace</url>
     <build>
         <plugins>
             <plugin>
@@ -22,24 +22,33 @@
             </plugin>
         </plugins>
     </build>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.license>umd</project.license>
-  </properties>
-
-  <dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.license>umd</project.license>
+    </properties>
+    <repositories>
+        <repository>
+            <id>java.net2</id>
+            <name>Repository hosting the jee6 artifacts</name>
+            <url>http://download.java.net/maven/2</url>
+        </repository>
+    </repositories>
+    <dependencies>
     
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <modules>
-    <module>CollectionManager</module>
-    <module>ace-am-lib</module>
-  </modules>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <modules>
+        <module>CollectionManager</module>
+        <module>ace-am-lib</module>
+        <module>bag-storage-library</module>
+        <module>bag-services</module>
+        <module>bag-manager</module>
+    </modules>
     <!--<reporting>
         <plugins>
             <plugin>

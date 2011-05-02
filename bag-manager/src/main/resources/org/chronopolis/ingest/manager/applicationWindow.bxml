@@ -1,0 +1,11 @@
+<bag:MainWindow title="Bag Server Manager" maximized="true"
+    xmlns:bxml="http://pivot.apache.org/bxml"
+    xmlns:bag="org.chronopolis.ingest.manager"
+    xmlns="org.apache.pivot.wtk">
+        
+    <BoxPane orientation="vertical"
+        styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
+        <Label text="This is a Java window."/>
+        <PushButton bxml:id="startServer" buttonData="Say Hello"/>
+    </BoxPane>
+</bag:MainWindow>
