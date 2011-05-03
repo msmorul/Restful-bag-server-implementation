@@ -6,8 +6,13 @@ package org.chronopolis.bagserver.disk;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -159,7 +164,7 @@ public class SimpleDiskVault implements BagVault {
                 return new MyBagEntry(workingBag);
             }
 
-            if (!workingBag.mkdir()) {
+            if (!workingBag.mkdir() || !new File(workingBag, "data").mkdir()) {
                 LOG.error("Count not create bag directory " + workingBag);
                 throw new RuntimeException("Could not create bag " + workingBag);
             }
@@ -250,34 +255,50 @@ public class SimpleDiskVault implements BagVault {
         }
 
         public boolean setBagItInformation(BagIt bagIt) {
-            File f = new File(directory,BagIt.FILE_NAME);
-            try
-            {
-            FileWriter fw = new FileWriter(f);
-            bagIt.writeFile(fw);
-            fw.close();
-            return true;
-            }
-            catch (IOException e)
-            {
-                LOG.error("Cannot write bagit.txt",e);
+            File f = new File(directory, BagIt.FILE_NAME);
+            try {
+                FileWriter fw = new FileWriter(f);
+                bagIt.writeFile(fw);
+                fw.close();
+                return true;
+            } catch (IOException e) {
+                LOG.error("Cannot write bagit.txt", e);
                 return false;
             }
         }
 
         public boolean setBagInfo(BagInfo baginfo) {
-            File f = new File(directory,BagInfo.FILE_NAME);
-            try
-            {
-            FileWriter fw = new FileWriter(f);
-            baginfo.writeInfo(fw);
-            fw.close();
-            return true;
-            }
-            catch (IOException e)
-            {
-                LOG.error("Cannot write bag-info.txt",e);
+            File f = new File(directory, BagInfo.FILE_NAME);
+            try {
+                FileWriter fw = new FileWriter(f);
+                baginfo.writeInfo(fw);
+                fw.close();
+                return true;
+            } catch (IOException e) {
+                LOG.error("Cannot write bag-info.txt", e);
                 return false;
+            }
+        }
+
+        public InputStream openDataInputStream(String fileIdentifier) throws IllegalArgumentException {
+            File dataFile = new File(directory, "data/" + fileIdentifier);
+            try {
+                return new FileInputStream(dataFile);
+            } catch (FileNotFoundException e) {
+                LOG.error("Cannot create input file: " + dataFile + " for id: " + fileIdentifier);
+                return null;
+            }
+        }
+
+        public OutputStream openDataOutputStream(String fileIdentifier) throws IllegalArgumentException {
+
+
+            File dataFile = new File(directory, "data/" + fileIdentifier);
+            try {
+                return new FileOutputStream(dataFile);
+            } catch (FileNotFoundException e) {
+                LOG.error("Cannot create output file: " + dataFile + " for id: " + fileIdentifier);
+                return null;
             }
         }
 

@@ -5,7 +5,9 @@
 package org.chronopolis.restserver;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -100,15 +102,73 @@ public class BagServer {
     }
 
     /**
-     * Return links, parsed bag-info.txt, and parsed bagit.txt
+     * Return links, parsed bag-info.txt, and parsed bagit.txt from spec
      * TODO: getBagDescription
      * @param bagId bag to query
      */
     @Path("{bagid}")
+    @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response getBagDescription(@PathParam("bagid") String bagId,
             @Context ServletContext servletCtx) {
         return null;
+    }
+
+    @Path("{bagid}/data/{dataFile}")
+    @GET
+    public Response getBagData(@PathParam("bagid") String bagId,
+            @PathParam("dataFile") String dataFile,
+            @Context ServletContext servletCtx) {
+        BagVault vault = getVault(servletCtx);
+        BagEntry be = vault.getBag(bagId);
+        if (be == null) {
+            LOG.info("Request for unknown bag: " + bagId);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        InputStream is = be.openDataInputStream(dataFile);
+
+        return Response.ok(is).build();
+    }
+
+    /**
+     * Retrieve data from the specified bag
+     * @param bagId bag to open
+     * @param dataFile data file in bag
+     * @param request
+     * @param servletCtx
+     * @return
+     */
+    @Path("{bagid}/data/{dataFile}")
+    @PUT
+    public Response putBagData(@PathParam("bagid") String bagId,
+            @PathParam("dataFile") String dataFile,
+            @Context HttpServletRequest request,
+            @Context ServletContext servletCtx) {
+        BagVault vault = getVault(servletCtx);
+        BagEntry be = vault.getBag(bagId);
+        if (be == null) {
+            LOG.info("Request for unknown bag: " + bagId);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        byte[] block = new byte[32768];
+        OutputStream os = be.openDataOutputStream(dataFile);
+        if (os == null) {
+            return Response.serverError().build();
+        }
+
+        try {
+            InputStream is = request.getInputStream();
+            int read;
+            while ((read = is.read(block)) != -1) {
+                os.write(block, 0, read);
+            }
+            os.close();
+        } catch (IOException e) {
+            LOG.error("Error writing file " + bagId + ": " + dataFile);
+            throw new WebApplicationException(e);
+        }
+        return Response.ok().build();
     }
 
     /**
@@ -124,8 +184,9 @@ public class BagServer {
     @GET
     public Response getMetadataFile(@PathParam("bagid") String bagId,
             @PathParam("contentFile") String contentFile,
-            @Context ServletContext servletCtx,
-            @Context HttpServletRequest request) {
+            @Context ServletContext servletCtx) {
+
+
         return Response.ok().build();
     }
 
