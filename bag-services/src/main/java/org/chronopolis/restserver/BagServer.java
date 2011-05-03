@@ -30,9 +30,8 @@ public class BagServer {
     private static final Logger LOG = Logger.getLogger(BagServer.class);
 
     @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response createBag(@FormParam("id") String newBagId,
-            //@Context SecurityContext securityCtx,
             @Context ServletContext servletCtx) {
 
         LOG.debug("Create bag " + newBagId);
@@ -56,17 +55,27 @@ public class BagServer {
     public Response removeBag(@PathParam("bagid") String bagId,
             @Context ServletContext servletCtx) {
 
+        LOG.debug("Remove bag " + bagId);
+
         BagVault vault = getVault(servletCtx);
         BagEntry be = vault.getBag(bagId);
         if (be == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return Response.ok().build();
 
+        if (be.delete()) {
+            LOG.trace("Bag Successfully removed " + bagId);
+            return Response.ok().build();
+
+        } else {
+            LOG.trace("Count not remove " + bagId);
+            return Response.serverError().build();
+        }
     }
 
     /**
      * handler for validation and commit actions
+     * //TODO invokeBagAction
      * @param bagId
      */
     @Path("{bagid}")
@@ -81,7 +90,7 @@ public class BagServer {
 
     /**
      * Return links, parsed bag-info.txt, and parsed bagit.txt
-     * 
+     * TODO: getBagDescription
      * @param bagId bag to query
      */
     @Path("{bagid}")

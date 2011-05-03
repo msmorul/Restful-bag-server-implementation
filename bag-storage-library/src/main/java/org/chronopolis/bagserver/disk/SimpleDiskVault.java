@@ -95,6 +95,9 @@ public class SimpleDiskVault implements BagVault {
      * @return
      */
     private File getWorkingBag(String identifier) {
+        if (identifier == null) {
+            throw new IllegalArgumentException("Null identifier");
+        }
         File f = new File(workDirectory, identifier);
         if (!f.getParentFile().equals(workDirectory)) {
             throw new IllegalArgumentException("Bad directory name " + identifier);
@@ -103,6 +106,9 @@ public class SimpleDiskVault implements BagVault {
     }
 
     private File getCommitedBag(String identifier) {
+        if (identifier == null) {
+            throw new IllegalArgumentException("Null identifier");
+        }
         File f = new File(commitDirectory, identifier);
         if (!f.getParentFile().equals(commitDirectory)) {
             throw new IllegalArgumentException("Bad directory name " + identifier);

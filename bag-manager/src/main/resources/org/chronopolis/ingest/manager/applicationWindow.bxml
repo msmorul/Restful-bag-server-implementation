@@ -1,11 +1,34 @@
+
 <bag:MainWindow title="Bag Server Manager" maximized="true"
     xmlns:bxml="http://pivot.apache.org/bxml"
     xmlns:bag="org.chronopolis.ingest.manager"
+    xmlns:val="org.apache.pivot.wtk.validation"
     xmlns="org.apache.pivot.wtk">
+
+    <TablePane>
+        <columns>
+            <TablePane.Column width="1*"/>
+        </columns>
+        <rows>
+            <TablePane.Row height="-1">
+                <BoxPane styles="{padding:10}" orientation="horizontal">
+                    <PushButton bxml:id="startServer" buttonData="Start Server"/>
+                    <Label text="port:" />
+                    <TextInput text="7878" bxml:id="port" textSize="5">
+                        <validator>
+                            <val:IntValidator/>
+                        </validator>
+                    </TextInput>
+                </BoxPane>
+            </TablePane.Row>
+            <TablePane.Row height="1*">
+                <Border styles="{padding:10}">
+                    <TabPane >
+                        <bag:LogPane TabPane.tabData="Server Logs"/>
+                    </TabPane>
+                </Border>
+            </TablePane.Row>
+        </rows>
+    </TablePane>
         
-    <BoxPane orientation="vertical"
-        styles="{horizontalAlignment:'center', verticalAlignment:'center'}">
-        <Label text="This is a Java window."/>
-        <PushButton bxml:id="startServer" buttonData="Say Hello"/>
-    </BoxPane>
 </bag:MainWindow>
