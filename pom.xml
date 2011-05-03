@@ -49,9 +49,9 @@
     <modules>
         <module>CollectionManager</module>
         <module>ace-am-lib</module>
-        <module>bag-storage-library</module>
+        <!--<module>bag-manager</module>-->
         <module>bag-services</module>
-        <module>bag-manager</module>
+        <module>bagStorageLibrary</module>
     </modules>
     <!--<reporting>
         <plugins>

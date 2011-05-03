@@ -6,10 +6,10 @@
         <groupId>org.chronopolis.ingest</groupId>
         <artifactId>ingest</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>bag-services</artifactId>
     <name>Bag RESTful services</name>
+    <packaging>jar</packaging>
     <url>http://maven.apache.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,8 +30,8 @@
         </dependency>
         <dependency>
             <groupId>org.chronopolis.ingest</groupId>
-            <version>1.0-SNAPSHOT</version>
             <artifactId>bag-storage-library</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

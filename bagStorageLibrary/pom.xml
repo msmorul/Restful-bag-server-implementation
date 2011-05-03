@@ -6,8 +6,8 @@
     <groupId>org.chronopolis.ingest</groupId>
     <artifactId>ingest</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
+  <packaging>jar</packaging>
   <artifactId>bag-storage-library</artifactId>
   <name>Bag Storage Library</name>
   <url>http://maven.apache.org</url>

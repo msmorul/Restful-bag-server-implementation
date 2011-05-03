@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>org.chronopolis.ingest</groupId>
-            <version>${project.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <artifactId>bag-services</artifactId>
         </dependency>
         <dependency>
