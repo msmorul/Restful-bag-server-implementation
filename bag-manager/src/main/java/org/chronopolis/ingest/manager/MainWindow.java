@@ -19,8 +19,6 @@ import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.Window;
 import org.chronopolis.bagserver.disk.SimpleDiskVault;
 import org.chronopolis.restserver.BagServer;
-import org.mortbay.component.LifeCycle;
-import org.mortbay.component.LifeCycle.Listener;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;

@@ -22,11 +22,19 @@
                 </BoxPane>
             </TablePane.Row>
             <TablePane.Row height="1*">
-                <Border styles="{padding:10}">
-                    <TabPane >
-                        <bag:LogPane TabPane.tabData="Server Logs"/>
-                    </TabPane>
-                </Border>
+                <SplitPane styles="{padding:10}" orientation="horizontal" splitRatio="0.25">
+                    <left>
+                        <Border styles="{padding:6}">
+                            <Label text="Bags" styles="{font:{bold:true}}"/>
+                        </Border>
+                    </left>
+                    <right>
+                        <TabPane >
+                            <BoxPane TabPane.tabData="Browse"></BoxPane>
+                            <bag:LogPane TabPane.tabData="Server Logs"/>
+                        </TabPane>
+                    </right>
+                </SplitPane>
             </TablePane.Row>
         </rows>
     </TablePane>
