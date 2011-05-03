@@ -4,19 +4,27 @@
  */
 package org.chronopolis.restserver;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.chronopolis.bagserver.BagEntry;
+import org.chronopolis.bagserver.BagInfo;
+import org.chronopolis.bagserver.BagIt;
 import org.chronopolis.bagserver.BagVault;
 
 /**
@@ -38,6 +46,7 @@ public class BagServer {
 
         BagVault vault = getVault(servletCtx);
         if (vault.bagExists(newBagId)) {
+            LOG.info("Request for existing bag: " + newBagId);
             return Response.status(409).build();
         }
 
@@ -60,6 +69,8 @@ public class BagServer {
         BagVault vault = getVault(servletCtx);
         BagEntry be = vault.getBag(bagId);
         if (be == null) {
+            LOG.info("Request for unknown bag: " + bagId);
+
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -68,7 +79,7 @@ public class BagServer {
             return Response.ok().build();
 
         } else {
-            LOG.trace("Count not remove " + bagId);
+            LOG.error("Count not remove " + bagId);
             return Response.serverError().build();
         }
     }
@@ -98,6 +109,70 @@ public class BagServer {
     public Response getBagDescription(@PathParam("bagid") String bagId,
             @Context ServletContext servletCtx) {
         return null;
+    }
+
+    /**
+     * TODO: getMetadataFile
+     * @param bagId
+     * @param contentFile
+     * @param servletCtx
+     * @param request
+     * @return
+     */
+    @Path("{bagid}/contents/{contentFile}")
+    @Produces(MediaType.TEXT_PLAIN)
+    @GET
+    public Response getMetadataFile(@PathParam("bagid") String bagId,
+            @PathParam("contentFile") String contentFile,
+            @Context ServletContext servletCtx,
+            @Context HttpServletRequest request) {
+        return Response.ok().build();
+    }
+
+    @Path("{bagid}/contents/{contentFile}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @PUT
+    public Response putMetadataFile(@PathParam("bagid") String bagId,
+            @PathParam("contentFile") String contentFile,
+            @Context ServletContext servletCtx,
+            @Context HttpServletRequest request) {
+        LOG.debug("Uploading metadata file: " + contentFile + " to bag " + bagId);
+
+        BagVault vault = getVault(servletCtx);
+        BagEntry be = vault.getBag(bagId);
+        if (be == null) {
+            LOG.info("Request for unknown bag: " + bagId);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        if (contentFile.toLowerCase().equals("bagit.txt")) {
+            LOG.trace("Parsing bagit.txt");
+            try {
+                BagIt bagit = BagIt.readFile(new InputStreamReader(request.getInputStream()));
+                if (!be.setBagItInformation(bagit)) {
+                    return Response.serverError().build();
+                }
+            } catch (IOException e) {
+                LOG.error(e);
+                throw new WebApplicationException(e);
+            }
+
+        } else if (contentFile.toLowerCase().equals("bag-info.txt")) {
+            LOG.trace("Parsing baginfo.txt");
+            try {
+                BagInfo bagInfo = BagInfo.readInfo(new InputStreamReader(request.getInputStream()));
+                if (!be.setBagInfo(bagInfo)) {
+                    return Response.serverError().build();
+                }
+            } catch (IOException e) {
+                LOG.error(e);
+                throw new WebApplicationException(e);
+            }
+        } else {
+            //TODO: parse other files
+        }
+
+        return Response.ok().build();
     }
 
     @Path("{bagid}/copies")

@@ -54,6 +54,17 @@ public class LogPane extends Border {
                     public void run() {
                         String text = message.getLogLayout().format(message.getEvent());
                         logTxt.getDocument().add(new Paragraph(text));
+                        if (message.getEvent().getThrowableInformation() != null)
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            for (String s : message.getEvent().getThrowableInformation().getThrowableStrRep())
+                            {
+                                sb.append("  ");
+                                sb.append(s);
+                                sb.append("\n");
+                            }
+                            logTxt.getDocument().add(new Paragraph(sb.toString()));
+                        }
                     }
                 });
             }
@@ -63,6 +74,7 @@ public class LogPane extends Border {
 
             public void buttonPressed(Button button) {
                 logTxt.setDocument(new Document());
+
             }
         });
         setContent(c);

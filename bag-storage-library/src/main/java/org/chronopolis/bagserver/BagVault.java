@@ -29,6 +29,7 @@ public interface BagVault {
      * @return entry of newly created bag
      */
     public BagEntry createNewBag(String newIdentifier);
+
     /**
      * test to see if a bag exists, must return true if the bag has been created
      * regardless of commit state
@@ -36,7 +37,7 @@ public interface BagVault {
      * @param identifier
      * @return true if bag exists
      */
-public boolean bagExists(String identifier);
+    public boolean bagExists(String identifier);
 //    /**
 //     * Remove a bag from the server
 //     *
@@ -47,6 +48,5 @@ public boolean bagExists(String identifier);
 //    boolean deleteBag(String identifier) throws IllegalStateException;
 //
 //    boolean commit(String identifier);
-
 //    public void validate(String identifier);
 }

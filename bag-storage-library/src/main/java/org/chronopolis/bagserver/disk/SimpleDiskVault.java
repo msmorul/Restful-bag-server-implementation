@@ -6,6 +6,8 @@ package org.chronopolis.bagserver.disk;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -247,10 +249,36 @@ public class SimpleDiskVault implements BagVault {
             return clearDirectory(deleteFile);
         }
 
-        public void setBagItInformation(BagIt bagIt) {
+        public boolean setBagItInformation(BagIt bagIt) {
+            File f = new File(directory,BagIt.FILE_NAME);
+            try
+            {
+            FileWriter fw = new FileWriter(f);
+            bagIt.writeFile(fw);
+            fw.close();
+            return true;
+            }
+            catch (IOException e)
+            {
+                LOG.error("Cannot write bagit.txt",e);
+                return false;
+            }
         }
 
-        public void setBagInfo(BagInfo baginfo) {
+        public boolean setBagInfo(BagInfo baginfo) {
+            File f = new File(directory,BagInfo.FILE_NAME);
+            try
+            {
+            FileWriter fw = new FileWriter(f);
+            baginfo.writeInfo(fw);
+            fw.close();
+            return true;
+            }
+            catch (IOException e)
+            {
+                LOG.error("Cannot write bag-info.txt",e);
+                return false;
+            }
         }
 
         @Override

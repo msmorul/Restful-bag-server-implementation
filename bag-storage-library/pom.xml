@@ -6,7 +6,7 @@
     <groupId>org.chronopolis.ingest</groupId>
     <artifactId>ingest</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <!-- <relativePath>../pom.xml</relativePath>-->
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>bag-storage-library</artifactId>
   <name>Bag Storage Library</name>

@@ -15,6 +15,7 @@ import java.io.Writer;
  */
 public class BagIt {
 
+    public static final String FILE_NAME = "bagit.txt";
     public static final String VERSION = "BagIt-Version";
     public static final String ENCODING = "Tag-File-Character-Encoding";
     public String encoding;

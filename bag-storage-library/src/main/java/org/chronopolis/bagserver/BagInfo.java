@@ -18,6 +18,7 @@ import java.util.Map.Entry;
  */
 public class BagInfo {
 
+    public static final String FILE_NAME = "bag-info.txt";
     private Map<String, String> bagAttributes;
 
     BagInfo(Map<String, String> bagAttributes) {
@@ -73,7 +74,7 @@ public class BagInfo {
                 if (lastAttribute != null) {
                     pairs.put(lastAttribute, valueLine);
                 }
-                String[] attrValue = currLine.split("/", 2);
+                String[] attrValue = currLine.split(":", 2);
                 lastAttribute = attrValue[0].trim();
                 valueLine = attrValue[1].trim();
             }

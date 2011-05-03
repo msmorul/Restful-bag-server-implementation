@@ -23,8 +23,8 @@ public interface BagEntry {
 
     public boolean delete();
 
-    public void setBagItInformation(BagIt bagIt);
+    public boolean setBagItInformation(BagIt bagIt);
 
-    public void setBagInfo(BagInfo baginfo);
+    public boolean setBagInfo(BagInfo baginfo);
 
 }
