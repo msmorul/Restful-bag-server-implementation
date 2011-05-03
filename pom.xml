@@ -47,11 +47,11 @@
         </dependency>
     </dependencies>
     <modules>
+        <module>bag-services</module>
         <module>CollectionManager</module>
         <module>ace-am-lib</module>
-        <!--<module>bag-manager</module>-->
-        <module>bag-services</module>
-        <module>bagStorageLibrary</module>
+        <module>bag-manager</module>
+        <module>bag-storage-library</module>
     </modules>
     <!--<reporting>
         <plugins>
