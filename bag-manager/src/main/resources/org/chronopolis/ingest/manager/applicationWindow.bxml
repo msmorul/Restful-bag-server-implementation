@@ -1,10 +1,34 @@
 
 <bag:MainWindow title="Bag Server Manager" maximized="true"
-    xmlns:bxml="http://pivot.apache.org/bxml"
-    xmlns:bag="org.chronopolis.ingest.manager"
-    xmlns:val="org.apache.pivot.wtk.validation"
-    xmlns="org.apache.pivot.wtk">
+                styles="{padding:{top:0, left:4, bottom:4, right:4}, showWindowControls:false}"
+                xmlns:bxml="http://pivot.apache.org/bxml"
+                xmlns:bag="org.chronopolis.ingest.manager"
+                xmlns:val="org.apache.pivot.wtk.validation"
+                xmlns="org.apache.pivot.wtk">
+    <bxml:define>
+        <FileBrowserSheet bxml:id="fileBrowserSheet"/>
+    </bxml:define>
 
+    <menuBar>
+        <MenuBar>
+            <MenuBar.Item buttonData="File">
+                <Menu>
+                    <Menu.Section>
+                        <Menu.Item bxml:id="directoryBtn" buttonData="Choose Directory">
+                        </Menu.Item>
+                    </Menu.Section>
+                </Menu>
+            </MenuBar.Item>
+            <MenuBar.Item buttonData="Server">
+                <Menu>
+                    <Menu.Section>
+                        <Menu.Item bxml:id="startServerBtn" buttonData="Start Server"></Menu.Item>
+                        <Menu.Item bxml:id="stopServerBtn" buttonData="Stop Server"></Menu.Item>
+                    </Menu.Section>
+                </Menu>
+            </MenuBar.Item>
+        </MenuBar>
+    </menuBar>
     <TablePane>
         <columns>
             <TablePane.Column width="1*"/>
@@ -12,13 +36,14 @@
         <rows>
             <TablePane.Row height="-1">
                 <BoxPane styles="{padding:10}" orientation="horizontal">
-                    <PushButton bxml:id="startServer" buttonData="Start Server"/>
                     <Label text="port:" />
                     <TextInput text="7878" bxml:id="port" textSize="5">
                         <validator>
                             <val:IntValidator/>
                         </validator>
                     </TextInput>
+                    <Label bxml:id="fileLabel" />
+
                 </BoxPane>
             </TablePane.Row>
             <TablePane.Row height="1*">
@@ -38,5 +63,5 @@
             </TablePane.Row>
         </rows>
     </TablePane>
-        
+
 </bag:MainWindow>
