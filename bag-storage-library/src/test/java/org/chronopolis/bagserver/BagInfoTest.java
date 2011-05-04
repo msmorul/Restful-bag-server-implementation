@@ -106,7 +106,8 @@ public class BagInfoTest {
         System.out.println("readInfo");
         Reader r = new StringReader(BAGINFO_FILE);
         
-        BagInfo.readInfo(r);
+        BagInfo bi = BagInfo.readInfo(r);
+        assertEquals("2011-04-13",bi.getAttribute("Bagging-Date"));
 //        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");

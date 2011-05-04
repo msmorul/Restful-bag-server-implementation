@@ -21,6 +21,9 @@ public class BagInfo {
     public static final String FILE_NAME = "bag-info.txt";
     private Map<String, String> bagAttributes;
 
+    public BagInfo() {
+    }
+
     BagInfo(Map<String, String> bagAttributes) {
         this.bagAttributes = bagAttributes;
     }

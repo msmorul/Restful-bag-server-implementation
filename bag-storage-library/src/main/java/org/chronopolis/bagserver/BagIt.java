@@ -21,6 +21,9 @@ public class BagIt {
     public String encoding;
     public String version;
 
+    public BagIt() {
+    }
+
     BagIt(String encoding, String version) {
         setEncoding(encoding);
         setVersion(version);

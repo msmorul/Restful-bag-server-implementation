@@ -71,6 +71,10 @@ public class MainWindow extends Frame implements Bindable {
     }
 
     public void initialize(Map<String, Object> map, URL url, final Resources rsrcs) {
+        baseDir = new File("/tmp/bagvault");
+        vault = new SimpleDiskVault(baseDir);
+        refreshBags();;
+        
         bagList.setItemRenderer(new BagListRenderer());
 
         refreshBtn.getButtonPressListeners().add(new ButtonPressListener() {
@@ -153,7 +157,6 @@ public class MainWindow extends Frame implements Bindable {
 
                     LOG.error("Error starting up", e);
                 }
-
             }
         });
     }

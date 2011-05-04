@@ -29,6 +29,11 @@
             <version>1.6</version>
         </dependency>
         <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
             <groupId>org.chronopolis.ingest</groupId>
             <artifactId>bag-storage-library</artifactId>
             <version>1.0-SNAPSHOT</version>

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -25,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.chronopolis.bagserver.BagEntry;
+import org.chronopolis.bagserver.BagEntry.State;
 import org.chronopolis.bagserver.BagInfo;
 import org.chronopolis.bagserver.BagIt;
 import org.chronopolis.bagserver.BagVault;
@@ -38,6 +41,23 @@ public class BagServer {
 
     public static final String VAULT = "org.chronopolis.BagVault";
     private static final Logger LOG = Logger.getLogger(BagServer.class);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<BagEntry> getBagList(@Context ServletContext servletCtx) {
+        LOG.debug("list bags ");
+
+        BagVault vault = getVault(servletCtx);
+        List<BagEntry> entryList = new ArrayList<BagEntry>();
+
+        for (BagEntry be : vault.getBags()) {
+            if (be.getBagState() == State.COMMITTED) {
+                entryList.add(be);
+            }
+        }
+
+        return entryList;
+    }
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -89,7 +109,7 @@ public class BagServer {
     /**
      * handler for validation and commit actions
      * if commit or validate are not null, then those actions are invoked. Should this be tightened per spec?
-     * //TODO invokeBagAction
+     * //TODO invokeBagAction validation
      * @param bagId
      */
     @Path("{bagid}")
@@ -124,7 +144,6 @@ public class BagServer {
 
     /**
      * Return links, parsed bag-info.txt, and parsed bagit.txt from spec
-     * TODO: getBagDescription
      * @param bagId bag to query
      */
     @Path("{bagid}")
@@ -132,7 +151,19 @@ public class BagServer {
     @GET
     public Response getBagDescription(@PathParam("bagid") String bagId,
             @Context ServletContext servletCtx) {
-        return null;
+        LOG.debug("metadata request for " + bagId);
+
+        BagVault vault = getVault(servletCtx);
+        BagEntry be = vault.getBag(bagId);
+        if (be == null) {
+            LOG.info("Request for unknown bag: " + bagId);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        BagDescriptionDTO dto = new BagDescriptionDTO();
+        dto.setInfo(be.getBagInfo());
+        dto.setBagit(be.getBagIt());
+        return Response.ok(dto).build();
+
     }
 
     @Path("{bagid}/data/{dataFile}")
@@ -203,7 +234,7 @@ public class BagServer {
     @Path("{bagid}/contents/{contentFile}")
     @Produces(MediaType.TEXT_PLAIN)
     @GET
-    public Response getMetadataFile(@PathParam("bagid") String bagId,
+    public Response getTagFile(@PathParam("bagid") String bagId,
             @PathParam("contentFile") String contentFile,
             @Context ServletContext servletCtx) {
         LOG.debug("Retrieve metadata file: " + contentFile + " to bag " + bagId);
@@ -222,7 +253,7 @@ public class BagServer {
     @Path("{bagid}/contents/{contentFile}")
     @Consumes(MediaType.TEXT_PLAIN)
     @PUT
-    public Response putMetadataFile(@PathParam("bagid") String bagId,
+    public Response putTagFile(@PathParam("bagid") String bagId,
             @PathParam("contentFile") String contentFile,
             @Context ServletContext servletCtx,
             @Context HttpServletRequest request) {
@@ -284,6 +315,20 @@ public class BagServer {
     }
 
     /**
+     * Return combined manifest describing items in the collection
+     * TODO getBagManifest
+     * @param bagId
+     * @param servletCtx
+     * @return
+     */
+    @GET
+    @Path("{bagid}/manifest")
+    public Response getBagManifest(@PathParam("bagid") String bagId,
+            @Context ServletContext servletCtx) {
+        return null;
+    }
+
+    /**
      * TODO: implement once spec has this listed
      * @param bagId
      * @param servletCtx
@@ -310,19 +355,11 @@ public class BagServer {
     }
 
     /**
-     * Return combined manifest describing items in the collection
-     * TODO getBagManifest
+     * TODO getBagMetadata
      * @param bagId
      * @param servletCtx
      * @return
      */
-    @GET
-    @Path("{bagid}/manifest")
-    public Response getBagManifest(@PathParam("bagid") String bagId,
-            @Context ServletContext servletCtx) {
-        return null;
-    }
-
     @GET
     @Path("{bagid}/metadata")
     public Response getBagMetadata(@PathParam("bagid") String bagId,

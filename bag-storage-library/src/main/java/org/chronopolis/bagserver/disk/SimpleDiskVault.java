@@ -398,6 +398,33 @@ public class SimpleDiskVault implements BagVault {
             }
         }
 
+        public BagIt getBagIt() {
+            File f = new File(directory, BagIt.FILE_NAME);
+            if (f.isFile()) {
+                try {
+                    return BagIt.readFile(new FileReader(f));
+                } catch (IOException e) {
+                    LOG.error("Error reading: " + f,e);
+                    return null;
+                }
+
+            }
+            return null;
+        }
+
+        public BagInfo getBagInfo() {
+            File f = new File(directory, BagInfo.FILE_NAME);
+            if (f.isFile()) {
+                try {
+                    return BagInfo.readInfo(new FileReader(f));
+                } catch (IOException e) {
+                    LOG.error("Error reading: " + f,e);
+                    return null;
+                }
+            }
+            return null;
+        }
+
         public InputStream openTagInputStream(String tagItem) throws IllegalArgumentException {
             File dataFile = new File(directory, tagItem);
             if (!dataFile.getParentFile().equals(directory)) {
