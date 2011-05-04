@@ -106,7 +106,22 @@ public class BagServer {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-
+        if (commit != null && !commit.isEmpty())
+        {
+            if (be.isComplete() && be.commit())
+            {
+                return Response.ok().build();
+            }
+            else
+            {
+                LOG.info("Could not commit bag: " + bagId);
+                return Response.serverError().build();
+            }
+        }
+        else if (validate != null && !validate.isEmpty())
+        {
+            //TODO: validation
+        }
 
 
         return Response.ok().build();
