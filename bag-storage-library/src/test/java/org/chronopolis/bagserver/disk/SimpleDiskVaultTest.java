@@ -4,10 +4,16 @@
  */
 package org.chronopolis.bagserver.disk;
 
+import java.io.OutputStream;
 import org.chronopolis.bagserver.BagEntry.State;
 import java.io.File;
+import java.io.StringReader;
 import org.apache.log4j.BasicConfigurator;
 import org.chronopolis.bagserver.BagEntry;
+import org.chronopolis.bagserver.BagInfo;
+import org.chronopolis.bagserver.BagInfoTest;
+import org.chronopolis.bagserver.BagIt;
+import org.chronopolis.bagserver.BagItTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -22,6 +28,7 @@ public class SimpleDiskVaultTest {
 
     private SimpleDiskVault instance;
     private File dir;
+    private static final String MANIFEST = "a4df   data/test";
 
     public SimpleDiskVaultTest() {
     }
@@ -56,6 +63,67 @@ public class SimpleDiskVaultTest {
             }
         }
         dir.delete();
+    }
+
+    @Test
+    public void testGetBag() throws Exception {
+        System.out.println("testgetBag");
+        String newIdentifier = "mynewbag";
+        BagEntry be = instance.createNewBag(newIdentifier);
+        assertNotNull(instance.getBag(newIdentifier));
+    }
+
+    @Test
+    public void testGetBaglist() throws Exception {
+        System.out.println("testgetBaglist");
+        String newIdentifier = "mynewbag";
+        assertEquals(0, instance.getBags().size());
+        instance.createNewBag(newIdentifier);
+        assertEquals(1, instance.getBags().size());
+        instance.getBag(newIdentifier).delete();
+        assertEquals(0, instance.getBags().size());
+
+    }
+
+    @Test
+    public void testSetBagIt() throws Exception {
+        System.out.println("testSetBagIt");
+        String newIdentifier = "mynewbag";
+        BagEntry be = instance.createNewBag(newIdentifier);
+        be.setBagItInformation(BagIt.readFile(new StringReader(BagItTest.BAG_FILE)));
+        assertTrue(new File(dir, "work/mynewbag/bagit.txt").isFile());
+    }
+
+    @Test
+    public void testSetBagInfo() throws Exception {
+        System.out.println("testSetBagInfo");
+        String newIdentifier = "mynewbag";
+        BagEntry be = instance.createNewBag(newIdentifier);
+        be.setBagInfo(BagInfo.readInfo(new StringReader(BagInfoTest.BAGINFO_FILE)));
+        assertTrue(new File(dir, "work/mynewbag/bag-info.txt").isFile());
+    }
+
+    @Test
+    public void testIsComplete() throws Exception {
+        System.out.println("testisComplete");
+        String newIdentifier = "mynewbag";
+        BagEntry be = instance.createNewBag(newIdentifier);
+        assertFalse(be.isComplete());
+        be.setBagItInformation(BagIt.readFile(new StringReader(BagItTest.BAG_FILE)));
+        be.setBagInfo(BagInfo.readInfo(new StringReader(BagInfoTest.BAGINFO_FILE)));
+        assertFalse(be.isComplete());
+        OutputStream os = be.openTagOutputStream("manifest-test.txt");
+        os.write(MANIFEST.getBytes());
+        os.close();
+        assertFalse(be.isComplete());
+        os = be.openDataOutputStream("test");
+        os.write(MANIFEST.getBytes());
+        os.close();
+        assertTrue(be.isComplete());
+        os = be.openDataOutputStream("test2");
+        os.write(MANIFEST.getBytes());
+        os.close();
+        assertFalse(be.isComplete());
     }
 
     @Test

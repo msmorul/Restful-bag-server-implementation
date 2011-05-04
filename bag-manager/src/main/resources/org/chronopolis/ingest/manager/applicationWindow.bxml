@@ -14,10 +14,12 @@
             <MenuBar.Item buttonData="File">
                 <Menu>
                     <Menu.Section>
-                        <Menu.Item bxml:id="directoryBtn" buttonData="Choose Directory">
-                        </Menu.Item>
+                        <Menu.Item bxml:id="directoryBtn" buttonData="Choose Directory"/>
+                        <Menu.Item bxml:id="refreshBtn" buttonData="Refresh Bag List"/>
+
                     </Menu.Section>
                 </Menu>
+               
             </MenuBar.Item>
             <MenuBar.Item buttonData="Server">
                 <Menu>
@@ -49,9 +51,21 @@
             <TablePane.Row height="1*">
                 <SplitPane styles="{padding:10}" orientation="horizontal" splitRatio="0.25">
                     <left>
-                        <Border styles="{padding:6}">
-                            <Label text="Bags" styles="{font:{bold:true}}"/>
-                        </Border>
+                        <TablePane>
+                            <columns>
+                                <TablePane.Column width="1*"/>
+                            </columns>
+                            <rows>
+                                <TablePane.Row height="-1">
+                                    <Label text="Bags" styles="{font:{bold:true}}"/>
+                                </TablePane.Row>
+                                <TablePane.Row height="1*">
+                                    <ScrollPane>
+                                        <ListView bxml:id="bagList"/>
+                                    </ScrollPane>
+                                </TablePane.Row>
+                            </rows>
+                        </TablePane>
                     </left>
                     <right>
                         <TabPane >

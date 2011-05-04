@@ -17,7 +17,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.log4j.Logger;
@@ -27,7 +29,10 @@ import org.chronopolis.bagserver.BagIt;
 import org.chronopolis.bagserver.BagVault;
 
 /**
- * Simple disk bag vault which assumes all bags exist in a flat hierarchy. 
+ * Simple disk bag vault which assumes all bags exist in a flat hierarchy. Bags
+ * are stored on disk in two directories
+ * work - bags which are allowed to be modified
+ * committed - static, unchanging bags.
  * 
  * @author toaster
  */
@@ -42,7 +47,7 @@ public class SimpleDiskVault implements BagVault {
 
         public boolean accept(File pathname) {
             if (pathname.getName().startsWith("_")) {
-                return true;
+                return false;
             }
 
             return pathname.isDirectory();
@@ -51,7 +56,7 @@ public class SimpleDiskVault implements BagVault {
     private FileFilter manifestFilter = new FileFilter() {
 
         public boolean accept(File pathname) {
-            return !pathname.isFile() || !pathname.getName().matches("^manifest-[a-z0-9]+\\.txt$");
+            return pathname.isFile() && pathname.getName().matches("^manifest-[a-z0-9]+\\.txt$");
         }
     };
 
@@ -210,6 +215,7 @@ public class SimpleDiskVault implements BagVault {
         }
 
         public boolean isComplete() {
+            // Check for metadats files
             File bagitFile = new File(directory, BagIt.FILE_NAME);
             if (!bagitFile.isFile()) {
                 LOG.info("Missing bagit.txt file ");
@@ -218,7 +224,7 @@ public class SimpleDiskVault implements BagVault {
             File bagInfo = new File(directory, BagInfo.FILE_NAME);
 
             if (!bagInfo.isFile()) {
-                LOG.info("Missing bagit.txt file ");
+                LOG.info("Missing bag-info.txt file ");
                 return false;
             }
 
@@ -231,12 +237,12 @@ public class SimpleDiskVault implements BagVault {
                     } else {
                         List<String> mf2 = loadManifestFiles(f);
                         if (mf2.size() != files.size()) {
-                            LOG.info("DIffering manifests");
+                            LOG.info("Differing manifests " + f);
                             return false;
                         }
                         for (int i = 0; i < files.size(); i++) {
                             if (!files.get(i).equals(mf2.get(i))) {
-                                LOG.info("DIffering manifests");
+                                LOG.info("Differing manifests " + f);
                                 return false;
                             }
                         }
@@ -244,9 +250,52 @@ public class SimpleDiskVault implements BagVault {
                 }
             } catch (IOException e) {
                 LOG.error("Error reading manifest ", e);
+                return false;
             }
 
+            // no manifests
+            if (files == null) {
+                LOG.error("No manifest found");
+                return false;
+            }
+
+            // check for all files in manifest
+            List<String> dFiles = loadAllFiles();
+            for (String s : files) {
+                if (!dFiles.contains(s)) {
+                    LOG.error("Manifest file not in storage: " + s);
+                    return false;
+                }
+                dFiles.remove(s);
+            }
+            // files on disk, but not in manifest
+            if (dFiles.size() > 0) {
+                LOG.error("Files on disk, but not in manifest: " + dFiles.size());
+                return false;
+            }
             return true;
+        }
+
+        private List<String> loadAllFiles() {
+            List<String> retList = new ArrayList<String>();
+
+            int len = directory.getAbsolutePath().length() + 1;
+
+            Queue<File> dirList = new LinkedList<File>();
+            dirList.offer(new File(directory, "data"));
+
+            File current;
+            while ((current = dirList.poll()) != null) {
+                for (File f : current.listFiles()) {
+                    if (f.isDirectory()) {
+                        dirList.offer(f);
+                    } else {
+                        retList.add(f.getAbsolutePath().substring(len));
+                    }
+                }
+            }
+
+            return retList;
         }
 
         private List<String> loadManifestFiles(File f) throws IOException {
@@ -349,8 +398,8 @@ public class SimpleDiskVault implements BagVault {
             }
         }
 
-        public InputStream openTagStream(String tagItem) throws IllegalArgumentException {
-            File dataFile = new File(directory, "data/" + tagItem);
+        public InputStream openTagInputStream(String tagItem) throws IllegalArgumentException {
+            File dataFile = new File(directory, tagItem);
             if (!dataFile.getParentFile().equals(directory)) {
                 throw new IllegalArgumentException("Bag tag item " + tagItem);
             }
@@ -362,8 +411,24 @@ public class SimpleDiskVault implements BagVault {
             }
         }
 
+        public OutputStream openTagOutputStream(String tagItem) throws IllegalArgumentException {
+
+
+            File dataFile = new File(directory, tagItem);
+            if (!dataFile.getParentFile().equals(directory)) {
+                throw new IllegalArgumentException("Bag tag item " + tagItem);
+            }
+            try {
+                return new FileOutputStream(dataFile);
+            } catch (FileNotFoundException e) {
+                LOG.error("Cannot create output file: " + dataFile + " for id: " + tagItem);
+                return null;
+            }
+        }
+
         public InputStream openDataInputStream(String fileIdentifier) throws IllegalArgumentException {
             File dataFile = new File(directory, "data/" + fileIdentifier);
+            //TODO: check to make sure abs path it in data dir;
             try {
                 return new FileInputStream(dataFile);
             } catch (FileNotFoundException e) {
@@ -374,7 +439,8 @@ public class SimpleDiskVault implements BagVault {
 
         public OutputStream openDataOutputStream(String fileIdentifier) throws IllegalArgumentException {
 
-
+            //TODO: check to make sure abs path it in data dir;
+            //TODO: create parent dir's if necessary
             File dataFile = new File(directory, "data/" + fileIdentifier);
             try {
                 return new FileOutputStream(dataFile);

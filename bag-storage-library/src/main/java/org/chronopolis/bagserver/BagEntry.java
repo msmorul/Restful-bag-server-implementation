@@ -43,7 +43,8 @@ public interface BagEntry {
     public boolean setBagInfo(BagInfo baginfo);
     //TODO: handle extra tag files
 
-    public InputStream openTagStream(String tagItem) throws IllegalArgumentException;
+    public InputStream openTagInputStream(String tagItem) throws IllegalArgumentException;
+    public OutputStream openTagOutputStream(String tagItem) throws IllegalArgumentException;
 
     /**
      * Return a data file from this bag.

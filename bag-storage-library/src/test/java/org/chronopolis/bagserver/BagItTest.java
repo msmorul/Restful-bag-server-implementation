@@ -23,8 +23,8 @@ public class BagItTest {
 
     private static final String VERSION = "0.96";
     private static final String ENCODING = "UTF-8";
-    private static final String BAG_FILE = "BagIt-Version: " + VERSION + "\nTag-File-Character-Encoding: " + ENCODING + "\n";
-    private static final String BAD_BAG_FILE = "BagIts-Version: 0.96\nTag-File-Character-Encoding: UTF-8\n";
+    public static final String BAG_FILE = "BagIt-Version: " + VERSION + "\nTag-File-Character-Encoding: " + ENCODING + "\n";
+    public static final String BAD_BAG_FILE = "BagIts-Version: 0.96\nTag-File-Character-Encoding: UTF-8\n";
 
     public BagItTest() {
     }

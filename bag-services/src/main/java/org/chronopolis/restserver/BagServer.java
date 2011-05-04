@@ -106,20 +106,15 @@ public class BagServer {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        if (commit != null && !commit.isEmpty())
-        {
-            if (be.isComplete() && be.commit())
-            {
+        if (commit != null && !commit.isEmpty()) {
+            if (be.isComplete() && be.commit()) {
                 return Response.ok().build();
-            }
-            else
-            {
+            } else {
                 LOG.info("Could not commit bag: " + bagId);
-                return Response.serverError().build();
+                // per spec, 400 to clients on incomplete bags
+                return Response.status(400).build();
             }
-        }
-        else if (validate != null && !validate.isEmpty())
-        {
+        } else if (validate != null && !validate.isEmpty()) {
             //TODO: validation
         }
 
@@ -219,7 +214,7 @@ public class BagServer {
             LOG.info("Request for unknown bag: " + bagId);
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        InputStream is = be.openTagStream(contentFile);
+        InputStream is = be.openTagInputStream(contentFile);
         return Response.ok(is).build();
 
     }
@@ -240,6 +235,7 @@ public class BagServer {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
+        //BAGIT file
         if (contentFile.toLowerCase().equals("bagit.txt")) {
             LOG.trace("Parsing bagit.txt");
             try {
@@ -251,7 +247,7 @@ public class BagServer {
                 LOG.error(e);
                 throw new WebApplicationException(e);
             }
-
+            // BAGINFO
         } else if (contentFile.toLowerCase().equals("bag-info.txt")) {
             LOG.trace("Parsing baginfo.txt");
             try {
@@ -263,8 +259,25 @@ public class BagServer {
                 LOG.error(e);
                 throw new WebApplicationException(e);
             }
+            // ALL OTHER TAG FILES
         } else {
-            //TODO: parse other files
+            byte[] block = new byte[32768];
+            OutputStream os = be.openTagOutputStream(contentFile);
+            if (os == null) {
+                return Response.serverError().build();
+            }
+
+            try {
+                InputStream is = request.getInputStream();
+                int read;
+                while ((read = is.read(block)) != -1) {
+                    os.write(block, 0, read);
+                }
+                os.close();
+            } catch (IOException e) {
+                LOG.error("Error writing file " + bagId + ": " + contentFile);
+                throw new WebApplicationException(e);
+            }
         }
 
         return Response.ok().build();
