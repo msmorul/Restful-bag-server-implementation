@@ -88,17 +88,28 @@ public class BagServer {
 
     /**
      * handler for validation and commit actions
+     * if commit or validate are not null, then those actions are invoked. Should this be tightened per spec?
      * //TODO invokeBagAction
      * @param bagId
      */
     @Path("{bagid}")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @POST
-    public void invokeBagAction(@PathParam("bagid") String bagId,
+    public Response invokeBagAction(@PathParam("bagid") String bagId,
+            @FormParam("commit") String commit,
+            @FormParam("validate") String validate,
             @Context ServletContext servletCtx) {
-//        BagEntry be = vault.getBag(bagId);
-//        if (be == null) {
-//            return Response.status(Response.Status.NOT_FOUND).build();
-//        }
+
+        BagVault vault = getVault(servletCtx);
+        BagEntry be = vault.getBag(bagId);
+        if (be == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+
+
+
+        return Response.ok().build();
     }
 
     /**
@@ -139,7 +150,7 @@ public class BagServer {
      * @param servletCtx
      * @return
      */
-    @Path("{bagid}/data/{dataFile}")
+    @Path("{bagid}/contents/data/{dataFile}")
     @PUT
     public Response putBagData(@PathParam("bagid") String bagId,
             @PathParam("dataFile") String dataFile,
@@ -270,6 +281,13 @@ public class BagServer {
         return null;
     }
 
+    /**
+     * Return combined manifest describing items in the collection
+     * TODO getBagManifest
+     * @param bagId
+     * @param servletCtx
+     * @return
+     */
     @GET
     @Path("{bagid}/manifest")
     public Response getBagManifest(@PathParam("bagid") String bagId,
