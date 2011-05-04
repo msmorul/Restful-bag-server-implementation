@@ -61,8 +61,9 @@ public class MainWindow extends Frame implements Bindable {
     private BagVault vault;
 
     private void refreshBags() {
-        if (vault == null)
+        if (vault == null) {
             return;
+        }
         List l = new ArrayList<BagEntry>();
         for (BagEntry be : vault.getBags()) {
             l.add(be);
@@ -71,10 +72,16 @@ public class MainWindow extends Frame implements Bindable {
     }
 
     public void initialize(Map<String, Object> map, URL url, final Resources rsrcs) {
+        // debug hack
         baseDir = new File("/tmp/bagvault");
-        vault = new SimpleDiskVault(baseDir);
-        refreshBags();;
-        
+        if (baseDir.exists()) {
+            vault = new SimpleDiskVault(baseDir);
+            refreshBags();
+            
+        } else {
+            baseDir = null;
+        }
+
         bagList.setItemRenderer(new BagListRenderer());
 
         refreshBtn.getButtonPressListeners().add(new ButtonPressListener() {

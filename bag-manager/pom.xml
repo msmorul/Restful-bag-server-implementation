@@ -13,31 +13,70 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-<build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>java</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <mainClass>org.chronopolis.ingest.manager.Main</mainClass>
-        </configuration>
-      </plugin>
-</plugins>
-</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>org.chronopolis.ingest.manager.Main</mainClass>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo.webstart</groupId>
+                <artifactId>webstart-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jnlp</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <libPath>lib</libPath>
+                    <jnlp>
+                        <mainClass>org.chronopolis.ingest.manager.Main</mainClass>
+                    </jnlp>
+                    <sign>
+                        <keystore>fillme</keystore>
+                        <keypass>fillme</keypass>
+                        <storepass>fillme</storepass>
+                        <alias>fillme</alias>
+                        <dnameCn>UMD</dnameCn>
+                        <dnameOu>UMIACS</dnameOu>
+                        <dnameO>Chronopolis</dnameO>
+                        <dnameL>College Park</dnameL>
+                        <dnameSt>MD</dnameSt>
+                        <dnameC>Ingestion</dnameC>
+                        <verify>true</verify>
+                        <keystoreConfig>
+                            <delete>true</delete> <!-- delete the keystore -->
+                            <gen>true</gen>       <!-- optional shortcut to generate the store. -->
+                        </keystoreConfig>
+                    </sign>
+                    <verbose>true</verbose>
+                </configuration>
+
+            </plugin>
+        </plugins>
+
+    </build>
 
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>1.6.1</version>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.pivot</groupId>
