@@ -4,16 +4,19 @@
  */
 package org.chronopolis.bagserver.disk;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -43,6 +46,12 @@ public class SimpleDiskVault implements BagVault {
             }
 
             return pathname.isDirectory();
+        }
+    };
+    private FileFilter manifestFilter = new FileFilter() {
+
+        public boolean accept(File pathname) {
+            return !pathname.isFile() || !pathname.getName().matches("^manifest-[a-z0-9]+\\.txt$");
         }
     };
 
@@ -200,6 +209,66 @@ public class SimpleDiskVault implements BagVault {
             throw new IllegalStateException("Cannot determine bag state " + directory);
         }
 
+        public boolean isComplete() {
+            File bagitFile = new File(directory, BagIt.FILE_NAME);
+            if (!bagitFile.isFile()) {
+                LOG.info("Missing bagit.txt file ");
+                return false;
+            }
+            File bagInfo = new File(directory, BagInfo.FILE_NAME);
+
+            if (!bagInfo.isFile()) {
+                LOG.info("Missing bagit.txt file ");
+                return false;
+            }
+
+            // locate manifests
+            List<String> files = null;
+            try {
+                for (File f : directory.listFiles(manifestFilter)) {
+                    if (files == null) {
+                        files = loadManifestFiles(f);
+                    } else {
+                        List<String> mf2 = loadManifestFiles(f);
+                        if (mf2.size() != files.size()) {
+                            LOG.info("DIffering manifests");
+                            return false;
+                        }
+                        for (int i = 0; i < files.size(); i++) {
+                            if (!files.get(i).equals(mf2.get(i))) {
+                                LOG.info("DIffering manifests");
+                                return false;
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                LOG.error("Error reading manifest ", e);
+            }
+
+            return true;
+        }
+
+        private List<String> loadManifestFiles(File f) throws IOException {
+            List<String> fList = new ArrayList<String>();
+            BufferedReader br = new BufferedReader(new FileReader(f));
+
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                String[] parts = line.split("\\s+", 2);
+                if (parts.length != 2) {
+                    br.close();
+                    throw new IOException("Bad Line: " + line);
+                }
+                fList.add(parts[1].trim());
+            }
+            br.close();
+            Collections.sort(fList);
+            return fList;
+        }
+
         public boolean commit() {
             creationLock.lock();
             try {
@@ -277,6 +346,19 @@ public class SimpleDiskVault implements BagVault {
             } catch (IOException e) {
                 LOG.error("Cannot write bag-info.txt", e);
                 return false;
+            }
+        }
+
+        public InputStream openTagStream(String tagItem) throws IllegalArgumentException {
+            File dataFile = new File(directory, "data/" + tagItem);
+            if (!dataFile.getParentFile().equals(directory)) {
+                throw new IllegalArgumentException("Bag tag item " + tagItem);
+            }
+            try {
+                return new FileInputStream(dataFile);
+            } catch (FileNotFoundException e) {
+                LOG.error("Cannot create input file: " + dataFile + " for id: " + tagItem);
+                return null;
             }
         }
 

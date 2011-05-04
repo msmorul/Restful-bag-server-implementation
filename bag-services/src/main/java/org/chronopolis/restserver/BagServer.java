@@ -172,7 +172,7 @@ public class BagServer {
     }
 
     /**
-     * TODO: getMetadataFile
+     * Handle the retrieval of tag files. 
      * @param bagId
      * @param contentFile
      * @param servletCtx
@@ -185,9 +185,17 @@ public class BagServer {
     public Response getMetadataFile(@PathParam("bagid") String bagId,
             @PathParam("contentFile") String contentFile,
             @Context ServletContext servletCtx) {
+        LOG.debug("Retrieve metadata file: " + contentFile + " to bag " + bagId);
 
+        BagVault vault = getVault(servletCtx);
+        BagEntry be = vault.getBag(bagId);
+        if (be == null) {
+            LOG.info("Request for unknown bag: " + bagId);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        InputStream is = be.openTagStream(contentFile);
+        return Response.ok(is).build();
 
-        return Response.ok().build();
     }
 
     @Path("{bagid}/contents/{contentFile}")
@@ -236,6 +244,12 @@ public class BagServer {
         return Response.ok().build();
     }
 
+    /**
+     * TODO: implement once spec has this listed
+     * @param bagId
+     * @param servletCtx
+     * @return
+     */
     @Path("{bagid}/copies")
     @GET
     public Response getBagCopies(@PathParam("bagid") String bagId,
@@ -243,6 +257,12 @@ public class BagServer {
         return null;
     }
 
+    /**
+     * TODO: implement once spec has description
+     * @param bagId
+     * @param servletCtx
+     * @return
+     */
     @GET
     @Path("{bagid}/notes")
     public Response getBagNotes(@PathParam("bagid") String bagId,

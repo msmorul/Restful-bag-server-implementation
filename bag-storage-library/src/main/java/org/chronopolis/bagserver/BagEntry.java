@@ -22,6 +22,18 @@ public interface BagEntry {
 
     public State getBagState();
 
+    /**
+     * Test bag for completeness, not integrity
+     * 
+     * @return true if manifests all contain same files and all files listed manifests are present
+     */
+    public boolean isComplete();
+
+    /**
+     * Mark a file as committed.
+     *
+     * @return
+     */
     public boolean commit();
 
     public boolean delete();
@@ -30,6 +42,8 @@ public interface BagEntry {
 
     public boolean setBagInfo(BagInfo baginfo);
     //TODO: handle extra tag files
+
+    public InputStream openTagStream(String tagItem) throws IllegalArgumentException;
 
     /**
      * Return a data file from this bag.
