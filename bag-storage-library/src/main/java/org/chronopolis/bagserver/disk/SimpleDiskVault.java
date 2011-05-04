@@ -455,6 +455,13 @@ public class SimpleDiskVault implements BagVault {
 
         public InputStream openDataInputStream(String fileIdentifier) throws IllegalArgumentException {
             File dataFile = new File(directory, "data/" + fileIdentifier);
+            if (!dataFile.getParentFile().exists())
+            {
+                if (!dataFile.getParentFile().mkdirs())
+                {
+                    throw new IllegalArgumentException("Cannot create parent dir " + dataFile.getParentFile());
+                }
+            }
             //TODO: check to make sure abs path it in data dir;
             try {
                 return new FileInputStream(dataFile);
