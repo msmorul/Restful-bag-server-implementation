@@ -218,6 +218,7 @@ public class Main implements Application {
 
         MessageBus.subscribe(SaveBagMessage.class, new ManifestSaveAction());
         MessageBus.subscribe(TransferBagMessage.class, new TransferBagAction());
+        MessageBus.subscribe(TransferBagMessage.class, new BagServerTransfer());
 
 
         ApplicationContext.queueCallback(new Runnable() {

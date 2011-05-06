@@ -197,6 +197,7 @@ public class BagServer {
             @PathParam("dataFile") String dataFile,
             @Context HttpServletRequest request,
             @Context ServletContext servletCtx) {
+        LOG.trace("Upload file: " + bagId + " " + dataFile);
         BagVault vault = getVault(servletCtx);
         BagEntry be = vault.getBag(bagId);
         if (be == null) {

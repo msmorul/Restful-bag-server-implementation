@@ -18,7 +18,7 @@ import org.apache.pivot.wtk.Sheet;
 import org.apache.pivot.wtk.SheetCloseListener;
 import org.chronopolis.ingest.bagger.BagModel;
 import org.chronopolis.ingest.messages.TransferBagMessage;
-import org.chronopolis.ingest.pkg.BagBuildListener;
+import org.chronopolis.ingest.pkg.TarBagBuildListener;
 import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.ChronPackage.Statistics;
 import org.chronopolis.ingest.pkg.DelayedTransferStream;
@@ -44,8 +44,9 @@ public final class TransferBagAction implements MessageBusListener<TransferBagMe
 
         final OutputStream os;
         final HttpURLConnection connection;
+        final boolean isLocal = (model.getIngestionType() == BagModel.IngestionType.LOCAL);
 
-        if (model.getIngestionType() == BagModel.IngestionType.LOCAL) {
+        if (isLocal) {
             File f = model.getSaveFile();
 
             try {
@@ -57,32 +58,32 @@ public final class TransferBagAction implements MessageBusListener<TransferBagMe
                 return;
             }
         } else {
+            return;
             //Open Chron input stream
-            try {
-                URL newURL = new URL(Main.getURL() + "/" + URLUTF8Encoder.encode(model.getChronopolisBag()));
-                if (model.getBagType() == BagModel.BagType.HOLEY) {
-                    connection = null;
-                    os = new DelayedTransferStream(newURL);
-                } else {
-                    connection = (HttpURLConnection) newURL.openConnection();
-                    connection.setChunkedStreamingMode(32768);
-                    connection.setDoOutput(true);
-                    connection.setRequestMethod("PUT");
-                    LOG.trace("Opening url: " + newURL);
-                    os = new GZIPOutputStream(connection.getOutputStream());
-                }
-
-            } catch (IOException ioe) {
-                LOG.error("Error opening chron connection",ioe);
-                Alert.alert(MessageType.ERROR, "Error opening chronopolis connection: ("
-                        + ioe.getClass().getName() + ") " + ioe.getMessage(), message.getParentWindow());
-                return;
-            }
+//            try {
+//                URL newURL = new URL(Main.getURL() + "/" + URLUTF8Encoder.encode(model.getChronopolisBag()));
+//                if (model.getBagType() == BagModel.BagType.HOLEY) {
+//                    connection = null;
+//                    os = new DelayedTransferStream(newURL);
+//                } else {
+//                    connection = (HttpURLConnection) newURL.openConnection();
+//                    connection.setChunkedStreamingMode(32768);
+//                    connection.setDoOutput(true);
+//                    connection.setRequestMethod("PUT");
+//                    LOG.trace("Opening url: " + newURL);
+//                    os = new GZIPOutputStream(connection.getOutputStream());
+//                }
+//
+//            } catch (IOException ioe) {
+//                LOG.error("Error opening chron connection",ioe);
+//                Alert.alert(MessageType.ERROR, "Error opening chronopolis connection: ("
+//                        + ioe.getClass().getName() + ") " + ioe.getMessage(), message.getParentWindow());
+//                return;
+//            }
         }
 
         boolean isHoley = (model.getBagType() == BagModel.BagType.HOLEY);
-        final boolean isLocal = (model.getIngestionType() == BagModel.IngestionType.LOCAL);
-        BagBuildListener writer = new BagBuildListener(workingPackage, os, isHoley);
+        TarBagBuildListener writer = new TarBagBuildListener( os, isHoley);
         writer.setCloseOutput(true);
         if (isHoley) {
             writer.setUrlPattern(model.getUrlPattern());

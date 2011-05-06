@@ -29,5 +29,4 @@ public class LogMessage {
         this.logLayout = logLayout;
         this.event = event;
     }
-    
 }

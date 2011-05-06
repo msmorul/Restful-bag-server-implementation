@@ -27,6 +27,12 @@ public class ManifestBuilder {
     private boolean execute = true;
     private long totalSize;
 
+    public ChronPackage getPackage() {
+        return pkg;
+    }
+
+
+
     public ManifestBuilder(ChronPackage pkg, long totalSize) {
         this.pkg = pkg;
         this.totalSize = totalSize;

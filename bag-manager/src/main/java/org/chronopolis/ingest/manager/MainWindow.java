@@ -77,7 +77,7 @@ public class MainWindow extends Frame implements Bindable {
         if (baseDir.exists()) {
             vault = new SimpleDiskVault(baseDir);
             refreshBags();
-            
+
         } else {
             baseDir = null;
         }

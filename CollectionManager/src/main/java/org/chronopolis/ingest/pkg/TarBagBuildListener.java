@@ -7,17 +7,15 @@ package org.chronopolis.ingest.pkg;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.regex.Matcher;
 import org.chronopolis.ingest.Util;
 
 /**
  *
  * @author toaster
  */
-public class BagBuildListener extends ManifestBuildListener.Adapter {
+public class TarBagBuildListener extends ManifestBuildListener.Adapter {
 
     private OutputStream baseStream;
-    private ChronPackage pkg;
     private boolean holey = false;
     private BagWriter writer;
     private UrlFormatter formatter;
@@ -25,9 +23,8 @@ public class BagBuildListener extends ManifestBuildListener.Adapter {
     private long totalBytes = 0;
     private long totalFiles = 0;
 
-    public BagBuildListener(ChronPackage pkg, OutputStream bagStream, boolean holey) {
+    public TarBagBuildListener(OutputStream bagStream, boolean holey) {
         this.holey = holey;
-        this.pkg = pkg;
         
         this.baseStream = bagStream;
     }
@@ -50,7 +47,7 @@ public class BagBuildListener extends ManifestBuildListener.Adapter {
 
     @Override
     public void startBuild(ManifestBuilder builder) {
-        writer = new BagWriter(baseStream, pkg);
+        writer = new BagWriter(baseStream, builder.getPackage());
         writer.addMetadata(BagWriter.INFO_BAGGING_DATE, BagWriter.DATE_FORMAT.format(new Date()));
     }
 
@@ -68,7 +65,6 @@ public class BagBuildListener extends ManifestBuildListener.Adapter {
                 baseStream.close();
             }
             baseStream = null;
-            pkg = null;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
