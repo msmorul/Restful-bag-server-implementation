@@ -42,7 +42,7 @@ public final class BagServerTransfer implements MessageBusListener<TransferBagMe
         boolean isHoley = (model.getBagType() == BagModel.BagType.HOLEY);
 
 
-        BagServerBuildListener writer = new BagServerBuildListener(URI.create("http://localhost:7878/bags"), isHoley,model.getChronopolisBag());
+        BagServerBuildListener writer = new BagServerBuildListener(URI.create("http://localhost:7878/bags"), isHoley, model.getChronopolisBag());
         if (isHoley) {
             writer.setUrlPattern(model.getUrlPattern());
         }
@@ -56,15 +56,10 @@ public final class BagServerTransfer implements MessageBusListener<TransferBagMe
                 builder.cancel();
 
                 if (sheet.getResult()) {
-
                     Alert.alert(MessageType.INFO, "Chronopolis Transfer Successful", message.getParentWindow());
-
-
                     workingPackage.setReadOnly(true);
-
-                } else {
-                    Alert.alert(MessageType.ERROR, "Aborted!", message.getParentWindow());
-
+//                } else {
+//                    Alert.alert(MessageType.ERROR, "Aborted! ", message.getParentWindow());
                 }
             }
         });
@@ -75,6 +70,8 @@ public final class BagServerTransfer implements MessageBusListener<TransferBagMe
                     builder.scanPackage();
                 } catch (Exception ioe) {
                     dialog.close();
+                    Alert.alert(MessageType.ERROR, "Aborted! " + ioe.getMessage(), message.getParentWindow());
+
                     LOG.error(ioe);
                 }
             }

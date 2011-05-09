@@ -59,27 +59,6 @@ public final class TransferBagAction implements MessageBusListener<TransferBagMe
             }
         } else {
             return;
-            //Open Chron input stream
-//            try {
-//                URL newURL = new URL(Main.getURL() + "/" + URLUTF8Encoder.encode(model.getChronopolisBag()));
-//                if (model.getBagType() == BagModel.BagType.HOLEY) {
-//                    connection = null;
-//                    os = new DelayedTransferStream(newURL);
-//                } else {
-//                    connection = (HttpURLConnection) newURL.openConnection();
-//                    connection.setChunkedStreamingMode(32768);
-//                    connection.setDoOutput(true);
-//                    connection.setRequestMethod("PUT");
-//                    LOG.trace("Opening url: " + newURL);
-//                    os = new GZIPOutputStream(connection.getOutputStream());
-//                }
-//
-//            } catch (IOException ioe) {
-//                LOG.error("Error opening chron connection",ioe);
-//                Alert.alert(MessageType.ERROR, "Error opening chronopolis connection: ("
-//                        + ioe.getClass().getName() + ") " + ioe.getMessage(), message.getParentWindow());
-//                return;
-//            }
         }
 
         boolean isHoley = (model.getBagType() == BagModel.BagType.HOLEY);

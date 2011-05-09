@@ -8,6 +8,9 @@ import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -16,9 +19,13 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+//import java.util.Map;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
+import org.apache.pivot.collections.Map;
+import org.chronopolis.ingest.Util;
 
 /**
  *
@@ -31,10 +38,12 @@ public class BagServerBuildListener extends ManifestBuildListener.Adapter {
     private List<String> digestList = new ArrayList<String>();
     private List<String> fetchList = new ArrayList<String>(1000);
     private long totalBytes = 0;
+    private long totalFiles = 0;
     private OutputStream dataPutStream = null;
     private boolean holey;
     private UrlFormatter formatter;
     private String pkgId;
+    private HttpURLConnection uc;
 
     public BagServerBuildListener(URI baseURL, boolean holey, String pkgId) {
         this.baseURL = baseURL;
@@ -72,18 +81,21 @@ public class BagServerBuildListener extends ManifestBuildListener.Adapter {
     @Override
     public void startItem(ManifestBuilder builder, long size, String item) {
         String rel = "/" + pkgId + "/contents/data/" + item;
+        totalFiles++;
         try {
             if (!holey) {
-                URL putURI = new URL(baseURL.toASCIIString() + rel);
+
+                URL putURI = new URL(URLUTF8Encoder.encode(baseURL.toASCIIString() + rel));
                 LOG.debug("Opening data connection to: " + putURI);
 
-                HttpURLConnection uc = (HttpURLConnection) putURI.openConnection();
+                uc = (HttpURLConnection) putURI.openConnection();
                 uc.setDoOutput(true);
                 uc.setRequestMethod("PUT");
                 HttpURLConnection.setFollowRedirects(true);
                 uc.setChunkedStreamingMode(32768);
                 dataPutStream = uc.getOutputStream();
             } else {
+                uc = null;
                 String url = formatter.format(item);
                 fetchList.add(url + "  " + size + "  data/" + item);
             }
@@ -99,6 +111,7 @@ public class BagServerBuildListener extends ManifestBuildListener.Adapter {
         if (dataPutStream != null) {
             try {
                 dataPutStream.write(block, offset, length);
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -109,10 +122,16 @@ public class BagServerBuildListener extends ManifestBuildListener.Adapter {
     public void endItem(ManifestBuilder builder, String item, String digest) {
         if (dataPutStream != null) {
             try {
+                LOG.debug("Closing file put: " + item);
                 dataPutStream.close();
+                if (uc.getResponseCode() != 200) {
+                    LOG.error("Unexpected result code: " + uc.getResponseCode());
+                    throw new RuntimeException("Unexpected result code: " + uc.getResponseCode());
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
             dataPutStream = null;
         }
         digestList.add(digest + "  data/" + item);
@@ -144,29 +163,111 @@ public class BagServerBuildListener extends ManifestBuildListener.Adapter {
      */
     @Override
     public void endBuild(ManifestBuilder builder) {
-
+        LOG.debug("Sendinf bagit, info, manifest and fetch ");
         // TODO: upload bagit, info, manifest, fetch files
-        writeVersion(builder);
+        writeVersion();
+        writeInfo(builder);
+        try {
+            writeList("manifest-" + builder.getPackage().getBagFormattedDigest() + ".txt", digestList);
+            writeList("fetch.txt", fetchList);
+        } catch (IOException e) {
+            LOG.error("Error uploading fetch or manifest: ", e);
+            throw new RuntimeException(e);
+        }
 
+        LOG.debug("POSTing commit instruction ");
+        Form f = new Form();
+        f.add("commit", "true");
         Client c = Client.create();
         WebResource r = c.resource(URI.create(baseURL.toString() + "/" + pkgId));
+        LOG.debug("POSTing commit instruction " + r.getURI());
         r.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE);
         try {
-            r.post();
+            r.post(f);
         } catch (UniformInterfaceException e) {
             LOG.error(e.getResponse());
             builder.cancel();
         }
     }
 
-    private void writeVersion(ManifestBuilder builder) {
+    private void writeList(String name, List<String> list) throws IOException {
+        if (list.isEmpty()) {
+            return;
+        }
+        File tmpFile = File.createTempFile("list", ".txt");
+        PrintWriter writer = new PrintWriter(new FileWriter(tmpFile));
+        for (String s : list) {
+            writer.println(s);
+        }
+        writer.close();
+
+        String rel = "/" + pkgId + "/contents/" + name;
+
+        URL putURI = new URL(baseURL.toASCIIString() + rel);
+        LOG.debug("Sending metadata to: " + putURI);
+        HttpURLConnection uc = (HttpURLConnection) putURI.openConnection();
+        uc.setDoOutput(true);
+        uc.setRequestMethod("PUT");
+        HttpURLConnection.setFollowRedirects(true);
+        uc.setChunkedStreamingMode(32768);
+        OutputStream os = uc.getOutputStream();
+
+
+        FileInputStream fis = new FileInputStream(tmpFile);
+        byte[] block = new byte[32786];
+        int read;
+        while ((read = fis.read(block)) != -1) {
+            os.write(block, 0, read);
+        }
+        fis.close();
+        os.close();
+
+    }
+
+    private void writeInfo(ManifestBuilder builder) {
+        Map<String, String> metadata = builder.getPackage().getMetadataMap();
+        metadata.put(BagWriter.INFO_BAGGING_DATE, BagWriter.DATE_FORMAT.format(new Date()));
+        metadata.put(BagWriter.INFO_PAYLOAD_OXUM, totalBytes + "." + totalFiles);
+        metadata.put(BagWriter.INFO_BAG_SIZE, Util.formatSize(totalBytes));
+
+
+        try {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+
+            for (String key : metadata) {
+                pw.println(key + ": " + metadata.get(key));
+            }
+
+            byte[] block = sw.toString().getBytes("UTF-8");
+
+            String rel = "/" + pkgId + "/contents/bag-info.txt";
+
+            URL putURI = new URL(baseURL.toASCIIString() + rel);
+            LOG.debug("Sending bag-info to: " + putURI);
+            HttpURLConnection uc = (HttpURLConnection) putURI.openConnection();
+            uc.setDoOutput(true);
+            uc.setRequestMethod("PUT");
+            HttpURLConnection.setFollowRedirects(true);
+            uc.setChunkedStreamingMode(32768);
+            OutputStream os = uc.getOutputStream();
+            os.write(block);
+            os.close();
+
+        } catch (IOException ex) {
+            throw new RuntimeException("Could not write header", ex);
+        }
+
+    }
+
+    private void writeVersion() {
         try {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             pw.println("BagIt-Version: 0.96");
             pw.println("Tag-File-Character-Encoding: UTF-8");
             byte[] block = sw.toString().getBytes("UTF-8");
-            String rel = "/" + pkgId + "/contents";
+            String rel = "/" + pkgId + "/contents/bagit.txt";
             URL putURI = new URL(baseURL.toASCIIString() + rel);
             LOG.debug("Sending bagit to: " + putURI);
             HttpURLConnection uc = (HttpURLConnection) putURI.openConnection();

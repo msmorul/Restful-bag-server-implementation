@@ -404,7 +404,7 @@ public class SimpleDiskVault implements BagVault {
                 try {
                     return BagIt.readFile(new FileReader(f));
                 } catch (IOException e) {
-                    LOG.error("Error reading: " + f,e);
+                    LOG.error("Error reading: " + f, e);
                     return null;
                 }
 
@@ -418,7 +418,7 @@ public class SimpleDiskVault implements BagVault {
                 try {
                     return BagInfo.readInfo(new FileReader(f));
                 } catch (IOException e) {
-                    LOG.error("Error reading: " + f,e);
+                    LOG.error("Error reading: " + f, e);
                     return null;
                 }
             }
@@ -433,7 +433,7 @@ public class SimpleDiskVault implements BagVault {
             try {
                 return new FileInputStream(dataFile);
             } catch (FileNotFoundException e) {
-                LOG.error("Cannot create input file: " + dataFile + " for id: " + tagItem);
+                LOG.error("Cannot open file: " + dataFile + " for id: " + tagItem);
                 return null;
             }
         }
@@ -455,27 +455,25 @@ public class SimpleDiskVault implements BagVault {
 
         public InputStream openDataInputStream(String fileIdentifier) throws IllegalArgumentException {
             File dataFile = new File(directory, "data/" + fileIdentifier);
-            if (!dataFile.getParentFile().exists())
-            {
-                if (!dataFile.getParentFile().mkdirs())
-                {
-                    throw new IllegalArgumentException("Cannot create parent dir " + dataFile.getParentFile());
-                }
-            }
+
             //TODO: check to make sure abs path it in data dir;
             try {
                 return new FileInputStream(dataFile);
             } catch (FileNotFoundException e) {
-                LOG.error("Cannot create input file: " + dataFile + " for id: " + fileIdentifier);
+                LOG.error("Cannot open file for reading: " + dataFile + " for id: " + fileIdentifier);
                 return null;
             }
         }
 
         public OutputStream openDataOutputStream(String fileIdentifier) throws IllegalArgumentException {
+            File dataFile = new File(directory, "data/" + fileIdentifier);
 
             //TODO: check to make sure abs path it in data dir;
-            //TODO: create parent dir's if necessary
-            File dataFile = new File(directory, "data/" + fileIdentifier);
+            if (!dataFile.getParentFile().exists()) {
+                if (!dataFile.getParentFile().mkdirs()) {
+                    throw new IllegalArgumentException("Cannot create parent dir " + dataFile.getParentFile());
+                }
+            }
             try {
                 return new FileOutputStream(dataFile);
             } catch (FileNotFoundException e) {

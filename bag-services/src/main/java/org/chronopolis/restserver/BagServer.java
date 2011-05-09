@@ -120,6 +120,9 @@ public class BagServer {
             @FormParam("validate") String validate,
             @Context ServletContext servletCtx) {
 
+        LOG.debug("Request for commit/validate on "+bagId
+                +" Commit="+commit + ", Validate="+validate);
+
         BagVault vault = getVault(servletCtx);
         BagEntry be = vault.getBag(bagId);
         if (be == null) {
@@ -166,7 +169,7 @@ public class BagServer {
 
     }
 
-    @Path("{bagid}/data/{dataFile}")
+    @Path("{bagid}/contents/data/{dataFile: .*}")
     @GET
     public Response getBagData(@PathParam("bagid") String bagId,
             @PathParam("dataFile") String dataFile,
@@ -179,7 +182,9 @@ public class BagServer {
         }
 
         InputStream is = be.openDataInputStream(dataFile);
-
+        if (is == null) {
+            return Response.status(404).build();
+        }
         return Response.ok(is).build();
     }
 
@@ -191,7 +196,7 @@ public class BagServer {
      * @param servletCtx
      * @return
      */
-    @Path("{bagid}/contents/data/{dataFile}")
+    @Path("{bagid}/contents/data/{dataFile: .*}")
     @PUT
     public Response putBagData(@PathParam("bagid") String bagId,
             @PathParam("dataFile") String dataFile,
@@ -217,6 +222,7 @@ public class BagServer {
                 os.write(block, 0, read);
             }
             os.close();
+            LOG.trace("Finish file upload: " + bagId + " " + dataFile);
         } catch (IOException e) {
             LOG.error("Error writing file " + bagId + ": " + dataFile);
             throw new WebApplicationException(e);
