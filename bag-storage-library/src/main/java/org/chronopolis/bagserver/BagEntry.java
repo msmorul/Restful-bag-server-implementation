@@ -6,6 +6,7 @@ package org.chronopolis.bagserver;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * 
@@ -18,6 +19,8 @@ public interface BagEntry {
         COMMITTED, NONEXISTENT, OPEN
     }
 
+    public List<String> listTagFiles();
+    
     public String getIdentifier();
 
     public State getBagState();

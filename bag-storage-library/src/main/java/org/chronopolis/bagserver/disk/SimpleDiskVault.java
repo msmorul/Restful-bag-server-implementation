@@ -348,6 +348,17 @@ public class SimpleDiskVault implements BagVault {
             }
         }
 
+        public List<String> listTagFiles() {
+            List<String> retList = new ArrayList<String>();
+            for (File f : directory.listFiles())
+            {
+                if (f.isFile())
+                    retList.add(f.getName());
+
+            }
+            return retList;
+        }
+
         public boolean delete() {
 
             //TODO: check for open files

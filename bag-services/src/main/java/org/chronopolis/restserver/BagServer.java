@@ -120,8 +120,8 @@ public class BagServer {
             @FormParam("validate") String validate,
             @Context ServletContext servletCtx) {
 
-        LOG.debug("Request for commit/validate on "+bagId
-                +" Commit="+commit + ", Validate="+validate);
+        LOG.debug("Request for commit/validate on " + bagId
+                + " Commit=" + commit + ", Validate=" + validate);
 
         BagVault vault = getVault(servletCtx);
         BagEntry be = vault.getBag(bagId);
@@ -332,7 +332,31 @@ public class BagServer {
     @Path("{bagid}/manifest")
     public Response getBagManifest(@PathParam("bagid") String bagId,
             @Context ServletContext servletCtx) {
-        return null;
+        BagVault vault = getVault(servletCtx);
+        BagEntry be = vault.getBag(bagId);
+
+        LOG.debug("manifest request for " + bagId);
+
+        if (be == null) {
+            LOG.info("Request for unknown bag: " + bagId);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        List<String> tagList = be.listTagFiles();
+        ManifestBuilder mb = new ManifestBuilder();
+
+        for (String s : tagList) {
+            try {
+                LOG.trace("Adding tagfile to manifest: " + s);
+                mb.parseTagFile(s, be);
+            } catch (IOException e) {
+                LOG.error("Errror reading, " + s, e);
+                return Response.serverError().build();
+            }
+        }
+
+        return Response.ok(mb).build();
+
     }
 
     /**

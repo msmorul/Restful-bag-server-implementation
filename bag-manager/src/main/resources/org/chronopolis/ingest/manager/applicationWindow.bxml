@@ -49,7 +49,7 @@
                 </BoxPane>
             </TablePane.Row>
             <TablePane.Row height="1*">
-                <SplitPane styles="{padding:10}" orientation="horizontal" splitRatio="0.25">
+                <SplitPane styles="{padding:10}" orientation="horizontal" splitRatio="0.20">
                     <left>
                         <TablePane>
                             <columns>
@@ -69,8 +69,8 @@
                     </left>
                     <right>
                         <TabPane >
-                            <BoxPane TabPane.tabData="Browse"></BoxPane>
                             <bag:LogPane TabPane.tabData="Server Logs"/>
+                            <BoxPane TabPane.tabData="Browse"></BoxPane>
                         </TabPane>
                     </right>
                 </SplitPane>
