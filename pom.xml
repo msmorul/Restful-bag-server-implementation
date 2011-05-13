@@ -52,6 +52,7 @@
         <module>ace-am-lib</module>
         <module>bag-manager</module>
         <module>bag-storage-library</module>
+        <module>bag-client</module>
     </modules>
     <!--<reporting>
         <plugins>

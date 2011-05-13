@@ -4,24 +4,15 @@
  */
 package org.chronopolis.ingest;
 
-import edu.umiacs.ace.json.JsonGateway;
-import edu.umiacs.ace.json.PartnerSite;
-import edu.umiacs.ace.json.PeerAuthenticator;
-import edu.umiacs.ace.json.StatusBean;
-import edu.umiacs.ace.json.StatusBean.CollectionBean;
-import edu.umiacs.ace.json.Strings;
 import java.io.File;
-import java.net.Authenticator;
 import java.net.URL;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.BXMLSerializer;
-import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.List;
 import org.apache.pivot.collections.ListListener;
 import org.apache.pivot.collections.Map;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.util.MessageBus;
-import org.apache.pivot.wtk.Alert;
 import org.apache.pivot.wtk.Application;
 import org.apache.pivot.wtk.ApplicationContext;
 import org.apache.pivot.wtk.DesktopApplicationContext;
@@ -35,6 +26,7 @@ import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.ChronPackageListener;
 import org.chronopolis.ingest.pkg.PackageManager;
 import org.apache.log4j.Logger;
+import org.chronopolis.bag.client.JsonGateway;
 
 /**
  * Package storage: bdb digest & path
@@ -64,7 +56,7 @@ public class Main implements Application {
     @BXML
     private ListView pendingListView;
     private Window mainW;
-    private static PartnerSite aceSite;
+    private static JsonGateway gateway;
     private static PackageManager mgr;
     private static URL chronURL;
     // Default settings
@@ -85,9 +77,13 @@ public class Main implements Application {
         DesktopApplicationContext.main(Main.class, args);
     }
 
-    public static PartnerSite getAceSite() {
-        return aceSite;
+    public static JsonGateway getGateway() {
+        return gateway;
     }
+
+//    public static PartnerSite getAceSite() {
+//        return aceSite;
+//    }
 
     public static PackageManager getPackageManager() {
         return mgr;
@@ -120,7 +116,7 @@ public class Main implements Application {
 
         // set ingestion url
         String url = System.getProperty(PARAM_INGEST_URL);
-        if (!Strings.isEmpty(url)) {
+        if (url != null && !url.isEmpty()) {
             chronURL = new URL(url);
         } else {
             chronURL = new URL(DEFAULT_INGEST);
@@ -138,7 +134,7 @@ public class Main implements Application {
 
         // Set default url pattern
         defaultURLPattern = System.getProperty(PARAM_URL_PATTERN);
-        if (Strings.isEmpty(defaultURLPattern)) {
+        if (defaultURLPattern == null || defaultURLPattern.isEmpty()) {
             defaultURLPattern = "http://your_webserver_here.com/bags/{b}/{d}";
         }
         LOG.info("Default URL Pattern: " + defaultURLPattern);
@@ -146,14 +142,14 @@ public class Main implements Application {
         mgr = new PackageManager();
 
         // configure cron connection
-        PeerAuthenticator pa = new PeerAuthenticator();
-        Authenticator.setDefault(pa);
+//        PeerAuthenticator pa = new PeerAuthenticator();
+//        Authenticator.setDefault(pa);
 
-        aceSite = new PartnerSite();
-        aceSite.setRemoteURL("http://chron-monitor.umiacs.umd.edu:8080/ace-am");
-        aceSite.setUser("browse");
-        aceSite.setPass("browse");
-        pa.addSite(aceSite);
+//        aceSite = new PartnerSite();
+//        aceSite.setRemoteURL("http://chron-monitor.umiacs.umd.edu:8080/ace-am");
+//        aceSite.setUser("browse");
+//        aceSite.setPass("browse");
+//        pa.addSite(aceSite);
 
         // build app
         BXMLSerializer serializer = new BXMLSerializer();
@@ -224,9 +220,9 @@ public class Main implements Application {
         ApplicationContext.queueCallback(new Runnable() {
 
             public void run() {
-                List<CollectionBean> list = updateCollectionList(aceSite);
-                ingestedListView.setListData(list);
-//                createBagDialog.setCollectionListData(list);
+//                List<CollectionBean> list = updateCollectionList(aceSite);
+//                ingestedListView.setListData(list);
+////                createBagDialog.setCollectionListData(list);
             }
         });
 
@@ -234,29 +230,29 @@ public class Main implements Application {
 
     }
 
-    private List<CollectionBean> updateCollectionList(PartnerSite site) {
-        List<CollectionBean> cbList = new ArrayList<CollectionBean>();
-        try {
-            JsonGateway gateway = JsonGateway.getGateway();
-            StatusBean sb = gateway.getStatusBean(site);
-
-            if (sb == null) {
-                Alert.alert("Could not contact Chronopolis", mainW);
-            } else {
-
-                for (CollectionBean cb : sb.getCollections()) {
-                    if (provider.equals(cb.getGroup())) {
-                        cbList.add(cb);
-                    }
-                }
-            }
-            return cbList;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert.alert("Error reading collections " + e.getMessage(), mainW);
-            return null;
-        }
-    }
+//    private List<CollectionBean> updateCollectionList(PartnerSite site) {
+//        List<CollectionBean> cbList = new ArrayList<CollectionBean>();
+//        try {
+//            JsonGateway gateway = JsonGateway.getGateway();
+//            StatusBean sb = gateway.getStatusBean(site);
+//
+//            if (sb == null) {
+//                Alert.alert("Could not contact Chronopolis", mainW);
+//            } else {
+//
+//                for (CollectionBean cb : sb.getCollections()) {
+//                    if (provider.equals(cb.getGroup())) {
+//                        cbList.add(cb);
+//                    }
+//                }
+//            }
+//            return cbList;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Alert.alert("Error reading collections " + e.getMessage(), mainW);
+//            return null;
+//        }
+//    }
 
     public boolean shutdown(boolean bln) throws Exception {
         return false;

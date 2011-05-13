@@ -29,7 +29,13 @@ import org.chronopolis.bagserver.BagEntry;
 import org.chronopolis.bagserver.BagVault;
 import org.chronopolis.bagserver.disk.SimpleDiskVault;
 import org.chronopolis.restserver.BagServer;
+import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.RequestLog;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.handler.DefaultHandler;
+import org.mortbay.jetty.handler.HandlerCollection;
+import org.mortbay.jetty.handler.RequestLogHandler;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
@@ -151,9 +157,31 @@ public class MainWindow extends Frame implements Bindable {
 
                 LOG.trace("Starting jetty server");
                 server = new Server(p);
+
+                // logging
+//                HandlerCollection handlers = new HandlerCollection();
+//                ContextHandlerCollection contexts = new ContextHandlerCollection();
+//                RequestLogHandler requestLogHandler = new RequestLogHandler();
+//                handlers.setHandlers(new Handler[]{contexts, new DefaultHandler(), requestLogHandler});
+//                server.setHandler(handlers);
+
+                // add jersey endpoint
                 Context context = new Context(server, "/", Context.SESSIONS);
                 context.addServlet(sh, "/*");
                 context.getServletContext().setAttribute(BagServer.VAULT, vault);
+
+                // ncsa-style logging
+
+
+//        NCSARequestLog requestLog = new NCSARequestLog();
+//        requestLog.setRetainDays(90);
+//        requestLog.setAppend(true);
+//        requestLog.setExtended(false);
+//        requestLog.setLogTimeZone("GMT");
+//        requestLog.
+//                requestLogHandler.setRequestLog(new PivotRequestLogHandler());
+
+
 
                 try {
                     server.start();

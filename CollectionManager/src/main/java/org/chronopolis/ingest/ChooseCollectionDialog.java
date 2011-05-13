@@ -4,11 +4,9 @@
  */
 package org.chronopolis.ingest;
 
-import edu.umiacs.ace.json.StatusBean.CollectionBean;
 import java.io.IOException;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.BXMLSerializer;
-import org.apache.pivot.collections.List;
 import org.apache.pivot.serialization.SerializationException;
 import org.apache.pivot.util.ListenerList;
 import org.apache.pivot.wtk.Button;
@@ -71,22 +69,22 @@ public class ChooseCollectionDialog extends Dialog {
         okBtn.setButtonData(data);
     }
 
-    public void setListData(List<CollectionBean> collectionList) {
-        collectionListButton.setListData(collectionList);
-        if (collectionList.getLength() > 0) {
-            collectionListButton.setSelectedIndex(0);
-        }
-    }
+//    public void setListData(List<CollectionBean> collectionList) {
+//        collectionListButton.setListData(collectionList);
+//        if (collectionList.getLength() > 0) {
+//            collectionListButton.setSelectedIndex(0);
+//        }
+//    }
 
     private class CollectionButtonRenderer extends ButtonDataRenderer {
 
         @Override
         public void render(Object data, Button button, boolean highlighted) {
-            if (data instanceof CollectionBean) {
-                super.render(((CollectionBean) data).getName(), button, highlighted);
-            } else {
+//            if (data instanceof CollectionBean) {
+//                super.render(((CollectionBean) data).getName(), button, highlighted);
+//            } else {
                 super.render(data, button, highlighted);
-            }
+//            }
         }
     }
 }

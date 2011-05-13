@@ -4,7 +4,6 @@
  */
 package org.chronopolis.ingest.bagger;
 
-import edu.umiacs.ace.json.Strings;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -120,7 +119,7 @@ public class SetUrlPattern extends BasePanel {
     }
 
     public Vote isComplete() {
-        if (Strings.isEmpty(getBagModel().getUrlPattern())) {
+        if (getBagModel().getUrlPattern() == null || getBagModel().getUrlPattern().isEmpty()) {
             return Vote.APPROVE;
         } else {
             return Vote.DENY;
@@ -135,7 +134,7 @@ public class SetUrlPattern extends BasePanel {
         if (getBagModel() != null) {
             BagModel model = getBagModel();
             model.getModelListenerList().add(bagListener);
-            if (Strings.isEmpty(model.getUrlPattern())) {
+            if (getBagModel().getUrlPattern() == null || getBagModel().getUrlPattern().isEmpty()) {
                 model.setUrlPattern(Main.getDefaultURLPattern());
             }
         }
@@ -144,7 +143,7 @@ public class SetUrlPattern extends BasePanel {
     }
 
     private void updateNext() {
-        if (Strings.isEmpty(getBagModel().getUrlPattern())) {
+        if (getBagModel().getUrlPattern() == null || getBagModel().getUrlPattern().isEmpty()) {
             setErrorMessage("Please set and test URL pattern");
         } else {
             setErrorMessage("");

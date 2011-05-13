@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.zip.GZIPOutputStream;
 import org.apache.pivot.util.MessageBusListener;
 import org.apache.pivot.wtk.Alert;
@@ -24,7 +23,6 @@ import org.chronopolis.ingest.pkg.ChronPackage.Statistics;
 import org.chronopolis.ingest.pkg.DelayedTransferStream;
 import org.chronopolis.ingest.pkg.ManifestBuilder;
 import org.apache.log4j.Logger;
-import org.chronopolis.ingest.pkg.URLUTF8Encoder;
 
 /**
  *

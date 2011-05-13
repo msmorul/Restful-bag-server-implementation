@@ -4,7 +4,6 @@
  */
 package org.chronopolis.ingest;
 
-import edu.umiacs.ace.json.Strings;
 import java.net.URL;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.Bindable;
@@ -123,7 +122,7 @@ public class ApplicationWindow extends Window implements Bindable {
                 boolean selected, boolean checked, boolean highlighted, boolean disabled) {
             if (item instanceof ChronPackage) {
                 ChronPackage cp = (ChronPackage) item;
-                if (Strings.isEmpty(cp.getName())) {
+                if (cp.getName() == null || cp.getName().isEmpty()) {
                     super.render("<Unnamed>", index, listView, selected,
                             checked, highlighted, disabled);
 

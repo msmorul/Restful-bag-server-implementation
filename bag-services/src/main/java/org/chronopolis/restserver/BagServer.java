@@ -323,7 +323,6 @@ public class BagServer {
 
     /**
      * Return combined manifest describing items in the collection
-     * TODO getBagManifest
      * @param bagId
      * @param servletCtx
      * @return

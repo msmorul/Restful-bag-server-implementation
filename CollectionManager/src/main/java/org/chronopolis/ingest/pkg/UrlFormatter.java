@@ -4,7 +4,6 @@
  */
 package org.chronopolis.ingest.pkg;
 
-import edu.umiacs.ace.json.Strings;
 import java.util.regex.Matcher;
 
 /**

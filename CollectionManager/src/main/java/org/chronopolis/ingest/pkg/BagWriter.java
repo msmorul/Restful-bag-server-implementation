@@ -4,7 +4,6 @@
  */
 package org.chronopolis.ingest.pkg;
 
-import edu.umiacs.ace.json.Strings;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -92,7 +91,7 @@ public class BagWriter {
     }
 
     private String getTarPath(String pkgPath) {
-        if (Strings.isEmpty(pkg.getName())) {
+        if (pkg.getName() == null || pkg.getName().isEmpty()) {
             return "bag/" + pkgPath;
             
         } else {

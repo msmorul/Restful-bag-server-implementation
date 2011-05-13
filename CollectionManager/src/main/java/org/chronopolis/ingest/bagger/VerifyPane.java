@@ -4,7 +4,6 @@
  */
 package org.chronopolis.ingest.bagger;
 
-import edu.umiacs.ace.json.Strings;
 import java.io.File;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.collections.ArrayList;
@@ -225,7 +224,7 @@ public class VerifyPane extends BasePanel {
         vrfyPatternLbl.setText("");
         vrfyFetchTxt.setText("");
 
-        if (model != null && !Strings.isEmpty(model.getUrlPattern())) {
+        if (model != null && (getBagModel().getUrlPattern() != null && !getBagModel().getUrlPattern().isEmpty())) {
 
             UrlFormatter fmt = new UrlFormatter(model.getChronPackage(),
                     model.getUrlPattern());

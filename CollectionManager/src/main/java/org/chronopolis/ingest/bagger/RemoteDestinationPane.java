@@ -4,14 +4,11 @@
  */
 package org.chronopolis.ingest.bagger;
 
-import edu.umiacs.ace.json.Strings;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.util.Vote;
 import org.apache.pivot.wtk.TextInput;
 import org.apache.pivot.wtk.Accordion;
 import org.apache.pivot.wtk.TextInputContentListener;
-import org.chronopolis.ingest.pkg.ChronPackage;
-import org.chronopolis.ingest.pkg.ChronPackageListener;
 
 /**
  *
@@ -34,9 +31,8 @@ public class RemoteDestinationPane extends BasePanel {
 
         @Override
         public void chronopoligBagChanged(BagModel mode, String oldbagname) {
-            if (Strings.isEmpty(mode.getChronopolisBag())) {
+            if (mode.getChronopolisBag() == null || mode.getChronopolisBag().isEmpty()) {
                 setErrorMessage("Enter Name for Chronopolis bag");
-
                 
             }
             updateFromModel();
@@ -51,7 +47,7 @@ public class RemoteDestinationPane extends BasePanel {
 
     private void updateNext() {
         BagModel model = getBagModel();
-        if (Strings.isEmpty(model.getChronopolisBag())) {
+        if (model.getChronopolisBag() == null || model.getChronopolisBag().isEmpty()) {
             setErrorMessage("Please enter a deposit name for this bag");
         } else {
             setErrorMessage("");
@@ -72,7 +68,7 @@ public class RemoteDestinationPane extends BasePanel {
 
     @Override
     public Vote isComplete() {
-        if (Strings.isEmpty(getBagModel().getChronopolisBag())) {
+        if (getBagModel().getChronopolisBag() == null || getBagModel().getChronopolisBag().isEmpty()) {
             return Vote.DENY;
         } else {
             return Vote.APPROVE;
