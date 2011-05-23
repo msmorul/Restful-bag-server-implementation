@@ -58,7 +58,7 @@ public class ChooseBagPane extends BasePanel {
         super("chooseBagPane.bxml");
 
         Accordion.setHeaderData(this, "1. Choose Bag Type");
-        chronopolisBtn.setEnabled(Main.getURL() != null);
+        chronopolisBtn.setEnabled(Main.getGateway() != null);
         chronopolisBtn.getButtonPressListeners().add(chronopolisBtnListener);
         localBtn.getButtonPressListeners().add(localBtnListener);
         holeyBtn.getButtonPressListeners().add(holeyBtnListener);

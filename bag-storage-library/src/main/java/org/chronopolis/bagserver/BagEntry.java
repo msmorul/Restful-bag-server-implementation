@@ -30,7 +30,7 @@ public interface BagEntry {
      * 
      * @return true if manifests all contain same files and all files listed manifests are present
      */
-    public boolean isComplete();
+//    public boolean isComplete();
 
     /**
      * Mark a file as committed.
@@ -49,6 +49,12 @@ public interface BagEntry {
 
     public BagIt getBagIt();
 
+    /**
+     * List all data files in this collection
+     * @Return list of data files relative to bag root.
+     * 
+     */
+    public List<String> listDataFiles();
 
     public InputStream openTagInputStream(String tagItem) throws IllegalArgumentException;
     public OutputStream openTagOutputStream(String tagItem) throws IllegalArgumentException;

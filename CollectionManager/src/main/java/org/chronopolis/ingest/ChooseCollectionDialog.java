@@ -45,7 +45,7 @@ public class ChooseCollectionDialog extends Dialog {
             throw new RuntimeException(e);
         }
 
-        collectionListButton.setItemRenderer(new CollectionBeanRenderer());
+        collectionListButton.setItemRenderer(new BagBeanRenderer());
         collectionListButton.setDataRenderer(new CollectionButtonRenderer());
         setTitle("Choose Collection");
         setPreferredSize(350, 100);

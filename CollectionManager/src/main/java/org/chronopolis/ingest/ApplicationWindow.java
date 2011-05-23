@@ -180,7 +180,7 @@ public class ApplicationWindow extends Window implements Bindable {
         pendingListView.getParent().setMenuHandler(menuHandler);
 
         ingestedListView.getListViewSelectionListeners().add(ingestListSelectionListener);
-        ingestedListView.setItemRenderer(new CollectionBeanRenderer());
+        ingestedListView.setItemRenderer(new BagBeanRenderer());
         digestBrowser.setRootDirectory(Main.getDefaultDirectory());
         digestBrowser.getSheetStateListeners().add(new SheetStateListener.Adapter() {
 

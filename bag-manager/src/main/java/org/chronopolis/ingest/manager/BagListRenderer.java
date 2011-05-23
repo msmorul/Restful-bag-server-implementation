@@ -18,7 +18,9 @@ public class BagListRenderer extends ListViewItemRenderer {
     public void render(Object item, int index, ListView listView, boolean selected, boolean checked, boolean highlighted, boolean disabled) {
         if (item instanceof BagEntry) {
             super.render(((BagEntry) item).getIdentifier(), index, listView, selected, checked, highlighted, disabled);
-
+            if (((BagEntry) item).getBagState() == BagEntry.State.OPEN) {
+                label.getStyles().put("color", "green");
+            }
         } else {
             super.render(item, index, listView, selected, checked, highlighted, disabled);
         }

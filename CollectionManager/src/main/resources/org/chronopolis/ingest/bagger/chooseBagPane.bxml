@@ -20,13 +20,13 @@
                 <PushButton preferredWidth="75" preferredHeight="75"
                             enabled="true" styles="{backgroundColor:'#ffffff'}"
                             toggleButton="true" bxml:id="chronopolisBtn"
-                            tooltipText="Send Bag to Chronopolis" buttonGroup="$outputGroup">
+                            tooltipText="Send Bag to Server" buttonGroup="$outputGroup">
                     <buttonData>
-                        <c:ButtonData icon="@chronopolisTransfer.png" />
+                        <c:ButtonData icon="@remoteTransfer.png" />
                     </buttonData>
                     
                 </PushButton>
-                <Label text="Chronopolis"/>
+                <Label text="Remote"/>
             </BoxPane>
             <BoxPane styles="{horizontalAlignment:'center',padding:{left:0,top:25,right:0,bottom:0}}" orientation="vertical" >
                 <PushButton bxml:id="localBtn" preferredWidth="75" preferredHeight="75"

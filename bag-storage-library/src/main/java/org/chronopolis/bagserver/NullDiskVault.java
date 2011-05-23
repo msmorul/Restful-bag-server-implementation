@@ -64,6 +64,12 @@ public class NullDiskVault implements BagVault {
             this.isWork = isWork;
         }
 
+        public List<String> listDataFiles() {
+            List<String> l = new ArrayList<String>();
+            l.add("data/test");
+            return l;
+        }
+
         public List<String> listTagFiles() {
             List<String> l = new ArrayList<String>();
             l.add("bag-info.txt");

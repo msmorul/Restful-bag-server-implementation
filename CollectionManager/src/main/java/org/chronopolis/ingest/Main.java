@@ -5,6 +5,7 @@
 package org.chronopolis.ingest;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.BXMLSerializer;
@@ -26,6 +27,11 @@ import org.chronopolis.ingest.pkg.ChronPackage;
 import org.chronopolis.ingest.pkg.ChronPackageListener;
 import org.chronopolis.ingest.pkg.PackageManager;
 import org.apache.log4j.Logger;
+import org.apache.pivot.collections.adapter.ListAdapter;
+import org.apache.pivot.wtk.Alert;
+import org.apache.pivot.wtk.MessageType;
+import org.chronopolis.bag.client.BagBean;
+import org.chronopolis.bag.client.BagList;
 import org.chronopolis.bag.client.JsonGateway;
 
 /**
@@ -58,7 +64,7 @@ public class Main implements Application {
     private Window mainW;
     private static JsonGateway gateway;
     private static PackageManager mgr;
-    private static URL chronURL;
+//    private static URL chronURL;
     // Default settings
     private static File defaultDir;
     private static String defaultURLPattern;
@@ -68,7 +74,7 @@ public class Main implements Application {
     private static final String PARAM_URL_PATTERN = "jnlp.urlpattern";
     private static final String PARAM_DEFAULT_DIR = "jnlp.defaultdir";
     private static final String DEFAULT_PROVIDER = "duracloud";
-    private static final String DEFAULT_INGEST = "http://localhost:8080/bag";
+    private static final String DEFAULT_INGEST = "http://localhost:7878/bags";
 
     /**
      * @param args the command line arguments
@@ -81,16 +87,8 @@ public class Main implements Application {
         return gateway;
     }
 
-//    public static PartnerSite getAceSite() {
-//        return aceSite;
-//    }
-
     public static PackageManager getPackageManager() {
         return mgr;
-    }
-
-    public static URL getURL() {
-        return chronURL;
     }
 
     public static String getDefaultURLPattern() {
@@ -116,12 +114,14 @@ public class Main implements Application {
 
         // set ingestion url
         String url = System.getProperty(PARAM_INGEST_URL);
+        URL endpointURL;
         if (url != null && !url.isEmpty()) {
-            chronURL = new URL(url);
+            endpointURL = new URL(url);
         } else {
-            chronURL = new URL(DEFAULT_INGEST);
+            endpointURL = new URL(DEFAULT_INGEST);
         }
-        LOG.info("Ingest URL: " + chronURL);
+        LOG.info("Ingest URL: " + endpointURL);
+        gateway = new JsonGateway(endpointURL);
 
         // set starting directory for browse windows
         String defaultDirectory = System.getProperty(PARAM_DEFAULT_DIR);
@@ -220,39 +220,22 @@ public class Main implements Application {
         ApplicationContext.queueCallback(new Runnable() {
 
             public void run() {
-//                List<CollectionBean> list = updateCollectionList(aceSite);
-//                ingestedListView.setListData(list);
-////                createBagDialog.setCollectionListData(list);
+                try
+                {
+                BagList bl = getGateway().listBags();
+                ingestedListView.setListData(new ListAdapter<BagBean>(bl.getObjects()));
+                }
+                catch (IOException e)
+                {
+                    LOG.error("Error reading server bags ",e);
+                    Alert.alert(MessageType.ERROR, "Error loading ingested list", mainW);
+                }
             }
         });
 
         mainW.open(dspl);
 
     }
-
-//    private List<CollectionBean> updateCollectionList(PartnerSite site) {
-//        List<CollectionBean> cbList = new ArrayList<CollectionBean>();
-//        try {
-//            JsonGateway gateway = JsonGateway.getGateway();
-//            StatusBean sb = gateway.getStatusBean(site);
-//
-//            if (sb == null) {
-//                Alert.alert("Could not contact Chronopolis", mainW);
-//            } else {
-//
-//                for (CollectionBean cb : sb.getCollections()) {
-//                    if (provider.equals(cb.getGroup())) {
-//                        cbList.add(cb);
-//                    }
-//                }
-//            }
-//            return cbList;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            Alert.alert("Error reading collections " + e.getMessage(), mainW);
-//            return null;
-//        }
-//    }
 
     public boolean shutdown(boolean bln) throws Exception {
         return false;

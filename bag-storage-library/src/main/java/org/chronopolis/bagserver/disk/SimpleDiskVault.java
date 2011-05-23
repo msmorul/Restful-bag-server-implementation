@@ -214,69 +214,9 @@ public class SimpleDiskVault implements BagVault {
             throw new IllegalStateException("Cannot determine bag state " + directory);
         }
 
-        public boolean isComplete() {
-            // Check for metadats files
-            File bagitFile = new File(directory, BagIt.FILE_NAME);
-            if (!bagitFile.isFile()) {
-                LOG.info("Missing bagit.txt file ");
-                return false;
-            }
-            File bagInfo = new File(directory, BagInfo.FILE_NAME);
+        
 
-            if (!bagInfo.isFile()) {
-                LOG.info("Missing bag-info.txt file ");
-                return false;
-            }
-
-            // locate manifests
-            List<String> files = null;
-            try {
-                for (File f : directory.listFiles(manifestFilter)) {
-                    if (files == null) {
-                        files = loadManifestFiles(f);
-                    } else {
-                        List<String> mf2 = loadManifestFiles(f);
-                        if (mf2.size() != files.size()) {
-                            LOG.info("Differing manifests " + f);
-                            return false;
-                        }
-                        for (int i = 0; i < files.size(); i++) {
-                            if (!files.get(i).equals(mf2.get(i))) {
-                                LOG.info("Differing manifests " + f);
-                                return false;
-                            }
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                LOG.error("Error reading manifest ", e);
-                return false;
-            }
-
-            // no manifests
-            if (files == null) {
-                LOG.error("No manifest found");
-                return false;
-            }
-
-            // check for all files in manifest
-            List<String> dFiles = loadAllFiles();
-            for (String s : files) {
-                if (!dFiles.contains(s)) {
-                    LOG.error("Manifest file not in storage: " + s);
-                    return false;
-                }
-                dFiles.remove(s);
-            }
-            // files on disk, but not in manifest
-            if (dFiles.size() > 0) {
-                LOG.error("Files on disk, but not in manifest: " + dFiles.size());
-                return false;
-            }
-            return true;
-        }
-
-        private List<String> loadAllFiles() {
+        public List<String> listDataFiles() {
             List<String> retList = new ArrayList<String>();
 
             int len = directory.getAbsolutePath().length() + 1;
@@ -298,25 +238,6 @@ public class SimpleDiskVault implements BagVault {
             return retList;
         }
 
-        private List<String> loadManifestFiles(File f) throws IOException {
-            List<String> fList = new ArrayList<String>();
-            BufferedReader br = new BufferedReader(new FileReader(f));
-
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
-                String[] parts = line.split("\\s+", 2);
-                if (parts.length != 2) {
-                    br.close();
-                    throw new IOException("Bad Line: " + line);
-                }
-                fList.add(parts[1].trim());
-            }
-            br.close();
-            Collections.sort(fList);
-            return fList;
-        }
 
         public boolean commit() {
             creationLock.lock();

@@ -103,28 +103,28 @@ public class SimpleDiskVaultTest {
         assertTrue(new File(dir, "work/mynewbag/bag-info.txt").isFile());
     }
 
-    @Test
-    public void testIsComplete() throws Exception {
-        System.out.println("testisComplete");
-        String newIdentifier = "mynewbag";
-        BagEntry be = instance.createNewBag(newIdentifier);
-        assertFalse(be.isComplete());
-        be.setBagItInformation(BagIt.readFile(new StringReader(BagItTest.BAG_FILE)));
-        be.setBagInfo(BagInfo.readInfo(new StringReader(BagInfoTest.BAGINFO_FILE)));
-        assertFalse(be.isComplete());
-        OutputStream os = be.openTagOutputStream("manifest-test.txt");
-        os.write(MANIFEST.getBytes());
-        os.close();
-        assertFalse(be.isComplete());
-        os = be.openDataOutputStream("test");
-        os.write(MANIFEST.getBytes());
-        os.close();
-        assertTrue(be.isComplete());
-        os = be.openDataOutputStream("test2");
-        os.write(MANIFEST.getBytes());
-        os.close();
-        assertFalse(be.isComplete());
-    }
+//    @Test
+//    public void testIsComplete() throws Exception {
+//        System.out.println("testisComplete");
+//        String newIdentifier = "mynewbag";
+//        BagEntry be = instance.createNewBag(newIdentifier);
+//        assertFalse(be.isComplete());
+//        be.setBagItInformation(BagIt.readFile(new StringReader(BagItTest.BAG_FILE)));
+//        be.setBagInfo(BagInfo.readInfo(new StringReader(BagInfoTest.BAGINFO_FILE)));
+//        assertFalse(be.isComplete());
+//        OutputStream os = be.openTagOutputStream("manifest-test.txt");
+//        os.write(MANIFEST.getBytes());
+//        os.close();
+//        assertFalse(be.isComplete());
+//        os = be.openDataOutputStream("test");
+//        os.write(MANIFEST.getBytes());
+//        os.close();
+//        assertTrue(be.isComplete());
+//        os = be.openDataOutputStream("test2");
+//        os.write(MANIFEST.getBytes());
+//        os.close();
+//        assertFalse(be.isComplete());
+//    }
 
     @Test
     public void testCommit() {

@@ -26,6 +26,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
+import org.chronopolis.bagserver.BagChecker;
 import org.chronopolis.bagserver.BagEntry;
 import org.chronopolis.bagserver.BagEntry.State;
 import org.chronopolis.bagserver.BagInfo;
@@ -129,8 +130,9 @@ public class BagServer {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
+        BagChecker checker = new BagChecker(be);
         if (commit != null && !commit.isEmpty()) {
-            if (be.isComplete() && be.commit()) {
+            if (checker.isComplete() && be.commit()) {
                 return Response.ok().build();
             } else {
                 LOG.info("Could not commit bag: " + bagId);
@@ -138,6 +140,7 @@ public class BagServer {
                 return Response.status(400).build();
             }
         } else if (validate != null && !validate.isEmpty()) {
+            
             //TODO: validation
         }
 
