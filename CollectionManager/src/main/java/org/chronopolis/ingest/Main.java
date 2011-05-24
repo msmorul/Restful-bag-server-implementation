@@ -64,16 +64,13 @@ public class Main implements Application {
     private Window mainW;
     private static JsonGateway gateway;
     private static PackageManager mgr;
-//    private static URL chronURL;
     // Default settings
     private static File defaultDir;
     private static String defaultURLPattern;
-    private static String provider;
     private static final String PARAM_PROVIDER = "jnlp.provider";
     private static final String PARAM_INGEST_URL = "jnlp.ingest.url";
     private static final String PARAM_URL_PATTERN = "jnlp.urlpattern";
     private static final String PARAM_DEFAULT_DIR = "jnlp.defaultdir";
-    private static final String DEFAULT_PROVIDER = "duracloud";
     private static final String DEFAULT_INGEST = "http://localhost:7878/bags";
 
     /**
@@ -95,22 +92,11 @@ public class Main implements Application {
         return defaultURLPattern;
     }
 
-    public static String getProvider() {
-        return provider;
-    }
-
     public static File getDefaultDirectory() {
         return defaultDir;
     }
 
     public void startup(Display dspl, Map<String, String> map) throws Exception {
-
-        // set provider
-        provider = System.getProperty(PARAM_PROVIDER);
-        if (provider == null) {
-            provider = DEFAULT_PROVIDER; // default provider, only exists at umiacs
-        }
-        LOG.info("Provider: " + provider);
 
         // set ingestion url
         String url = System.getProperty(PARAM_INGEST_URL);

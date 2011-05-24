@@ -14,19 +14,19 @@
                 <rows>
                     <TablePane.Row>
                         <Label text="Name" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
-                        <BoxPane><Label textKey="name"/><Label text="/"/><Label textKey="group"/></BoxPane>
+                        <Label textKey="id"/>
                     </TablePane.Row>
                     <TablePane.Row>
-                        <Label text="Errors" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
-                        <Label textKey="totalErrors"/>
+                        <Label text="URL" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
+                        <Label textKey="href"/>
                     </TablePane.Row>
                     <TablePane.Row>
                         <Label text="Items" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
-                        <Label textKey="totalFiles"/>
+                        <Label />
                     </TablePane.Row>
                     <TablePane.Row>
                         <Label text="Size" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
-                        <Label textKey="totalSize"/>
+                        <Label />
                     </TablePane.Row>
                 </rows>
             </TablePane>
@@ -39,7 +39,7 @@
                             <left>
                                 <ScrollPane styles="{backgroundColor:'#fafafa'}">
                                     <view>
-                                        <TreeView styles="{backgroundColor:'#fafafa'}" bxml:id="fileTreeView"/>
+                                        <TreeView styles="{backgroundColor:'#fafafa',indent:5}" bxml:id="fileTreeView"/>
                                     </view>
                                 </ScrollPane>
                             </left>
@@ -101,7 +101,6 @@
                                                 <Label text="End" styles="{padding:{left:0,top:0,right:15,bottom:0}}"/>
                                                 <Label textKey="end"/>
                                             </TablePane.Row>
-
                                         </rows>
                                     </TablePane>
                                 </Border>

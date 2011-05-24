@@ -26,6 +26,8 @@ public class AboutDialog extends Dialog {
     private Label buildLbl;
     @BXML
     private Label dateLbl;
+    @BXML
+    private Label url;
 
     public AboutDialog() {
         setPreferredWidth(350);
@@ -46,6 +48,7 @@ public class AboutDialog extends Dialog {
         ResourceBundle bundle = java.util.ResourceBundle.getBundle("version");
         buildLbl.setText(bundle.getString("build.num"));
         dateLbl.setText(bundle.getString("build.date"));
+        url.setText(Main.getGateway().getEndpoint().toString());
 //         Pretty picture in the about box ;) Better than pemulis' twitter feed
         if (System.currentTimeMillis() % 2 == 1) {
             img.setImage(Main.class.getResource("trash.jpg"));

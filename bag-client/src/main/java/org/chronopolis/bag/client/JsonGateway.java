@@ -27,6 +27,10 @@ public class JsonGateway {
         DeserializationConfig cfg = mapper.getDeserializationConfig();
     }
 
+    public URL getEndpoint() {
+        return endpoint;
+    }
+
     public Manifest getManifest(String identifier) {
         try {
             URL u = new URL(endpoint + "/" + identifier + "/manifest");

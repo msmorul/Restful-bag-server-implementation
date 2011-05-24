@@ -156,7 +156,7 @@ public class MainWindow extends Frame implements Bindable {
 
                 sh.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
                 sh.setInitParameter("com.sun.jersey.config.property.packages", "org.chronopolis.restserver");
-
+                sh.setInitParameter(BagServer.VAULT, "vault1");
                 LOG.trace("Starting jetty server");
                 server = new Server(p);
 
@@ -170,7 +170,8 @@ public class MainWindow extends Frame implements Bindable {
                 // add jersey endpoint
                 Context context = new Context(server, "/", Context.SESSIONS);
                 context.addServlet(sh, "/*");
-                context.getServletContext().setAttribute(BagServer.VAULT, vault);
+                context.getServletContext().setAttribute("vault1", vault);
+
 
                 // ncsa-style logging
 

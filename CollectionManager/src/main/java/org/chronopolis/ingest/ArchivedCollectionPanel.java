@@ -5,8 +5,10 @@
 package org.chronopolis.ingest;
 
 import java.io.IOException;
+import org.apache.log4j.Logger;
 import org.apache.pivot.beans.BXML;
 import org.apache.pivot.beans.BXMLSerializer;
+import org.apache.pivot.collections.ArrayList;
 import org.apache.pivot.collections.Sequence;
 import org.apache.pivot.collections.Sequence.Tree.Path;
 import org.apache.pivot.serialization.SerializationException;
@@ -20,12 +22,13 @@ import org.apache.pivot.wtk.Span;
 import org.apache.pivot.wtk.TablePane;
 import org.apache.pivot.wtk.TreeView;
 import org.apache.pivot.wtk.TreeView.NodeCheckState;
-import org.apache.pivot.wtk.TreeViewBranchListener;
 import org.apache.pivot.wtk.TreeViewSelectionListener;
 import org.apache.pivot.wtk.content.ListViewItemRenderer;
 import org.apache.pivot.wtk.content.TreeViewNodeRenderer;
 import org.chronopolis.bag.client.BagBean;
 import org.chronopolis.bag.client.JsonGateway;
+import org.chronopolis.bag.client.Manifest;
+import org.chronopolis.bag.client.Manifest.PayloadItem;
 
 /**
  *
@@ -33,6 +36,7 @@ import org.chronopolis.bag.client.JsonGateway;
  */
 public class ArchivedCollectionPanel extends Border {
 
+    private static final Logger LOG = Logger.getLogger(ArchivedCollectionPanel.class);
     @BXML
     private TreeView fileTreeView;
     @BXML
@@ -57,14 +61,15 @@ public class ArchivedCollectionPanel extends Border {
 
                 public void messageSent(BagBean t) {
                     currentCollection = t;
-//                    loadFileTree();
-                    loadReports();
-                    collectionTable.load(t);
+                    loadFileTree();
+//                    loadReports();
+                    collectionTable.load(currentCollection);
+
                     //ArchivedCollectionPanel.this.load(t);
                 }
             });
 
-            fileTreeView.getTreeViewBranchListeners().add(new LazyLoadBranchListener());
+//            fileTreeView.getTreeViewBranchListeners().add(new LazyLoadBranchListener());
             fileTreeView.setNodeRenderer(new FileTreeRenderer());
             fileTreeView.getTreeViewSelectionListeners().add(new DetailsLoader());
 
@@ -78,28 +83,27 @@ public class ArchivedCollectionPanel extends Border {
         }
     }
 
-    private void loadReports() {
-
-        if (currentCollection != null) {
-            ApplicationContext.queueCallback(new Runnable() {
-
-                public void run() {
-
-                    JsonGateway gateway = Main.getGateway();
-//                    SummaryBean reportbean = gateway.getSummaryBean(site);
-//                    List ll = new ArrayList();
-//                    reportListView.setListData(ll);
-//                    for (Summary s : reportbean.getSummaries()) {
-//                        if (s.getCollection() == currentCollection.getId()) {
-//                            ll.add(s);
-//                        }
-//                    }
-                }
-            });
-        } else {
-        }
-    }
-
+//    private void loadReports() {
+//
+//        if (currentCollection != null) {
+//            ApplicationContext.queueCallback(new Runnable() {
+//
+//                public void run() {
+//
+//                    JsonGateway gateway = Main.getGateway();
+////                    SummaryBean reportbean = gateway.getSummaryBean(site);
+////                    List ll = new ArrayList();
+////                    reportListView.setListData(ll);
+////                    for (Summary s : reportbean.getSummaries()) {
+////                        if (s.getCollection() == currentCollection.getId()) {
+////                            ll.add(s);
+////                        }
+////                    }
+//                }
+//            });
+//        } else {
+//        }
+//    }
     private class ReportListListener extends ListViewSelectionListener.Adapter {
 
         @Override
@@ -109,7 +113,6 @@ public class ArchivedCollectionPanel extends Border {
     }
 
     private class ReportListRenderer extends ListViewItemRenderer {
-
 //        @Override
 //        public void render(Object item, int index, ListView listView, boolean selected, boolean checked, boolean highlighted, boolean disabled) {
 //            if (item instanceof Summary) {
@@ -121,34 +124,51 @@ public class ArchivedCollectionPanel extends Border {
 //        }
     }
 
-//    private void loadFileTree() {
-//        if (currentCollection != null) {
-//            ApplicationContext.queueCallback(new Runnable() {
-//
-//                public void run() {
-//                    JsonGateway gateway = Main.getGateway();
-////                    PartnerSite site = Main.getAceSite();
-////                    JsonGateway gateway = JsonGateway.getGateway();
-////                    ParentChildBean root = gateway.getAceItem(site, currentCollection.getId(), null);
-//                    LabeledList ll = new LabeledList(root.getParent());
-//                    fileTreeView.setTreeData(ll);
-//
-//                    for (AceItem child : root.getChildren()) {
-//                        if (child.isDirectory()) {
-//                            ll.add(new LabeledList(child));
-//                        } else {
-//                            ll.add(child);
-//                        }
-//                    }
-//                }
-//            });
-//        } else {
-//            fileTreeView.setTreeData(new ArrayList());
-//        }
-//    }
+    private void loadFileTree() {
+        if (currentCollection != null) {
+            ApplicationContext.queueCallback(new Runnable() {
+
+                public void run() {
+                    JsonGateway gateway = Main.getGateway();
+                    Manifest m = gateway.getManifest(currentCollection.getId());
+                    LabeledList ll = new LabeledList(m);
+                    for (Manifest.PayloadItem pi : m.getPayload()) {
+//                        LOG.trace("Loading " + pi.getPath());
+                        loadPath(ll, pi);
+                    }
+                    fileTreeView.setTreeData(ll);
+                }
+            });
+        } else {
+            fileTreeView.setTreeData(new ArrayList());
+        }
+    }
+
+    private void loadPath(LabeledList root, Manifest.PayloadItem pi) {
+        String path = pi.getPath();
+        if (path != null && !path.isEmpty()) {
+            LabeledList currList = root;
+            currList.setComparator(LabeledList.getLabelComparator());
+            String[] pathList = path.split("/");
+            for (int i = 0; i < (pathList.length - 1); i++) {
+                int idx = currList.indexOf(pathList[i]);
+//                LOG.trace("idx: " + idx + " path " + pathList[i]);
+                if (idx != -1) {
+                    currList = (LabeledList) currList.get(idx);
+
+                } else {
+                    LabeledList newList = new LabeledList(pathList[i]);
+                    newList.setComparator(LabeledList.getLabelComparator());
+                    currList.add(newList);
+                    currList = newList;
+
+                }
+            }
+            currList.add(pi);
+        }
+    }
 
     private class DetailsLoader extends TreeViewSelectionListener.Adapter {
-
 //        @Override
 //        public void selectedPathsChanged(TreeView treeView, Sequence<Path> previousSelectedPaths) {
 //
@@ -161,51 +181,26 @@ public class ArchivedCollectionPanel extends Border {
 //        }
     }
 
-    private class LazyLoadBranchListener implements TreeViewBranchListener {
-
-        public void branchExpanded(TreeView tv, Path path) {
-
-//            LabeledList lList = (LabeledList) Sequence.Tree.get(tv.getTreeData(), path);
-
-//            if (!lList.isLoaded()) {
-//                AceItem item = (AceItem) lList.getLabel();
-//                if (item.isDirectory()) {
-//                    PartnerSite site = Main.getAceSite();
-//                    JsonGateway gateway = JsonGateway.getGateway();
-//                    ParentChildBean details = gateway.getAceItem(site, currentCollection.getId(), item.getPath());
-//
-//                    for (AceItem child : details.getChildren()) {
-//                        if (child.isDirectory()) {
-//                            lList.add(new LabeledList(child));
-//                        } else {
-//                            lList.add(child);
-//                        }
-//                    }
-//                }
-//                lList.setLoaded(true);
-//            }
-        }
-
-        public void branchCollapsed(TreeView tv, Path path) {
-        }
-    }
-
     private class FileTreeRenderer extends TreeViewNodeRenderer {
+
+        public FileTreeRenderer() {
+            setIconWidth(0);
+            setIconHeight(0);
+        }
 
         @Override
         public void render(Object node, Path path, int rowIndex, TreeView treeView, boolean expanded, boolean selected, NodeCheckState checkState, boolean highlighted, boolean disabled) {
 
-//            if (node instanceof AceItem) {
-//                AceItem o = (AceItem) node;
-//                super.render(o.getPath().substring(o.getParentPath().length() + 1), path, rowIndex, treeView, expanded, selected, checkState, highlighted, disabled);
-//
-//            } else if (node instanceof LabeledList) {
-//                AceItem o = (AceItem) ((LabeledList) node).getLabel();
-//                super.render(o.getPath().substring(o.getParentPath().length() + 1), path, rowIndex, treeView, expanded, selected, checkState, highlighted, disabled);
-//
-//            } else {
-//                super.render(node, path, rowIndex, treeView, expanded, selected, checkState, highlighted, disabled);
-//            }
+            Object renderObj = node;
+            if (node instanceof LabeledList) {
+                renderObj = ((LabeledList) node).getLabel();
+            } else if (node != null) {
+                PayloadItem pi = (PayloadItem) node;
+                renderObj = pi.getPath().substring(pi.getPath().lastIndexOf("/") + 1);
+            }
+
+            super.render(renderObj, path, rowIndex, treeView, expanded, selected, checkState, highlighted, disabled);
+
         }
     }
 }

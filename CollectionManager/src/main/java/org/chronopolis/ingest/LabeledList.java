@@ -12,6 +12,7 @@ import org.apache.pivot.collections.ArrayList;
  */
 public class LabeledList<T, V> extends ArrayList<T> implements Comparable {
 
+    private static LabelComparator lc = new LabelComparator();
     private V label;
     private boolean loaded = false;
 
@@ -21,12 +22,30 @@ public class LabeledList<T, V> extends ArrayList<T> implements Comparable {
     }
 
     public LabeledList(V label, java.util.List<T> list) {
-        for (T item : list)
-        {
+        for (T item : list) {
             add(item);
         }
         this.label = label;
         setComparator(new LabeledList.Comparator());
+    }
+
+    public static java.util.Comparator getLabelComparator() {
+        return lc;
+    }
+
+    public static class LabelComparator implements java.util.Comparator {
+
+        public int compare(Object o1, Object o2) {
+            Object newO1 = o1;
+            Object newO2 = o2;
+            if (o1 instanceof LabeledList) {
+                newO1 = ((LabeledList) o1).label;
+            }
+            if (o2 instanceof LabeledList) {
+                newO2 = ((LabeledList) o2).label;
+            }
+            return LabeledList.compare(newO1, newO2);
+        }
     }
 
     public static class Comparator implements java.util.Comparator {
@@ -75,7 +94,7 @@ public class LabeledList<T, V> extends ArrayList<T> implements Comparable {
 
     @Override
     public String toString() {
-        return label + " [" +getLength() + "]";
+        return label + " [" + getLength() + "]";
     }
 
     @Override

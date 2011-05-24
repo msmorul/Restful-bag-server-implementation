@@ -53,6 +53,7 @@
         <module>bag-manager</module>
         <module>bag-storage-library</module>
         <module>bag-client</module>
+        <module>bag-exe</module>
     </modules>
     <!--<reporting>
         <plugins>

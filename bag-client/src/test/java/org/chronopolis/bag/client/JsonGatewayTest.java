@@ -44,13 +44,14 @@ public class JsonGatewayTest {
 
         sh.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
         sh.setInitParameter("com.sun.jersey.config.property.packages", "org.chronopolis.restserver");
+        sh.setInitParameter(BagServer.VAULT, "vault1");
 
         server = new Server(port);
 
         // add jersey endpoint
         Context context = new Context(server, "/", Context.SESSIONS);
         context.addServlet(sh, "/*");
-        context.getServletContext().setAttribute(BagServer.VAULT, vault);
+        context.getServletContext().setAttribute("vault1", vault);
         server.start();
 
 

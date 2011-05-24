@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -40,15 +41,19 @@ import org.chronopolis.bagserver.BagVault;
 @Path("bags")
 public class BagServer {
 
+    @Context
+    private ServletConfig servletConfig;
+    @Context
+    private ServletContext servletContext;
     public static final String VAULT = "org.chronopolis.BagVault";
     private static final Logger LOG = Logger.getLogger(BagServer.class);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<BagEntry> getBagList(@Context ServletContext servletCtx) {
+    public List<BagEntry> getBagList() {
         LOG.debug("list bags ");
 
-        BagVault vault = getVault(servletCtx);
+        BagVault vault = getVault();
         List<BagEntry> entryList = new ArrayList<BagEntry>();
 
         for (BagEntry be : vault.getBags()) {
@@ -62,12 +67,11 @@ public class BagServer {
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response createBag(@FormParam("id") String newBagId,
-            @Context ServletContext servletCtx) {
+    public Response createBag(@FormParam("id") String newBagId) {
 
         LOG.debug("Create bag " + newBagId);
 
-        BagVault vault = getVault(servletCtx);
+        BagVault vault = getVault();
         if (vault.bagExists(newBagId)) {
             LOG.info("Request for existing bag: " + newBagId);
             return Response.status(409).build();
@@ -84,12 +88,11 @@ public class BagServer {
      */
     @Path("{bagid}")
     @DELETE
-    public Response removeBag(@PathParam("bagid") String bagId,
-            @Context ServletContext servletCtx) {
+    public Response removeBag(@PathParam("bagid") String bagId) {
 
         LOG.debug("Remove bag " + bagId);
 
-        BagVault vault = getVault(servletCtx);
+        BagVault vault = getVault();
         BagEntry be = vault.getBag(bagId);
         if (be == null) {
             LOG.info("Request for unknown bag: " + bagId);
@@ -118,13 +121,12 @@ public class BagServer {
     @POST
     public Response invokeBagAction(@PathParam("bagid") String bagId,
             @FormParam("commit") String commit,
-            @FormParam("validate") String validate,
-            @Context ServletContext servletCtx) {
+            @FormParam("validate") String validate) {
 
         LOG.debug("Request for commit/validate on " + bagId
                 + " Commit=" + commit + ", Validate=" + validate);
 
-        BagVault vault = getVault(servletCtx);
+        BagVault vault = getVault();
         BagEntry be = vault.getBag(bagId);
         if (be == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -140,7 +142,6 @@ public class BagServer {
                 return Response.status(400).build();
             }
         } else if (validate != null && !validate.isEmpty()) {
-            
             //TODO: validation
         }
 
@@ -155,11 +156,10 @@ public class BagServer {
     @Path("{bagid}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response getBagDescription(@PathParam("bagid") String bagId,
-            @Context ServletContext servletCtx) {
+    public Response getBagDescription(@PathParam("bagid") String bagId) {
         LOG.debug("metadata request for " + bagId);
 
-        BagVault vault = getVault(servletCtx);
+        BagVault vault = getVault();
         BagEntry be = vault.getBag(bagId);
         if (be == null) {
             LOG.info("Request for unknown bag: " + bagId);
@@ -175,9 +175,8 @@ public class BagServer {
     @Path("{bagid}/contents/data/{dataFile: .*}")
     @GET
     public Response getBagData(@PathParam("bagid") String bagId,
-            @PathParam("dataFile") String dataFile,
-            @Context ServletContext servletCtx) {
-        BagVault vault = getVault(servletCtx);
+            @PathParam("dataFile") String dataFile) {
+        BagVault vault = getVault();
         BagEntry be = vault.getBag(bagId);
         if (be == null) {
             LOG.info("Request for unknown bag: " + bagId);
@@ -203,10 +202,9 @@ public class BagServer {
     @PUT
     public Response putBagData(@PathParam("bagid") String bagId,
             @PathParam("dataFile") String dataFile,
-            @Context HttpServletRequest request,
-            @Context ServletContext servletCtx) {
+            @Context HttpServletRequest request) {
         LOG.trace("Upload file: " + bagId + " " + dataFile);
-        BagVault vault = getVault(servletCtx);
+        BagVault vault = getVault();
         BagEntry be = vault.getBag(bagId);
         if (be == null) {
             LOG.info("Request for unknown bag: " + bagId);
@@ -245,11 +243,10 @@ public class BagServer {
     @Produces(MediaType.TEXT_PLAIN)
     @GET
     public Response getTagFile(@PathParam("bagid") String bagId,
-            @PathParam("contentFile") String contentFile,
-            @Context ServletContext servletCtx) {
+            @PathParam("contentFile") String contentFile) {
         LOG.debug("Retrieve metadata file: " + contentFile + " to bag " + bagId);
 
-        BagVault vault = getVault(servletCtx);
+        BagVault vault = getVault();
         BagEntry be = vault.getBag(bagId);
         if (be == null) {
             LOG.info("Request for unknown bag: " + bagId);
@@ -265,11 +262,10 @@ public class BagServer {
     @PUT
     public Response putTagFile(@PathParam("bagid") String bagId,
             @PathParam("contentFile") String contentFile,
-            @Context ServletContext servletCtx,
             @Context HttpServletRequest request) {
         LOG.debug("Uploading metadata file: " + contentFile + " to bag " + bagId);
 
-        BagVault vault = getVault(servletCtx);
+        BagVault vault = getVault();
         BagEntry be = vault.getBag(bagId);
         if (be == null) {
             LOG.info("Request for unknown bag: " + bagId);
@@ -332,9 +328,8 @@ public class BagServer {
      */
     @GET
     @Path("{bagid}/manifest")
-    public Response getBagManifest(@PathParam("bagid") String bagId,
-            @Context ServletContext servletCtx) {
-        BagVault vault = getVault(servletCtx);
+    public Response getBagManifest(@PathParam("bagid") String bagId) {
+        BagVault vault = getVault();
         BagEntry be = vault.getBag(bagId);
 
         LOG.debug("manifest request for " + bagId);
@@ -369,8 +364,7 @@ public class BagServer {
      */
     @Path("{bagid}/copies")
     @GET
-    public Response getBagCopies(@PathParam("bagid") String bagId,
-            @Context ServletContext servletCtx) {
+    public Response getBagCopies(@PathParam("bagid") String bagId) {
         return null;
     }
 
@@ -382,8 +376,7 @@ public class BagServer {
      */
     @GET
     @Path("{bagid}/notes")
-    public Response getBagNotes(@PathParam("bagid") String bagId,
-            @Context ServletContext servletCtx) {
+    public Response getBagNotes(@PathParam("bagid") String bagId) {
         return null;
     }
 
@@ -395,12 +388,12 @@ public class BagServer {
      */
     @GET
     @Path("{bagid}/metadata")
-    public Response getBagMetadata(@PathParam("bagid") String bagId,
-            @Context ServletContext servletCtx) {
+    public Response getBagMetadata(@PathParam("bagid") String bagId) {
         return null;
     }
 
-    private BagVault getVault(ServletContext ctx) {
-        return (BagVault) ctx.getAttribute(VAULT);
+    private BagVault getVault() {
+        String vaultID = servletConfig.getInitParameter(VAULT);
+        return (BagVault) servletContext.getAttribute(vaultID);
     }
 }
