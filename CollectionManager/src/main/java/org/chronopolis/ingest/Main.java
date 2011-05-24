@@ -67,7 +67,7 @@ public class Main implements Application {
     // Default settings
     private static File defaultDir;
     private static String defaultURLPattern;
-    private static final String PARAM_PROVIDER = "jnlp.provider";
+//    private static final String PARAM_PROVIDER = "jnlp.provider";
     private static final String PARAM_INGEST_URL = "jnlp.ingest.url";
     private static final String PARAM_URL_PATTERN = "jnlp.urlpattern";
     private static final String PARAM_DEFAULT_DIR = "jnlp.defaultdir";
