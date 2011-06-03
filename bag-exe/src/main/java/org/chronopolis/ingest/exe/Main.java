@@ -28,7 +28,6 @@ public class Main {
         ServerArgs settings = new ServerArgs();
         JCommander cmd = new JCommander(settings);
 
-
         if (settings.isUsage()) {
             cmd.usage();
             return;
