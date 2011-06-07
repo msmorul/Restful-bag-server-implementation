@@ -142,12 +142,14 @@ public class BagServer {
                 return Response.status(400).build();
             }
         } else if (validate != null && !validate.isEmpty()) {
-            //TODO: validation
+            //TODO: validation, return handle
         }
 
 
         return Response.ok().build();
     }
+
+    //TODO: method to handle validation status
 
     /**
      * Return links, parsed bag-info.txt, and parsed bagit.txt from spec
