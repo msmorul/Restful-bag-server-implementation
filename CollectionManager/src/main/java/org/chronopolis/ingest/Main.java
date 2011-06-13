@@ -96,7 +96,7 @@ public class Main implements Application {
     private static final String PARAM_INGEST_URL = "jnlp.ingest.url";
     private static final String PARAM_URL_PATTERN = "jnlp.urlpattern";
     private static final String PARAM_DEFAULT_DIR = "jnlp.defaultdir";
-    private static final String DEFAULT_INGEST = "http://localhost:7878/bags";
+    private static final String DEFAULT_INGEST = "http://localhost:8080/bags";
 
     /**
      * @param args the command line arguments

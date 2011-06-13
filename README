@@ -1,0 +1,42 @@
+The bag ingestion tools contain several client and server side components. 
+ - ace-am-lib - ACE audit manager api, used by older collection managers.
+ - bag-client - bag client library used to query RESTful bag services
+ - bag-exe - standalone server to share a directory of bags
+ - bag-manager - Simple UI to share a directory of bags
+ - bag-services - RESTful bag services to be integrated into other apps
+ - bag-storage-library - Core bag storage api used by the rest-ful bag services
+ - CollectionManager - Client UI for ingesting ang browsing bags on a bag server.
+
+----
+Compiling
+
+ This project was build using maven 3.0.1 running against jdk 1.6. To compile
+all packages, run 'mvn clean package' from the root directory. The following 
+artifacts will be generated which you can embed in your applications or use as
+standalong services
+
+
+----
+Starting the Server UI
+
+----
+Starting the command line server
+
+ Look in bag-exe/target for the bag-exe...with-dependencies.jar file. This is 
+a standalone binary which can serve a bag directory by running:
+
+ $ java -jar bag-exe-1.0-SNAPSHOT-jar-with-dependencies.jar -dir /tmp/bagdir
+
+----
+Starting the Client UI
+
+ Look in CollectionMananger/target for the collection-manager...with-dependencies.jar.
+This is a standalone binary which you can start up from the command line.
+
+ $ java -jar collection-manager-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+By default, it will look at http://localhost:8080/bags for a bag endpoint. If you are
+running on a different server, you set jnlp.ingest.url to point at your bag server
+
+ $ java -D'jnlp.ingest.url=http://mybagserver.com:8080/bags' \
+   -jar collection-manager-1.0-SNAPSHOT-jar-with-dependencies.jar
