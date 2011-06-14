@@ -158,8 +158,8 @@ public class Main implements Application {
 
 //        aceSite = new PartnerSite();
 //        aceSite.setRemoteURL("http://chron-monitor.umiacs.umd.edu:8080/ace-am");
-//        aceSite.setUser("browse");
-//        aceSite.setPass("browse");
+//        aceSite.setUser("user");
+//        aceSite.setPass("pass");
 //        pa.addSite(aceSite);
 
         // build app
@@ -167,7 +167,7 @@ public class Main implements Application {
         mainW = (Window) serializer.readObject(Main.class, "applicationWindow.bxml");
         serializer.bind(this);
 
-        //TODO: Clean this shithole up
+        //TODO: Clean this shithole listener up
         pendingListView.getListViewListeners().add(new ListViewListener.Adapter() {
 
             private BagWatcher listener = new BagWatcher();

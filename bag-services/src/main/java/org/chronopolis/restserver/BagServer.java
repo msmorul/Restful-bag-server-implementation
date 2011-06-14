@@ -157,6 +157,7 @@ public class BagServer {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
+
         BagChecker checker = new BagChecker(be);
         if (commit != null && !commit.isEmpty()) {
             if (checker.isComplete() && be.commit()) {
@@ -167,14 +168,19 @@ public class BagServer {
                 return Response.status(400).build();
             }
         } else if (validate != null && !validate.isEmpty()) {
-            //TODO: validation, return handle
+            if (servletContext.getAttribute("val-" + bagId) == null) {
+                servletContext.setAttribute("val-" + bagId, checker);
+                checker.addListener(new ValidationListener(servletContext));
+                checker.validate(true);
+                return Response.status(202).entity(checker).build();
+            } else {
+                return Response.status(202).entity(servletContext.getAttribute("val-" + bagId)).build();
+            }
         }
 
-
+        //TODO:  what to return here
         return Response.ok().build();
     }
-
-    //TODO: method to handle validation status
 
     /**
      * Return links, parsed bag-info.txt, and parsed bagit.txt from spec

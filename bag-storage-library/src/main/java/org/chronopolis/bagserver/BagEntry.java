@@ -44,12 +44,27 @@ public interface BagEntry {
         COMMITTED, NONEXISTENT, OPEN
     }
 
+    /**
+     * Return the current validation state of a file. Care should be taken to
+     * ensure this does not return a successful validation if anything has
+     * changed in a bag
+     * 
+     * @return current state or null if none.
+     */
+    public ValidationHistory getValidationHistory();
+
     public List<String> listTagFiles();
     
     public String getIdentifier();
 
     public State getBagState();
 
+    /**
+     * Set the validation history for this entry from the supplied bag checker
+     * 
+     * @param checker checker to set validation history from
+     */
+    void setLastValidation(BagChecker checker);
     /**
      * Test bag for completeness, not integrity
      * 

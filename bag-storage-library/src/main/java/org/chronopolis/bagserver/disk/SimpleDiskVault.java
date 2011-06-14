@@ -30,6 +30,7 @@
 package org.chronopolis.bagserver.disk;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -41,17 +42,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.log4j.Logger;
+import org.chronopolis.bagserver.BagChecker;
 import org.chronopolis.bagserver.BagEntry;
 import org.chronopolis.bagserver.BagInfo;
 import org.chronopolis.bagserver.BagIt;
 import org.chronopolis.bagserver.BagVault;
+import org.chronopolis.bagserver.ValidationHistory;
+import org.chronopolis.bagserver.ValidationHistory.Status;
 
 /**
  * Simple disk bag vault which assumes all bags exist in a flat hierarchy. Bags
@@ -68,6 +71,7 @@ public class SimpleDiskVault implements BagVault {
     private File commitDirectory;
     private File workDirectory;
     private File logDirectory;
+//    private static final String VALIDATION_FNAME = "validation";
     private FileFilter bagFilter = new FileFilter() {
 
         public boolean accept(File pathname) {
@@ -223,6 +227,67 @@ public class SimpleDiskVault implements BagVault {
             this.directory = directory;
         }
 
+        public void setLastValidation(BagChecker checker) {
+            if (checker.isComplete()) {
+                File valFile = new File(logDirectory, directory.getName());
+                try {
+                    FileWriter fw = new FileWriter(valFile);
+                    if (checker.isSuccessful()) {
+                        fw.write(Status.SUCCESSFUL.toString());
+                        fw.write(": ");
+                        
+                    } else {
+                        fw.write(Status.FAILED.toString());
+                        fw.write(":");
+                        fw.write(checker.getValidationSummary());
+                    }
+                    fw.close();
+                    
+                } catch (IOException e) {
+                    LOG.error("Error writing validation state ", e);
+                }
+            }
+        }
+
+        public ValidationHistory getValidationHistory() {
+            File valFile = new File(logDirectory, directory.getName());
+            if (!valFile.exists()) {
+                return null;
+            }
+            String line;
+            FileReader fr = null;
+            try {
+                fr = new FileReader(valFile);
+                BufferedReader br = new BufferedReader(fr);
+                line = br.readLine();
+            } catch (IOException e) {
+                LOG.error("Error reading " + valFile, e);
+                throw new RuntimeException("Error reading file " + valFile, e);
+            } finally {
+                if (fr != null) {
+                    try {
+                        fr.close();
+                    } catch (IOException e) {
+                        LOG.error("Error closing " + valFile, e);
+                    }
+                }
+            }
+            LOG.trace("Read history line: " + line + " from  " + valFile);
+            if (line == null) {
+                LOG.error("Empty validation read from " + valFile);
+                return null;
+            }
+            String[] parts = line.split(":", 2);
+            if (parts == null || parts.length != 2) {
+                LOG.error("History file has errors " + valFile);
+                throw new RuntimeException("History file has errors " + valFile);
+            }
+            Status status = Status.valueOf(parts[0]);
+            ValidationHistory vh = new ValidationHistory(status, parts[1]);
+            return vh;
+
+        }
+
         public String getIdentifier() {
             return directory.getName();
         }
@@ -238,8 +303,6 @@ public class SimpleDiskVault implements BagVault {
             }
             throw new IllegalStateException("Cannot determine bag state " + directory);
         }
-
-        
 
         public List<String> listDataFiles() {
             List<String> retList = new ArrayList<String>();
@@ -262,7 +325,6 @@ public class SimpleDiskVault implements BagVault {
 
             return retList;
         }
-
 
         public boolean commit() {
             creationLock.lock();
@@ -296,10 +358,10 @@ public class SimpleDiskVault implements BagVault {
 
         public List<String> listTagFiles() {
             List<String> retList = new ArrayList<String>();
-            for (File f : directory.listFiles())
-            {
-                if (f.isFile())
+            for (File f : directory.listFiles()) {
+                if (f.isFile()) {
                     retList.add(f.getName());
+                }
 
             }
             return retList;
@@ -308,7 +370,7 @@ public class SimpleDiskVault implements BagVault {
         public boolean delete() {
 
             //TODO: check for open files
-
+            cleanBagValidation();
             File deleteFile;
             creationLock.lock();
             try {
@@ -332,6 +394,7 @@ public class SimpleDiskVault implements BagVault {
         public boolean setBagItInformation(BagIt bagIt) {
             File f = new File(directory, BagIt.FILE_NAME);
             try {
+                cleanBagValidation();
                 FileWriter fw = new FileWriter(f);
                 bagIt.writeFile(fw);
                 fw.close();
@@ -345,6 +408,7 @@ public class SimpleDiskVault implements BagVault {
         public boolean setBagInfo(BagInfo baginfo) {
             File f = new File(directory, BagInfo.FILE_NAME);
             try {
+                cleanBagValidation();
                 FileWriter fw = new FileWriter(f);
                 baginfo.writeInfo(fw);
                 fw.close();
@@ -382,12 +446,21 @@ public class SimpleDiskVault implements BagVault {
             return null;
         }
 
+        private void cleanBagValidation() {
+            File valFile = new File(logDirectory, directory.getName());
+            if (!valFile.exists()) {
+                valFile.delete();
+            }
+
+        }
+
         public InputStream openTagInputStream(String tagItem) throws IllegalArgumentException {
             File dataFile = new File(directory, tagItem);
             if (!dataFile.getParentFile().equals(directory)) {
                 throw new IllegalArgumentException("Bag tag item " + tagItem);
             }
             try {
+
                 return new FileInputStream(dataFile);
             } catch (FileNotFoundException e) {
                 LOG.error("Cannot open file: " + dataFile + " for id: " + tagItem);
@@ -403,6 +476,7 @@ public class SimpleDiskVault implements BagVault {
                 throw new IllegalArgumentException("Bag tag item " + tagItem);
             }
             try {
+                cleanBagValidation();
                 return new FileOutputStream(dataFile);
             } catch (FileNotFoundException e) {
                 LOG.error("Cannot create output file: " + dataFile + " for id: " + tagItem);
@@ -432,6 +506,7 @@ public class SimpleDiskVault implements BagVault {
                 }
             }
             try {
+                cleanBagValidation();
                 return new FileOutputStream(dataFile);
             } catch (FileNotFoundException e) {
                 LOG.error("Cannot create output file: " + dataFile + " for id: " + fileIdentifier);

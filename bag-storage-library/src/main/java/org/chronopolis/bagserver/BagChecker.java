@@ -38,8 +38,10 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -64,6 +66,53 @@ public final class BagChecker {
         this.workingBag = workingBag;
     }
 
+    public boolean isSuccessful() {
+        return localListener.isValid();
+    }
+
+    public String getValidationSummary() {
+        StringBuffer sb = new StringBuffer();
+        if (!localListener.bagInfo) {
+            sb.append("Missing or corrupt Bag Info; ");
+        }
+        if (!localListener.bagIt) {
+            sb.append("Missing or corrupt BagIT; ");
+        }
+        if (localListener.corruptFiles.size() > 0) {
+            sb.append("Corrupt Files: ");
+            sb.append(localListener.corruptFiles.size());
+            sb.append("; ");
+        }
+        if (localListener.extraFiles.size() > 0) {
+            sb.append("Extra Files: ");
+            sb.append(localListener.extraFiles.size());
+            sb.append("; ");
+        }
+        if (localListener.malformedManifestFiles.size() > 0) {
+            sb.append("Malformed Manifests: ");
+            sb.append(localListener.malformedManifestFiles.size());
+            sb.append("; ");
+
+        }
+        if (localListener.malformedManifestFiles.size() > 0) {
+            sb.append("Missing Digests: ");
+            sb.append(localListener.malformedManifestFiles.size());
+            sb.append("; ");
+        }
+        if (localListener.missingFiles.size() > 0) {
+
+            sb.append("Missing Files: ");
+            sb.append(localListener.missingFiles.size());
+            sb.append("; ");
+        }
+        if (localListener.readErrors > 0) {
+            sb.append("Total Read errors: ");
+            sb.append(localListener.readErrors);
+            sb.append("; ");
+        }
+        return sb.toString();
+    }
+
     public void addListener(BagCheckListener listener) {
         listenerList.add(listener);
     }
@@ -72,18 +121,18 @@ public final class BagChecker {
         listenerList.remove(listener);
     }
 
-    public List<String> getCorruptFiles() {
+    public Set<String> getCorruptFiles() {
         return localListener.corruptFiles;
     }
 
-    public List<String> getExtraFiles() {
+    public Set<String> getExtraFiles() {
         return localListener.extraFiles;
     }
 
 //    public List<String> getManifestDifferences() {
 //        return localListener.manifestDifferences;
 //    }
-    public List<String> getMissingFiles() {
+    public Set<String> getMissingFiles() {
         return localListener.missingFiles;
     }
 
@@ -117,7 +166,7 @@ public final class BagChecker {
 
     private void fireMissingFile(String file) {
         for (BagCheckListener l : listenerList) {
-            l.missingDigest(this, file);
+            l.missingFile(this, file);
         }
     }
 
@@ -127,15 +176,21 @@ public final class BagChecker {
         }
     }
 
-    private void fireMissingDigest(String file) {
+    private void fireMissingDigest(String file, String alg) {
         for (BagCheckListener l : listenerList) {
-            l.missingDigest(this, file);
+            l.missingDigest(this, file, alg);
         }
     }
 
-    private void fireCorruptFile(String file, String expected, String seen) {
+    private void fireCorruptFile(String file, String alg, String expected, String seen) {
         for (BagCheckListener l : listenerList) {
-            l.corruptFile(this, file, expected, seen);
+            l.corruptFile(this, file, alg, expected, seen);
+        }
+    }
+
+    private void fireExtraFile(String file) {
+        for (BagCheckListener l : listenerList) {
+            l.extraFile(this, file);
         }
     }
 
@@ -164,6 +219,7 @@ public final class BagChecker {
     private void wrapValidate() {
         try {
             validateBag();
+            workingBag.setLastValidation(this);
         } finally {
             fireThreadTerminate();
         }
@@ -215,8 +271,12 @@ public final class BagChecker {
         resetDigests(mdArray);
 
         int fileCount = 0;
+        List<String> allFiles = workingBag.listDataFiles();
+
         for (Map.Entry<String, String[]> entry : digestMap.entrySet()) {
             String file = entry.getKey();
+            allFiles.remove(file);
+
             fileCount++;
             NDC.push("F:" + fileCount);
             LOG.trace("Starting audit of: " + file);
@@ -224,7 +284,12 @@ public final class BagChecker {
             InputStream is;
 
             try {
-                is = getBag().openDataInputStream(file);
+                is = getBag().openDataInputStream(file.substring(5));
+                if (is == null) {
+                    LOG.info("Cannot open file for validateion: "
+                            + file + " in " + getBag().getIdentifier());
+                    fireMissingFile(file);
+                }
             } catch (IllegalArgumentException e) {
                 LOG.info("Cannot open file for validateion: "
                         + file + " in " + getBag().getIdentifier());
@@ -244,13 +309,17 @@ public final class BagChecker {
 
             logCorruptDigests(file, mdArray, digests);
 
+
             NDC.pop();
             LOG.trace("Ending audit of: " + file);
         }
-
+        for (String remainingFile : allFiles) {
+            fireExtraFile(remainingFile);
+        }
     }
 
     private boolean readFully(InputStream compiledStream, String file) {
+
         try {
             while (compiledStream.read(block) != -1) {
             }
@@ -273,14 +342,14 @@ public final class BagChecker {
         for (int i = 0; i < mdArray.length; i++) {
             String finalDigest = Util.asHexString(mdArray[i].digest());
             if (Util.isEmpty(digests[i])) {
-                fireMissingDigest(file);
+                fireMissingDigest(file, mdArray[i].getAlgorithm());
                 LOG.info("Missing digest for " + file + " in "
                         + getBag().getIdentifier());
             } else if (!finalDigest.equals(digests[i])) {
                 LOG.info("Corrupt file " + file + " in "
                         + getBag().getIdentifier() + " expected: "
                         + digests[i] + " seen: " + finalDigest);
-                fireCorruptFile(file, digests[i], finalDigest);
+                fireCorruptFile(file, mdArray[i].getAlgorithm(), digests[i], finalDigest);
             }
         }
     }
@@ -294,7 +363,7 @@ public final class BagChecker {
     private void loadDigests(Map<String, String[]> digestMap, int idx,
             String manifest, int totalDigests) {
 
-        InputStream is = workingBag.openDataInputStream(manifest);
+        InputStream is = workingBag.openTagInputStream(manifest);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
         String line;
@@ -323,7 +392,13 @@ public final class BagChecker {
             br.close();
         } catch (IOException e) {
             LOG.error("Error reading file: " + manifest);
-
+            fireErrorReadingFile(manifest, e);
+        } finally {
+            try {
+                br.close();
+            } catch (IOException e) {
+                LOG.error("Error closing: " + manifest, e);
+            }
         }
     }
 
@@ -421,34 +496,50 @@ public final class BagChecker {
 
         private boolean bagInfo = true;
         private boolean bagIt = true;
-        private List<String> extraFiles = new ArrayList<String>();
-        private List<String> missingFiles = new ArrayList<String>();
-        private List<String> corruptFiles = new ArrayList<String>();
+        private int readErrors = 0;
+        private Set<String> extraFiles = new HashSet<String>();
+        private Set<String> missingFiles = new HashSet<String>();
+        private Set<String> corruptFiles = new HashSet<String>();
+        private Set<String> malformedManifestFiles = new HashSet<String>();
+        private Set<String> missingDigests = new HashSet<String>();
 
         public boolean isValid() {
             return bagInfo && bagIt && extraFiles.isEmpty() && missingFiles.isEmpty()
-                    &&  corruptFiles.isEmpty();
+                    && corruptFiles.isEmpty();
+        }
+
+        public void extraFile(BagChecker checker, String file) {
+            missingDigests.add(file);
+        }
+
+        public int getReadErrors() {
+            return readErrors;
         }
 
         public void badBagLine(BagChecker checker, String file, String line) {
+            malformedManifestFiles.add(line);
         }
 
         public void missingFile(BagChecker checker, String file) {
+            missingFiles.add(file);
         }
 
         public void errorReadingFile(BagChecker checker, String file, IOException e) {
+            readErrors++;
+            missingFiles.add(file);
         }
 
-        public void missingDigest(BagChecker checker, String file) {
+        public void missingDigest(BagChecker checker, String file, String alg) {
+            missingDigests.add(file);
         }
 
-        public void corruptFile(BagChecker checker, String file, String expected, String seen) {
+        public void corruptFile(BagChecker checker, String file, String alg, String expected, String seen) {
+            corruptFiles.add(file);
         }
 
         private void reset() {
             extraFiles.clear();
             missingFiles.clear();
-//            manifestDifferences.clear();
             corruptFiles.clear();
             bagInfo = true;
             bagIt = true;

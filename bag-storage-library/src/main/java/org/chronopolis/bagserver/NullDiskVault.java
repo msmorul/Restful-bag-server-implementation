@@ -89,6 +89,13 @@ public class NullDiskVault implements BagVault {
             this.isWork = isWork;
         }
 
+        public void setLastValidation(BagChecker checker) {
+        }
+
+        public ValidationHistory getValidationHistory() {
+            return null;
+        }
+
         public List<String> listDataFiles() {
             List<String> l = new ArrayList<String>();
             l.add("data/test");

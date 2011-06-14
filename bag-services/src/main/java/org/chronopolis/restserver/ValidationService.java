@@ -27,20 +27,47 @@
  * ACE Components were written in the ADAPT Project at the University of
  * Maryland Institute for Advanced Computer Study.
  */
-package org.chronopolis.bagserver;
+package org.chronopolis.restserver;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import org.chronopolis.bagserver.BagVault;
+import org.chronopolis.bagserver.ValidationHistory;
 
 /**
  *
  * @author toaster
  */
-public class ValidationState {
+@Path("validation")
+public class ValidationService {
 
-    public enum Status
-    {
-        IN_PROGRESS, FAILED, SUCCESSFUL;
+    @Context
+    private ServletContext servletContext;
+    @Context
+    private ServletConfig servletConfig;
+
+    @GET
+    @Path("{bagid}")
+    public Response getValidation(@PathParam("bagid") String bagid) {
+        BagVault vault = getVault();
+        if (servletContext.getAttribute("val-" + bagid) != null) {
+            return Response.ok(servletContext.getAttribute("val-" + bagid)).build();
+        } else if (vault.bagExists(bagid)) {
+            ValidationHistory vh = vault.getBag(bagid).getValidationHistory();
+            if (vh != null) {
+                return Response.status(202).entity(vh).build();   
+            }
+        }
+        return Response.status(404).build();
     }
-    private int filesValidated;
-    private String summary;
-    //todo: manifest list
 
+    private BagVault getVault() {
+        String vaultID = servletConfig.getInitParameter(BagServer.VAULT);
+        return (BagVault) servletContext.getAttribute(vaultID);
+    }
 }

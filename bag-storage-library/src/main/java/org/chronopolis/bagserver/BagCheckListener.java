@@ -47,19 +47,41 @@ public interface BagCheckListener {
     public void missingFile(BagChecker checker, String file);
     public void errorReadingFile(BagChecker checker, String file, IOException e);
 
-    public void missingDigest(BagChecker checker, String file);
+    /**
+     * A file doesn't have a digest in all available manifests
+     * @param checker
+     * @param file file with missing digest
+     * @param algorithm manifest where digest is missing
+     */
+    public void missingDigest(BagChecker checker, String file, String algorithm);
 
-    public void corruptFile(BagChecker checker, String file, String expected, String seen);
+    /**
+     * A file's digest does not match the expected digest;
+     *
+     * @param checker
+     * @param file - file w/ bad digest
+     * @param algorithm - digest algorithm where mismatch occurred
+     * @param expected - digest in manifest file
+     * @param seen - digest calculated after reading file
+     */
+    public void corruptFile(BagChecker checker, String file, String algorithm,String expected, String seen);
+
+    /**
+     * A file was found on disk that does not exist in a manifest
+     * @param checker
+     * @param file
+     */
+    public void extraFile(BagChecker checker, String file);
 
     public class Adapter implements BagCheckListener {
 
-        public void missingDigest(BagChecker checker, String file) {
+        public void missingDigest(BagChecker checker, String file,String algorithm) {
         }
 
         public void errorReadingFile(BagChecker checker, String file, IOException e) {
         }
 
-        public void corruptFile(BagChecker checker, String file, String expected, String seen) {
+        public void corruptFile(BagChecker checker, String file, String algorithm, String expected, String seen) {
         }
 
         public void missingFile(BagChecker checker, String file) {
@@ -75,6 +97,9 @@ public interface BagCheckListener {
         }
 
         public void missingBagInfo(BagChecker checker) {
+        }
+
+        public void extraFile(BagChecker checker, String file) {
         }
     }
 }
