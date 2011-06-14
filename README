@@ -11,13 +11,22 @@ The bag ingestion tools contain several client and server side components.
 Compiling
 
  This project was build using maven 3.0.1 running against jdk 1.6. To compile
-all packages, run 'mvn clean package' from the root directory. The following 
-artifacts will be generated which you can embed in your applications or use as
-standalong services
-
-
+all packages, run 'mvn clean package' from the root directory. Artifacts will 
+be generated which you can embed in your applications or use as standalone 
+services. 
+ 
 ----
 Starting the Server UI
+
+ Look in bag-manager/target for the bag-manager...with-dependencies.jar file. 
+This is a standalone binary which wraps a server.
+
+$ java -jar bag-manager-1.0-SNAPSHOT-jar-with-dependencies.jar
+Go to File->Choose Directory and select a directory to how your bag repo, or
+select an existing repo. Next, make sure the port is set to the one you want
+to run your server on and click Server->Start Server.
+
+You now have a running bag server on http://localhost:[port]/bags
 
 ----
 Starting the command line server
@@ -26,6 +35,10 @@ Starting the command line server
 a standalone binary which can serve a bag directory by running:
 
  $ java -jar bag-exe-1.0-SNAPSHOT-jar-with-dependencies.jar -dir /tmp/bagdir
+
+it will startup a bag endpoint on http://localhost:8080/bags
+
+You can supply a -port option to change the default (8080) port.
 
 ----
 Starting the Client UI
@@ -40,3 +53,9 @@ running on a different server, you set jnlp.ingest.url to point at your bag serv
 
  $ java -D'jnlp.ingest.url=http://mybagserver.com:8080/bags' \
    -jar collection-manager-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+----
+Nightly Builds
+
+ Nightly project builds are available at the adapt Jenkins site:
+http://adaptvm01.umiacs.umd.edu:8080/jenkins 

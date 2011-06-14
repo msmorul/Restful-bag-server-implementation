@@ -48,14 +48,14 @@
                                     </Menu>
                                 </MenuButton>
 
-                                <MenuButton tooltipText="Transfer Bag to Chronopolis" styles="{backgroundColor:'#ffffff'}" preferredWidth="60" preferredHeight="50" >
+                                <MenuButton tooltipText="Transfer Bag to Server" styles="{backgroundColor:'#ffffff'}" preferredWidth="60" preferredHeight="50" >
                                     <buttonData>
                                         <c:ButtonData icon="@transferBag.png" />
                                     </buttonData>
                                     <Menu>
                                         <Menu.Section>
                                             <Menu.Item enabled="false" buttonData="Create/Transfer Bag"
-                                                       tooltipText="Transfer Bag to Chronopolis" bxml:id="createBagBtn" >
+                                                       tooltipText="Transfer Bag to Server" bxml:id="createBagBtn" >
 
                                                 <buttonPressListeners>
                                                     function buttonPressed(button) {
@@ -76,7 +76,7 @@
                             </BoxPane>
                             
                             <BoxPane styles="{verticalAlignment:'center',horizontalAlignment:'right',padding:{left:5,top:5,right:55,bottom:5}}">
-                                <Label text="Chronopolis Data Manager" styles="{font:'Arial bold 36',color:'#a0a0a0'}">
+                                <Label text="Bag Transfer Utility" styles="{font:'Arial bold 36',color:'#a0a0a0'}">
                                     <decorators>
                                         <chron:ConfigurableReflection yTranslate="-20"/>
                                     </decorators>

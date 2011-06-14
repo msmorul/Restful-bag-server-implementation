@@ -235,14 +235,14 @@ public class SimpleDiskVault implements BagVault {
                     if (checker.isSuccessful()) {
                         fw.write(Status.SUCCESSFUL.toString());
                         fw.write(": ");
-                        
+
                     } else {
                         fw.write(Status.FAILED.toString());
                         fw.write(":");
                         fw.write(checker.getValidationSummary());
                     }
                     fw.close();
-                    
+
                 } catch (IOException e) {
                     LOG.error("Error writing validation state ", e);
                 }
