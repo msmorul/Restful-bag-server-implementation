@@ -1,4 +1,4 @@
-<chron:ApplicationWindow title="Chronopolis Collection Manager" maximized="true"
+<chron:ApplicationWindow title="Bag Transfer Manager" maximized="true"
                          xmlns:bxml="http://pivot.apache.org/bxml"
                          xmlns:c="org.apache.pivot.wtk.content"
                          xmlns="org.apache.pivot.wtk"
@@ -75,7 +75,7 @@
                                 </MenuButton>
                             </BoxPane>
                             
-                            <BoxPane styles="{verticalAlignment:'center',horizontalAlignment:'right',padding:{left:5,top:5,right:55,bottom:5}}">
+                            <BoxPane styles="{verticalAlignment:'center',horizontalAlignment:'left',padding:{left:150,top:5,right:100,bottom:5}}">
                                 <Label text="Bag Transfer Utility" styles="{font:'Arial bold 36',color:'#a0a0a0'}">
                                     <decorators>
                                         <chron:ConfigurableReflection yTranslate="-20"/>

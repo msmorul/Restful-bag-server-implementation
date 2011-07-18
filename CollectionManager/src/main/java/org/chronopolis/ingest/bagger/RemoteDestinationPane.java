@@ -57,7 +57,7 @@ public class RemoteDestinationPane extends BasePanel {
         @Override
         public void chronopoligBagChanged(BagModel mode, String oldbagname) {
             if (mode.getChronopolisBag() == null || mode.getChronopolisBag().isEmpty()) {
-                setErrorMessage("Enter Name for Chronopolis bag");
+                setErrorMessage("Enter Name of Bag on server");
                 
             }
             updateFromModel();
@@ -66,7 +66,7 @@ public class RemoteDestinationPane extends BasePanel {
 
     public RemoteDestinationPane() {
         super("remoteDestinationPane.bxml");
-        Accordion.setHeaderData(this, "2. Choose Chronopolis Collection");
+        Accordion.setHeaderData(this, "2. Choose Target Name");
         transferTxt.getTextInputContentListeners().add(txtListener);
     }
 
